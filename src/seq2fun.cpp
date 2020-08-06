@@ -415,8 +415,8 @@ int main(int argc, char* argv[]) {
         std::string outFName;
         opt.htmlFile = opt.mHomoSearchOptions.prefix + "_report.html";
         if (opt.outputMappedCleanReads) {
-            opt.out1 = opt.mHomoSearchOptions.prefix + "_mapped_R1.fasta.gz";
-            if(opt.isPaired()) opt.out2 = opt.mHomoSearchOptions.prefix + "_mapped_R2.fasta.gz";
+            opt.out1 = opt.mHomoSearchOptions.prefix + "_mapped_R1.fastq.gz";
+            if(opt.isPaired()) opt.out2 = opt.mHomoSearchOptions.prefix + "_mapped_R2.fastq.gz";
         }
         
         stringstream ss;
@@ -528,8 +528,8 @@ int main(int argc, char* argv[]) {
             opt.htmlFile = it.prefix + "_report.html";
 
             if (opt.outputMappedCleanReads) {
-                opt.out1 = it.prefix + "_mapped_R1.fasta.gz";
-                if(opt.isPaired()) opt.out2 = it.prefix + "_mapped_R2.fasta.gz";
+                opt.out1 = it.prefix + "_mapped_R1.fastq.gz";
+                if(opt.isPaired()) opt.out2 = it.prefix + "_mapped_R2.fastq.gz";
             }
             std::stringstream ss;
             for (int i = 0; i < argc; i++) {
