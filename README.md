@@ -1,4 +1,4 @@
-### Description 
+## Description 
 
 **Seq2Fun** is an ultra-fast, all-in-one functional profiling tool for RNA-seq data analysis for organisms without reference genomes.
 
@@ -22,23 +22,16 @@ Highly flexible: Seq2Fun supports RNA-seq analysis on particular genes or groups
 
 Easy to use: Seq2Fun requires minimal programing skills.
 
-### Getting started
-### Step 1. Install package dependencies 
+## Getting started
+### Step 1. Install the package
+Seq2Fun (version 1.0.0) is written in C/C++11 and can be installed on Linux or Mac OS X (with Xcode and Xcode Command Line Tools installed). 
+We have tested Seq2Fun on Ubuntu (16.04 LTS and above) and macOS Catalina.
 
-If you are using RStudio, ensure that it has been updated to the latest version for smoother installation of MicrobiomeAnalystR and overall better compatibility with all other R packages.
-
-To use MicrobiomeAnalystR , first install all package dependencies. Ensure that you are able to download packages from Bioconductor - the Bioconductor package ("BiocManager") and RTools should be pre-installed. To install package dependencies, one can use the pacman R package (for those with >R 3.5.1). Note that some of these packages may require additional library dependencies that need to be installed prior to their own successful installation. For users who wish to perform raw sequence data processing, dada2 will also need to be installed. 
-
-**MicrobiomeAnalystR will not be successfully installed until all package dependencies and their associated dependencies are also installed.** An example message signaling the R package installation failure is "non-zero exit status". The most common reason is that not all R package dependencies were successfully installed. If you are unable to run the pacman function, you will have to install each R package dependency one by one using **install.packages("x", dependencies = TRUE)** if the package is from CRAN or **BiocManager::install("x")** if the package is from Bioconductor. Note to know where the package is deposited, simply google the R package - i.e. "phyloseq R" will return the Bioconductor page where you can follow the installation instructions for that R package.
-
-Note about Tax4Fun: We are in the progress of migrating to Tax4Fun2 - the older version is no longer supported on CRAN but can still be installed from nick-youngblut/Tax4Fun by ensuring the following dependencies are also installed - rhdf5; qiimer; joey711/biom. 
+Click [here] [here](). to download the source code. From within the folder containing the downloaded package, issue the following commands:
 
 ```R
-install.packages("pacman")
-
-library(pacman)
-
-pacman::p_load(phyloseq, metacoder, pryr, biomformat, RColorBrewer, ggplot2, gplots, Cairo, igraph, BiocParallel, randomForest, metagenomeSeq, MASS, DESeq2, vegan, RJSONIO, ggfortify, pheatmap, xtable, genefilter, data.table, reshape, stringr, ape, grid, gridExtra, splitstackshape, edgeR, globaltest, R.utils, viridis, ggrepel, ppcor, qs)
+Or 
+git clone 
 ```
 ### Step 2. Install the package 
 
