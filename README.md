@@ -1,7 +1,7 @@
 ## Description 
 
 **Seq2Fun** is an ultra-fast, all-in-one functional profiling tool for RNA-seq data analysis for organisms without reference genomes.
-Visit Seq2Fun websit for more detials **www.seq2fun.ca**
+Visit Seq2Fun websit **www.seq2fun.ca** for more details.
 
 
 ## Key features of Seq2Fun
@@ -68,7 +68,6 @@ Note: * these KOs in the database are KOs assigned to KEGG pathways and they are
 | Fishes	| 39	| 273,691	| 4,308	| [fishes.tar.gz](http://gofile.me/4esAc/VCC2q7LC6)	| 783,801	| 10,510	| [fishes_all_KOs.tar.gz](http://gofile.me/4esAc/Iwjwuxoym) | 
 | Arthropods	| 72	| 196,277	| 3,541	| [arthropods.tar.gz](http://gofile.me/4esAc/tu3lbSwk2)	| 455,750	| 8,723	| [arthropods_all_KOs.tar.gz](http://gofile.me/4esAc/EGYQpJobd) | 
 | Nematodes	| 6	| 13,379	| 2,324	| [nematodes.tar.gz](http://gofile.me/4esAc/6axLombcd)	| 30,128	| 5,260	| [nematodes_all_KOs.tar.gz](http://gofile.me/4esAc/rS4CkbRpt) | 
-v
 
 #### Option B) Clone Github and install locally
 
