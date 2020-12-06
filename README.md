@@ -69,60 +69,31 @@ Note: * these KOs in the database are KOs assigned to KEGG pathways and they are
 | Arthropods	| 72	| 196,277	| 3,541	| [arthropods.tar.gz](http://gofile.me/4esAc/tu3lbSwk2)	| 455,750	| 8,723	| [arthropods_all_KOs.tar.gz](http://gofile.me/4esAc/EGYQpJobd) | 
 | Nematodes	| 6	| 13,379	| 2,324	| [nematodes.tar.gz](http://gofile.me/4esAc/6axLombcd)	| 30,128	| 5,260	| [nematodes_all_KOs.tar.gz](http://gofile.me/4esAc/rS4CkbRpt) | 
 
-#### Option B) Clone Github and install locally
-
-The * must be replaced by what is actually downloaded and built. For instance, check your Downloads folder to see what tar.gz file was downloaded. So if you download MicrobiomeAnalystR_1.0.1.tar.gz, replace the * with the downloaded version number.  
-
-```R
-git clone https://github.com/xia-lab/MicrobiomeAnalystR.git
-R CMD build MicrobiomeAnalystR
-R CMD INSTALL MicrobiomeAnalystR_*.tar.gz
-
-```
-
-#### Option C) Manual download of MicrobiomeAnalystR.tar.gz and install locally - not yet available, stable release to come soon!!
-
-Manually download the .tar.gz file from [here](https://www.dropbox.com/s/wk43rs9hswzypgt/MicrobiomeAnalystR_0.0.0.9000.tar.gz?dl=0). The * must be replaced by what is actually downloaded and built.  
-
-```R
-cd ~/Downloads
-R CMD INSTALL MicrobiomeAnalystR_*.tar.gz
-
-```
-
 ## Case Studies
+This short tutorial below demonstrates how to run Seq2Fun. We use a RNA-seq dataset from a real non-model organism double-crested cormorant (DCCO), treated with ethinyl estradiol (EE2) as a show case.
 
-### MicrobiomeAnalyst Workflow
+### Experimental design
+#### 1. Description of experiment
 
-To showcase how to utilize MicrobiomeAnalystR , we provide a detailed tutorial to perform a comprehensive end-to-end workflow from raw sequence data preprocessing to knowledge-based analysis. The dataset showcased in the tutorial consists of a subset of pediatric IBD stool samples obtained from the Integrative Human Microbiome Project Consortium (https://ibdmdb.org/). The tutorial is available inside the R package as a vignette.
+DCCO embryos were exposed via egg injection to EE2, a synthetic estrogen that is the active substance in some forms of birth control. Livers were harvested after 14 days exposure and immediately frozen in liquid nitrogen for total RNA extraction. Total RNA was sent to Genome Quebec (Montreal, Quebec, Canada), to build sequencing library with TruSeq RNA Library Prep Kit (San Diego, California, United States) before submitted to Illumina NovaSeq 6000 (San Diego, California, United States) for 100 bp PE reads sequencing.
 
-## Tutorials
+#### 2. Experimental samples
 
-For detailed tutorials on how to use MicrobiomeAnalystR, please refer to the R package vignettes. These vignettes include a comprehensive tutorial introducing MicrobiomeAnalystR, four detailed step-by-step tutorials with example data for each of the main MetaboAnalytR  modules, and a case-study showcasing the end-to-end functionality of MicrobiomeAnalystR. Note, the functions below work only if the R package vignettes were built. 
+Each sample was subsampled with 5 million reads, just for demonstration purpose.
+The samples can be download from here
 
-Within R:
-```R
-vignette(package="MicrobiomeAnalystR")
-```
+| Group | Chemicals (dose)	| Number of samples	| Number of reads	|
+| ----- | ----------------- | ----------------- | --------------- |
+| High	| EE2 (33 mg/ml)	  |    4	            |     20,000,000	|
+| Medium| EE2 (3.3 mg/ml)	  |    5	            |     25,000,000	|
+| Control| DMSO         	  |    5	            |     25,000,000	|
 
-Within a web-browser:
-```R
-browseVignettes("MicrobiomeAnalystR")
-```
 
-## Citation
+#### 3. Database used
 
-MicrobiomeAnalystR has been developed by the [XiaLab](http://xialabresearch.com/) at McGill University. The original manuscript (web-based version) can be found [here](https://www.ncbi.nlm.nih.gov/pubmed/28449106). 
-
-We encourage users to further develop the package to suit their needs. If you use the R package, please cite us: 
-
-Dhariwal A, Chong J, Habib S, King IL, Agellon LB, Xia J. MicrobiomeAnalyst: a web-based tool for comprehensive statistical, visual and meta-analysis of microbiome data. Nucleic acids research. 2017 Jul 3;45(W1):W180-8.
-
-*From within R:*
-
-```R
-citation("MicrobiomeAnalystR")
-```
+| Group | Number of proteins	| Number of KOs	| Number of species	| Database name |
+| ----- | ----------------    | ------------- | ---------------   | ------------- |
+| Birds	| 87,530          	  |    4,177	    |     24         	  |[birds.tar.gz](http://gofile.me/4esAc/G0QBrqmvn)|   
 
 ## Bugs or feature requests
 
@@ -138,7 +109,3 @@ To inform us of any bugs or requests, please open a new issue or send an email t
 07-08-2019 - Testing R code for local use + creating vignettes
 07-03-2019 - Updating R code + documentation
 06-22-2019 - Prepping R package for stable release
-
-## MicrobiomeAnalystR TO DO
-
-
