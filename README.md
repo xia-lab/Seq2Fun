@@ -100,7 +100,7 @@ The samples can be download from here
 
 This file consists of 3 columns and separated by '\t'. The first column is the prefix name of each sample, and the second is the forward reads file, the last column is the reverse reads file. If you have a single-end (SE) reads, remove the reverse reads (second) column. It looks like this:
 ```
-A1.CE2-S1-LT  A1.CE2-S1-LT_R1.fastq.gz  A1.CE2-S1-LT_R2.fastq.gz
+A1.CE2-S1-LT	A1.CE2-S1-LT_R1.fastq.gz	A1.CE2-S1-LT_R2.fastq.gz
 A2.CE2-M4-LT	A2.CE2-M4-LT_R1.fastq.gz	A2.CE2-M4-LT_R2.fastq.gz
 B1.CE2-S2-LT	B1.CE2-S2-LT_R1.fastq.gz	B1.CE2-S2-LT_R2.fastq.gz
 B2.CE2-M5-LT	B2.CE2-M5-LT_R1.fastq.gz	B2.CE2-M5-LT_R2.fastq.gz
