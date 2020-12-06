@@ -57,18 +57,18 @@ Note: * these KOs in the database are KOs assigned to KEGG pathways and they are
 | Group | Species	| Proteins*	| KOs*	| Filename*	| Proteins**	| KOs**	| Filename** |
 | ----- | ------- | --------- | ----- | --------- | ----------- | ----- | ---------- |
 | Eukaryotes	| 537	| 1,908,542	| 8,041	| [eukaryotes.tar.gz](http://gofile.me/4esAc/lwO0sfr5c)	| 3,950,549	| 15,302	| [eukaryotes_all_KOs.tar.gz](http://gofile.me/4esAc/3GNJ1lfNg)| 
-| Animals	| 250	| 1,126,598	| 6,723	| animals.tar.gz	| 2,446,258	| 12,984	| animals_all_KOs.tar.gz| 
-| Plants	| 105	| 480,379	| 3,012	| plants.tar.gz	| 926,166	| 6,363	| plants_all_KOs.tar.gz| 
-| Fungi	| 130	| 237,631	| 2,423	| fungi.tar.gz	| 444,690	| 4,987	| fungi_all_KOs.tar.gz| 
-| Protists	| 51	| 64,058	| 2,696	| protists.tar.gz	| 133,614	| 6,505	| protists_all_KOs.tar.gz| 
-| Mammals	| 66	| 378,311	| 5,622	| mammals.tar.gz	| 689,252	| 11,078	| mammals_all_KOs.tar.gz| 
-| Birds	| 24	| 87,530	| 4,177	| birds.tar.gz	| 208,153	| 9,718	| birds_all_KOs.tar.gz| 
-| Reptiles	| 12	| 62,677	| 4,342	| reptiles.tar.gz	| 153,373	| 10,113	| reptiles_all_KOs.tar.gz| 
-| Amphibians	| 3	| 20,880	| 4,207	| amphibians.tar.gz	| 50,137	| 9,715	| amphibians_all_KOs.tar.gz| 
-| Fishes	| 39	| 273,691	| 4,308	| fishes.tar.gz	| 783,801	| 10,510	| fishes_all_KOs.tar.gz| 
-| Arthropods	| 72	| 196,277	| 3,541	| arthropods.tar.gz	| 455,750	| 8,723	| arthropods_all_KOs.tar.gz| 
-| Nematodes	| 6	| 13,379	| 2,324	| nematodes.tar.gz	| 30,128	| 5,260	| nematodes_all_KOs.tar.gz| 
-
+| Animals	| 250	| 1,126,598	| 6,723	| [animals.tar.gz](http://gofile.me/4esAc/MfQbpPK02)	| 2,446,258	| 12,984	| [animals_all_KOs.tar.gz](http://gofile.me/4esAc/XkLMHAOnn) | 
+| Plants	| 105	| 480,379	| 3,012	| [plants.tar.gz](http://gofile.me/4esAc/jp5UT8xwG")	| 926,166	| 6,363	| [plants_all_KOs.tar.gz](http://gofile.me/4esAc/2UTNtmlWs) | 
+| Fungi	| 130	| 237,631	| 2,423	| [fungi.tar.gz](http://gofile.me/4esAc/1vo0BgUTU)	| 444,690	| 4,987	| [fungi_all_KOs.tar.gz](http://gofile.me/4esAc/gwqs6EXU0) 
+| Protists	| 51	| 64,058	| 2,696	| [protists.tar.gz](http://gofile.me/4esAc/Cbb9LcFLS)	| 133,614	| 6,505	| [protists_all_KOs.tar.gz](http://gofile.me/4esAc/So4gxKC7Q) | 
+| Mammals	| 66	| 378,311	| 5,622	| [mammals.tar.gz](http://gofile.me/4esAc/PYOHX6r1y)	| 689,252	| 11,078	| [mammals_all_KOs.tar.gz](http://gofile.me/4esAc/4SGD2Psmp) | 
+| Birds	| 24	| 87,530	| 4,177	| [birds.tar.gz](http://gofile.me/4esAc/G0QBrqmvn)	| 208,153	| 9,718	| [birds_all_KOs.tar.gz](http://gofile.me/4esAc/8FtrhiJf0) |
+| Reptiles	| 12	| 62,677	| 4,342	| [reptiles.tar.gz](http://gofile.me/4esAc/GjjKjzAsL)	| 153,373	| 10,113	| [reptiles_all_KOs.tar.gz](http://gofile.me/4esAc/K5YUqVVtW) | 
+| Amphibians	| 3	| 20,880	| 4,207	| [amphibians.tar.gz](http://gofile.me/4esAc/zUegm99hY)	| 50,137	| 9,715	| [amphibians_all_KOs.tar.gz](http://gofile.me/4esAc/qAmasYGsg) | 
+| Fishes	| 39	| 273,691	| 4,308	| [fishes.tar.gz](http://gofile.me/4esAc/VCC2q7LC6)	| 783,801	| 10,510	| [fishes_all_KOs.tar.gz](http://gofile.me/4esAc/Iwjwuxoym) | 
+| Arthropods	| 72	| 196,277	| 3,541	| [arthropods.tar.gz](http://gofile.me/4esAc/tu3lbSwk2)	| 455,750	| 8,723	| [arthropods_all_KOs.tar.gz](http://gofile.me/4esAc/EGYQpJobd) | 
+| Nematodes	| 6	| 13,379	| 2,324	| [nematodes.tar.gz](http://gofile.me/4esAc/6axLombcd)	| 30,128	| 5,260	| [nematodes_all_KOs.tar.gz](http://gofile.me/4esAc/rS4CkbRpt) | 
+v
 
 #### Option B) Clone Github and install locally
 
