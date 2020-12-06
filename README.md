@@ -54,12 +54,15 @@ We provide dozens of pre-built databases that can be downloaded here.
 Note: * these KOs in the database are KOs assigned to KEGG pathways and they are only a proportion of whole list of KOs.
 ** all KOs include KOs not assigned to KEGG pathways.
 
-```
 | First Header  | Second Header |
 | ------------- | ------------- |
 | Content Cell  | Content Cell  |
 | Content Cell  | Content Cell  |
-```
+
+| type|name |description |
+|----|---|---|
+| *address* | _user | address of certificate owner |
+| *bytes32* | _hash | sha256 hash of the certificate text |
 
 
 
