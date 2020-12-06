@@ -41,19 +41,26 @@ make
 ```
 ### Step 2. Run a small test 
 There are four sub folders under seq2fun - src, bin, database and testdata. The bin folder contains the binary code we just complied. The testdata contains a small test data from the Case Study.
-
-```
 From within the **testdata folder**, issue the following commands:
+```
 ../bin/seq2fun --sampletable sample.txt --tfmi birds_cdhit99_proteins.fmi --genemap birds_protein_ko_species_cdhit99.txt -w 8 --profiling -V --outputMappedCleanReads
 ```
 
 
 ### Step 3. download 
-There are four sub folders under seq2fun - src, bin, database and testdata. The bin folder contains the binary code we just complied. The testdata contains a small test data from the Case Study.
+For most non-model organisms, biological understanding of study outcomes is limited to protein-coding genes with functional annotations such as KEGG pathways, Gene Ontology or PANTHER classification system. Therefore, developing Seq2Fun database to focus on functionally annotated genes such as KOs largely meets the preferred needs of most scientists studying non-model organisms.
+
+We provide dozens of pre-built databases that can be downloaded here.
+Note: * these KOs in the database are KOs assigned to KEGG pathways and they are only a proportion of whole list of KOs.
+** all KOs include KOs not assigned to KEGG pathways.
 
 ```
-From within the testdata folder, issue the following commands:
-../bin/seq2fun --sampletable sample.txt --tfmi birds_cdhit99_proteins.fmi --genemap birds_protein_ko_species_cdhit99.txt -w 8 --profiling -V --outputMappedCleanReads
+<tr>
+<td><code>refseq</code></td>
+<td>Completely assembled and annotated reference genomes of Archaea, Bacteria, and viruses from the NCBI RefSeq database.</td>
+<td>63M</td>
+<td>43 (55)</td>
+</tr>
 ```
 
 
