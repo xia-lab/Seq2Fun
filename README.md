@@ -5,6 +5,7 @@ Visit Seq2Fun websit **www.seq2fun.ca** for more details.
 
 
 ## Key features of Seq2Fun
+```
 Ultra-fast: Seq2Fun is > 120 times faster (~ 2 million reads / minute) than the conventional RNA-seq workflow.
 
 Extremely low memory cost: Seq2Fun consumes as little as 2.27 GB memory and can run on a standard PC with 8 threads and 16 GB memory.
@@ -22,6 +23,7 @@ Multifunctional: Seq2Fun generates 6 levels of output files, including KO abunda
 Highly flexible: Seq2Fun supports RNA-seq analysis on particular genes or groups of organisms using customized database.
 
 Easy to use: Seq2Fun requires minimal programing skills.
+```
 
 ## Getting started
 ### Step 1. Install the package
