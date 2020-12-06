@@ -138,20 +138,70 @@ K00011	276             292             1581            303             315      
 K00012	130             94              609             112             111             134             127             344             103             193             163             382             116             299             UGDH, ugd; UDPglucose 6-dehydrogenase [EC:1.1.1.22]
 ...
 ```
+#### 2. Hit pathway table (A1.CE2-S1_pathway_hits.txt).
 
+This table has five columns separated by '\t', pathway_id, pathway_name, KO_id (which hit KOs are mapped to this pathway), KO_count and KO_name. It looks like this:
+```
+pathway_id	pathway_name                    KO_id	KO_count	KO_name
+map00010	Glycolysis_/_Gluconeogenesis	K00002	118             AKR1A1, adh; alcohol dehydrogenase (NADP+) [EC:1.1.1.2]
+map00010	Glycolysis_/_Gluconeogenesis	K00016	12019           LDH, ldh; L-lactate dehydrogenase [EC:1.1.1.27]
+map00010	Glycolysis_/_Gluconeogenesis	K00121	573             frmA, ADH5, adhC; S-(hydroxymethyl)glutathione dehydrogenase   alcohol dehydrogenase [EC:1.1.1.284 1.1.1.1]
+map00010	Glycolysis_/_Gluconeogenesis	K00128	3721            ALDH; aldehyde dehydrogenase (NAD+) [EC:1.2.1.3]
+map00010	Glycolysis_/_Gluconeogenesis	K00129	13              E1.2.1.5; aldehyde dehydrogenase (NAD(P)+) [EC:1.2.1.5]
+map00010	Glycolysis_/_Gluconeogenesis	K00134	29734           GAPDH, gapA; glyceraldehyde 3-phosphate dehydrogenase [EC:1.2.1.12]
+map00010	Glycolysis_/_Gluconeogenesis	K00149	4504            ALDH9A1; aldehyde dehydrogenase family 9 member A1 [EC:1.2.1.47 1.2.1.3]
+...             ...                             ...     ...             ...
+```
+#### 3. Hit species table (A1.CE2-S1_species_hits.txt).
 
+This table has two columns separated by '\t', species name and number of KOs (sorted by descending order) assigned to this species.
+```
+species                     number_of_KOs
+Nipponia_nippon             1470
+Egretta_garzetta            1200
+Pygoscelis_adeliae          1187
+Columba_livia               1057
+Athene_cunicularia          1048
+Apteryx_mantelli_mantelli   840
+Empidonax_traillii          820
+Falco_cherrug               779
+Gallus_gallus               658
+Anas_platyrhynchos          564
+Anser_cygnoides_domesticus  542
+Falco_peregrinus            510
+...                     ...
+```
+#### 4. Reads KO table (A1.CE2-S1_reads_ko.txt).
+This table has three columns separated by '\t', reads_id, KO_id (which homology KO assigned) and KO_name.
+```
+reads_id                                KO_id	KO_name
+A00266:275:HLFTWDSXX:2:1101:10013:26537	K14736	TF; transferrin
+A00266:275:HLFTWDSXX:2:1101:10122:16235	K14736	TF; transferrin
+A00266:275:HLFTWDSXX:2:1101:10122:17174	K03883	ND5; NADH-ubiquinone oxidoreductase chain 5 [EC:7.1.1.2]
+A00266:275:HLFTWDSXX:2:1101:10122:2174	K00602	purH; phosphoribosylaminoimidazolecarboxamide formyltransferase / IMP cyclohydrolase [EC:2.1.2.3 3.5.4.10]
+A00266:275:HLFTWDSXX:2:1101:10140:28510	K00799	GST, gst; glutathione S-transferase [EC:2.5.1.18]
+A00266:275:HLFTWDSXX:2:1101:10149:34225	K06238	COL6A; collagen, type VI, alpha
+A00266:275:HLFTWDSXX:2:1101:10185:19382	K03883	ND5; NADH-ubiquinone oxidoreductase chain 5 [EC:7.1.1.2]
+A00266:275:HLFTWDSXX:2:1101:10212:16423	K11188	PRDX6; peroxiredoxin 6, 1-Cys peroxiredoxin [EC:1.11.1.7 1.11.1.15 3.1.1.-]
+A00266:275:HLFTWDSXX:2:1101:10212:36777	K08737	MSH6; DNA mismatch repair protein MSH6
+A00266:275:HLFTWDSXX:2:1101:10294:9236	K02938	RP-L8e, RPL8; large subunit ribosomal protein L8e
+A00266:275:HLFTWDSXX:2:1101:10321:31735	K14736	TF; transferrin
+A00266:275:HLFTWDSXX:2:1101:10339:16297	K06171	NCSTN; nicastrin
+A00266:275:HLFTWDSXX:2:1101:10375:24972	K04660	DCN; decorin
+A00266:275:HLFTWDSXX:2:1101:10402:14121	K02132	ATPeF1A, ATP5A1, ATP1; F-type H+-transporting ATPase subunit alpha
+A00266:275:HLFTWDSXX:2:1101:10420:21198	K03231	EEF1A; elongation factor 1-alpha
+A00266:275:HLFTWDSXX:2:1101:10438:27179	K00149	ALDH9A1; aldehyde dehydrogenase family 9 member A1 [EC:1.2.1.47 1.2.1.3]
+A00266:275:HLFTWDSXX:2:1101:1045:22498	K00255	ACADL; long-chain-acyl-CoA dehydrogenase [EC:1.3.8.8]
+A00266:275:HLFTWDSXX:2:1101:1045:33144	K00134	GAPDH, gapA; glyceraldehyde 3-phosphate dehydrogenase [EC:1.2.1.12]
+A00266:275:HLFTWDSXX:2:1101:10465:27508	K05692	ACTB_G1; actin beta/gamma 1
+...                                     ...     ...
+```
 
 ## Bugs or feature requests
 
-To inform us of any bugs or requests, please open a new issue or send an email to #jasmine.chong@mail.mcgill.ca.
+To inform us of any bugs or requests, please open a new issue or send an email to #liu.peng2@mail.mcgill.ca or rocpengliu@gmail.com
 
-## MicrobiomeAnalystR History & Updates
+## Seq2Fun History & Updates
 
-11-16-2020 - Code update w. web + change files from .rds to .qs - users need to install qs R package now
-02-24-2020 - Code update w. web + added note about usage
-09-05-2019 - Bug fixing w. web
-08-07-2019 - Added function to import SILVA annotated biom files (handling Domain in taxonomy)
-07-11-2019 - Added volcano + dot plots for RNAseq analysis
-07-08-2019 - Testing R code for local use + creating vignettes
-07-03-2019 - Updating R code + documentation
-06-22-2019 - Prepping R package for stable release
+12-06-2020 - seq2fun_v1.1.0 released
+08-24-2020 - seq2fun_v1.0.0 released
