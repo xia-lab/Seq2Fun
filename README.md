@@ -47,7 +47,7 @@ From within the **testdata folder**, issue the following commands:
 ```
 
 
-### Step 3. download 
+### Step 3. Database download 
 For most non-model organisms, biological understanding of study outcomes is limited to protein-coding genes with functional annotations such as KEGG pathways, Gene Ontology or PANTHER classification system. Therefore, developing Seq2Fun database to focus on functionally annotated genes such as KOs largely meets the preferred needs of most scientists studying non-model organisms.
 
 We provide dozens of pre-built databases that can be downloaded here.
@@ -55,12 +55,9 @@ Note: * these KOs in the database are KOs assigned to KEGG pathways and they are
 ** all KOs include KOs not assigned to KEGG pathways.
 
 ```
-<tr>
-<td><code>refseq</code></td>
-<td>Completely assembled and annotated reference genomes of Archaea, Bacteria, and viruses from the NCBI RefSeq database.</td>
-<td>63M</td>
-<td>43 (55)</td>
-</tr>
+Attempt | #1 | #2 | #3 | #4 | #5 | #6 | #7 | #8 | #9 | #10 | #11
+--- | --- | --- | --- |--- |--- |--- |--- |--- |--- |--- |---
+Seconds | 301 | 283 | 290 | 286 | 289 | 285 | 287 | 287 | 272 | 276 | 269
 ```
 
 
