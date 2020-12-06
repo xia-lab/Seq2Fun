@@ -95,6 +95,44 @@ The samples can be download from here
 | ----- | ----------------    | ------------- | ---------------   | ------------- |
 | Birds	| 87,530          	  |    4,177	    |     24         	  |[birds.tar.gz](http://gofile.me/4esAc/G0QBrqmvn)|   
 
+### Running Seq2Fun
+#### 1.Preparing sample.txt file
+
+This file consists of 3 columns and separated by '\t'. The first column is the prefix name of each sample, and the second is the forward reads file, the last column is the reverse reads file. If you have a single-end (SE) reads, remove the reverse reads (second) column. It looks like this:
+
+A1.CE2-S1-LT	A1.CE2-S1-LT_R1.fastq.gz	A1.CE2-S1-LT_R2.fastq.gz
+
+A2.CE2-M4-LT	A2.CE2-M4-LT_R1.fastq.gz	A2.CE2-M4-LT_R2.fastq.gz
+
+B1.CE2-S2-LT	B1.CE2-S2-LT_R1.fastq.gz	B1.CE2-S2-LT_R2.fastq.gz
+
+B2.CE2-M5-LT	B2.CE2-M5-LT_R1.fastq.gz	B2.CE2-M5-LT_R2.fastq.gz
+
+C1.CE2-S3-LT	C1.CE2-S3-LT_R1.fastq.gz	C1.CE2-S3-LT_R2.fastq.gz
+
+D1.CE2-S4-LT	D1.CE2-S4-LT_R1.fastq.gz	D1.CE2-S4-LT_R2.fastq.gz
+
+D2.CE2-H2-LT	D2.CE2-H2-LT_R1.fastq.gz	D2.CE2-H2-LT_R2.fastq.gz
+
+E1.CE2-S5-LT	E1.CE2-S5-LT_R1.fastq.gz	E1.CE2-S5-LT_R2.fastq.gz
+
+E2.CE2-H3-LT	E2.CE2-H3-LT_R1.fastq.gz	E2.CE2-H3-LT_R2.fastq.gz
+
+F1.CE2-M1-LT	F1.CE2-M1-LT_R1.fastq.gz	F1.CE2-M1-LT_R2.fastq.gz
+
+F2.CE2-H4-LT	F2.CE2-H4-LT_R1.fastq.gz	F2.CE2-H4-LT_R2.fastq.gz
+
+G1.CE2-M2-LT	G1.CE2-M2-LT_R1.fastq.gz	G1.CE2-M2-LT_R2.fastq.gz
+
+G2.CE2-H5-LT	G2.CE2-H5-LT_R1.fastq.gz	G2.CE2-H5-LT_R2.fastq.gz
+
+H1.CE2-M3-LT	H1.CE2-M3-LT_R1.fastq.gz	H1.CE2-M3-LT_R2.fastq.gz
+
+
+
+
+
+
 ## Bugs or feature requests
 
 To inform us of any bugs or requests, please open a new issue or send an email to #jasmine.chong@mail.mcgill.ca.
