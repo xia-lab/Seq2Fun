@@ -130,19 +130,12 @@ S2F_HOME/bin/seq2fun --sampletable sample.txt --tfmi S2F_HOME/databas
 This table has KO id, sample names and KO name separated by '\t'. (how many reads have assigned to the homology KO), the full name of the assigned KO. It looks like this:
 ```
 KO_ID   A1.CE2-S1-LT    A2.CE2-M4-LT    B1.CE2-S2-LT    B2.CE2-M5-LT    C1.CE2-S3-LT    D1.CE2-S4-LT    D2.CE2-H2-LT    E1.CE2-S5-LT    E2.CE2-H3-LT    F1.CE2-M1-LT    F2.CE2-H4-LT    G1.CE2-M2-LT    G2.CE2-H5-LT    H1.CE2-M3-LT    KO_name
-
 K00002	118             96              386             131             147             141             106             129             120             98              148             117             136             121             AKR1A1, adh; alcohol dehydrogenase (NADP+) [EC:1.1.1.2]
-
 K00006	629             604             235             648             664             506             628             499             670             455             838             615             579             521             GPD1; glycerol-3-phosphate dehydrogenase (NAD+) [EC:1.1.1.8]
-
 K00008	971             755             715             770             1122            770             1058            1010            1023            829             1055            1351            954             1139            SORD, gutB; L-iditol 2-dehydrogenase [EC:1.1.1.14]
-
 K00010	17              18              31              17              17              14              15              17              17              17              15              9               20              25              iolG; myo-inositol 2-dehydrogenase   D-chiro-inositol 1-dehydrogenase [EC:1.1.1.18 1.1.1.369]
-
 K00011	276             292             1581            303             315             336             290             305             353             263             316             279             290             296             AKR1B; aldehyde reductase [EC:1.1.1.21]
-
 K00012	130             94              609             112             111             134             127             344             103             193             163             382             116             299             UGDH, ugd; UDPglucose 6-dehydrogenase [EC:1.1.1.22]
-
 ...
 ```
 
