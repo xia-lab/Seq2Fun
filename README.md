@@ -116,7 +116,13 @@ G2.CE2-H5-LT	G2.CE2-H5-LT_R1.fastq.gz	G2.CE2-H5-LT_R2.fastq.gz
 H1.CE2-M3-LT	H1.CE2-M3-LT_R1.fastq.gz	H1.CE2-M3-LT_R2.fastq.gz
 ```
 
+#### 2. Running Seq2Fun to quantify RNA-seq reads.
 
+Seq2Fun has two output modes: comparative and profiling mode (default).
+The comparative mode produces only the KO abundance table, while the profiling mode produces 4 tables 1). KO abundance table for all samples, and KO abundance table for each sample, 2). hit pathway, 3). hit species, 4). reads KO table, and 5). a a html report summarizing these tables summarizing these tables.
+```
+S2F_HOME/bin/seq2fun --sampletable sample.txt --tfmi S2F_HOME/databas
+```
 
 
 
