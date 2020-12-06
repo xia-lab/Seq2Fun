@@ -1,6 +1,7 @@
 ## Description 
 
 **Seq2Fun** is an ultra-fast, all-in-one functional profiling tool for RNA-seq data analysis for organisms without reference genomes.
+Visit Seq2Fun websit for more detials **www.seq2fun.ca**
 
 
 ## Key features of Seq2Fun
@@ -27,32 +28,35 @@ Easy to use: Seq2Fun requires minimal programing skills.
 Seq2Fun (version 1.0.0) is written in C/C++11 and can be installed on Linux or Mac OS X (with Xcode and Xcode Command Line Tools installed). 
 We have tested Seq2Fun on Ubuntu (16.04 LTS and above) and macOS Catalina.
 
-Click [here] [here](). to download the source code. From within the folder containing the downloaded package, issue the following commands:
+Click [here](). to download the source code. From within the folder containing the downloaded package, issue the following commands:
 
-```R
+```
+tar -xvzf seq2fun_v1.0.0.tar.gz
 Or 
-git clone 
+git clone https://github.com/xia-lab/Seq2Fun.git
+
+cd seq2fun/src/
+make clean
+make
 ```
-### Step 2. Install the package 
-
-MicrobiomeAnalystR is freely available from GitHub. Note that the Rpackage is currently under construction. The package documentation, including the vignettes for each module and user manual is available within the downloaded R package file. If all package dependencies were installed, you will be able to install the MicrobiomeAnalystR. There are three options, A) using the R package devtools, B) cloning the github, C) manually downloading the .tar.gz file. Note that the MicrobiomeAnalystR github will have the most up-to-date version of the package. 
-
-#### Option A) Install the package directly from github using the *devtools* package. Open R and enter:
-
-Due to issues with Latex, some users may find that they are only able to install MicrobiomeAnalystR without any documentation (i.e. vignettes). 
-
-```R
-# Step 1: Install devtools
-install.packages("devtools")
-library(devtools)
-
-# Step 2: Install MicrobiomeAnalystR WITHOUT documentation
-devtools::install_github("xia-lab/MicrobiomeAnalystR", build = TRUE, build_opts = c("--no-resave-data", "--no-manual", "--no-build-vignettes"))
-
-# Step 2: Install MicrobiomeAnalystR WITH documentation
-devtools::install_github("xia-lab/MicrobiomeAnalystR", build = TRUE, build_opts = c("--no-resave-data", "--no-manual"))
+### Step 2. Run a small test 
+There are four sub folders under seq2fun - src, bin, database and testdata. The bin folder contains the binary code we just complied. The testdata contains a small test data from the Case Study.
 
 ```
+From within the **testdata folder**, issue the following commands:
+../bin/seq2fun --sampletable sample.txt --tfmi birds_cdhit99_proteins.fmi --genemap birds_protein_ko_species_cdhit99.txt -w 8 --profiling -V --outputMappedCleanReads
+```
+
+
+### Step 3. download 
+There are four sub folders under seq2fun - src, bin, database and testdata. The bin folder contains the binary code we just complied. The testdata contains a small test data from the Case Study.
+
+```
+From within the testdata folder, issue the following commands:
+../bin/seq2fun --sampletable sample.txt --tfmi birds_cdhit99_proteins.fmi --genemap birds_protein_ko_species_cdhit99.txt -w 8 --profiling -V --outputMappedCleanReads
+```
+
+
 
 #### Option B) Clone Github and install locally
 
@@ -126,7 +130,4 @@ To inform us of any bugs or requests, please open a new issue or send an email t
 
 ## MicrobiomeAnalystR TO DO
 
-Add 3D visualizations using plotly
-
-Add function to make multiple feature box plots
 
