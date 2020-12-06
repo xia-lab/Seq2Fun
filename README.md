@@ -56,7 +56,7 @@ Note: * these KOs in the database are KOs assigned to KEGG pathways and they are
 
 | Group | Species	| Proteins*	| KOs*	| Filename*	| Proteins**	| KOs**	| Filename** |
 | ----- | ------- | --------- | ----- | --------- | ----------- | ----- | ---------- |
-| Eukaryotes	| 537	| 1,908,542	| 8,041	| eukaryotes.tar.gz	| 3,950,549	| 15,302	| eukaryotes_all_KOs.tar.gz| 
+| Eukaryotes	| 537	| 1,908,542	| 8,041	| [eukaryotes.tar.gz0(http://gofile.me/4esAc/lwO0sfr5c)	| 3,950,549	| 15,302	| [eukaryotes_all_KOs.tar.gz](http://gofile.me/4esAc/3GNJ1lfNg)| 
 | Animals	| 250	| 1,126,598	| 6,723	| animals.tar.gz	| 2,446,258	| 12,984	| animals_all_KOs.tar.gz| 
 | Plants	| 105	| 480,379	| 3,012	| plants.tar.gz	| 926,166	| 6,363	| plants_all_KOs.tar.gz| 
 | Fungi	| 130	| 237,631	| 2,423	| fungi.tar.gz	| 444,690	| 4,987	| fungi_all_KOs.tar.gz| 
