@@ -5,13 +5,21 @@
 
 ## Key features of Seq2Fun
 .Ultra-fast: Seq2Fun is > 120 times faster (~ 2 million reads / minute) than the conventional RNA-seq workflow.
+
 .Extremely low memory cost: Seq2Fun consumes as little as 2.27 GB memory and can run on a standard PC with 8 threads and 16 GB memory.
+
 .Highly efficient: Seq2Fun can finish a typical RNA-seq dataset within several hours on a standard PC in stead of several days or even weeks by conventional RNA-seq workflow on a high-performance server.
+
 .Reference-free: Seq2Fun does not require the genome or transcriptome reference of the organism; it is also transcriptome de novo assembly-free.
+
 .Highly accurate: Seq2Fun generates KO abundance with R2 value as high as 0.93 comparing with the ground truth.
+
 .All-in-one: Seq2Fun directly takes raw RNA-seq reads as input and output gene abundance table without any intermediate file writing and loading, making I/O very efficient.
+
 .Multifunctional: Seq2Fun generates 6 levels of output files, including KO abundance table, hit pathway table, hit species table, reads KO table, a html report summarizing these tables and reads quality check, as well as output mapped clean reads for further analysis such as gene assembly.
+
 .Highly flexible: Seq2Fun supports RNA-seq analysis on particular genes or groups of organisms using customized database.
+
 .Easy to use: Seq2Fun requires minimal programing skills.
 
 
