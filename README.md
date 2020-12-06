@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="https://github.com/xia-lab/MicrobiomeAnalystR/blob/master/docs/microbiomeanalystr_logo.png" width="600">
-</p>
-
 ### Note - MicrobiomeAnalystR is still under development - we cannot guarantee full functionality ### 
 
 ## Description 
