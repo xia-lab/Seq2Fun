@@ -199,9 +199,10 @@ A00266:275:HLFTWDSXX:2:1101:10465:27508	K05692	ACTB_G1; actin beta/gamma 1
 
 ## Bugs or feature requests
 
-To inform us of any bugs or requests, please open a new issue or send an email to #liu.peng2@mail.mcgill.ca or rocpengliu@gmail.com
+To inform us of any bugs or requests, please open a new issue or send an email to liu.peng2@mail.mcgill.ca or rocpengliu@gmail.com
 
 ## Seq2Fun History & Updates
 
 12-06-2020 - seq2fun_v1.1.0 released
+
 08-24-2020 - seq2fun_v1.0.0 released
