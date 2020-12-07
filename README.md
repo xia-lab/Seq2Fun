@@ -199,6 +199,224 @@ A00266:275:HLFTWDSXX:2:1101:10465:27508	K05692	ACTB_G1; actin beta/gamma 1
 ...                                     ...     ...
 ```
 
+## Seq2Fun full usage options
+```
+Use seq2fun or seq2fun --help to show the full usage options
+
+  options:
+
+  // input/output
+
+  -s, --sampletable,                (recommended) sample table consisting of 2 columns (read sample name (sample01_R1.fq.gz) prefix name (sample01)) for single-reads and 3 columns (forward read sample name (sample01_R1.fq.gz) reverse read sample name (sample01_R2.fq.gz) prefix name (sample01)) for paired-end reads. The columns must be separated by tab 
+
+  -i, --in1                         read1 input file name
+
+  -I, --in2                         read2 input file name
+
+  -X, --prefix                      (not recommended) prefix name for output files, eg: sample01
+
+      --outputMappedCleanReads,          enable output mapped clean reads into fastq.gz files, by default is false, using --outputMappedCleanReads to enable it
+
+
+  // Homology search;
+
+   -D, --genemap                    gene/protein KO species map
+
+       --profiling                  by default it is off. If this option is specified, 4 levels of output files will be generated, ko abundance table, hit pathway table, hit species table and ko reads mapping tableby default it is off. If this option is specified, 4 levels of output files will be generated, ko abundance table, hit pathway table, hit species table and ko reads mapping table
+
+    
+  // translated search
+
+   -d, --tfmi                       fmi index of Protein database
+
+   -K, --mode                       searching mode either tGREEDY or tMEM (maximum exactly match). By default greedy 
+
+   -E, --mismatch                   number of mismatched amino acid in sequence comparison with protein database with default value 2
+
+   -j, --minscore                   minimum matching score of amino acid sequence in comparison with protein database with default value 100
+
+   -J, --minlength                  minimum matching length of amino acid sequence in comparison with protein database with default value 25, for GREEDY and MEM model
+
+   -m, --maxtranslength             maximum cutoff of translated peptides, it must be no less than minlength, with default 60
+
+    
+  //selected pathways
+
+   -Z, --pathway                    list of selected pathways for target pathways analysis
+
+   -z, --genefa                     the gene/protein sequences fasta file for retrieving proteins in selected pathways to construct database
+
+    
+  // threading
+
+  -w, --thread                      worker thread number, default is 2
+
+    
+  -V, --verbose                     enable verbose
+
+      --debug                       enable debug
+
+
+      --phred64                     indicate the input is using phred64 scoring (it'll be converted to phred33, so the output will still be phred33)
+
+      --reads_to_process            specify how many reads/pairs to be processed. Default 0 means process all reads
+
+
+  // adapter
+
+  -A, --disable_adapter_trimming    adapter trimming is enabled by default. If this option is specified, adapter trimming is disabled
+
+  -a, --adapter_sequence            the adapter for read1. For SE data, if not specified, the adapter will be auto-detected. For PE data, this is used if R1/R2 are found not overlapped
+
+      --adapter_sequence_r2         the adapter for read2 (PE data only). This is used if R1/R2 are found not overlapped. If not specified, it will be the same as adapter_sequence
+
+      --adapter_fasta               specify a FASTA file to trim both read1 and read2 (if PE) by all the sequences in this FASTA file
+
+      --detect_adapter_for_pe       by default, the auto-detection for adapter is for SE data input only, turn on this option to enable it for PE data
+
+    
+  //polyA tail
+
+      --no_trim_polyA               by default, ployA tail will be trimmed. If this option is specified, polyA trimming is disabled
+
+
+  // trimming
+
+  -f, --trim_front1                 trimming how many bases in front for read1, default is 0
+
+  -t, --trim_tail1                  trimming how many bases in tail for read1, default is 0
+
+  -b, --max_len1                    if read1 is longer than max_len1, then trim read1 at its tail to make it as long as max_len1. Default 0 means no limitation
+
+  -F, --trim_front2                 trimming how many bases in front for read2. If it's not specified, it will follow read1's settings
+
+  -T, --trim_tail2                  trimming how many bases in tail for read2. If it's not specified, it will follow read1's settings
+
+  -B, --max_len2                    if read2 is longer than max_len2, then trim read2 at its tail to make it as long as max_len2. Default 0 means no limitation. If it's not specified, it will follow read1's settings
+
+
+  // polyG tail trimming
+
+  -g, --trim_poly_g                 force polyG tail trimming, by default trimming is automatically enabled for Illumina NextSeq/NovaSeq data
+
+      --poly_g_min_len              the minimum length to detect polyG in the read tail. 10 by default
+
+  -G, --disable_trim_poly_g         disable polyG tail trimming, by default trimming is automatically enabled for Illumina NextSeq/NovaSeq data
+
+
+  // polyX tail trimming
+
+  -x, --trim_poly_x                 enable polyX trimming in 3' ends
+
+      --poly_x_min_len              the minimum length to detect polyX in the read tail. 10 by default
+
+
+  // cutting by quality
+
+      --cut_front                   move a sliding window from front (5') to tail, drop the bases in the window if its mean quality < threshold, stop otherwise
+
+      --cut_tail                    move a sliding window from tail (3') to front, drop the bases in the window if its mean quality < threshold, stop otherwise
+
+  -r, --cut_right                   move a sliding window from front to tail, if meet one window with mean quality < threshold, drop the bases in the window and the right part, and then stop
+
+  -W, --cut_window_size             the window size option shared by cut_front, cut_tail or cut_sliding. Range: 1~1000, default: 4
+
+  -M, --cut_mean_quality            the mean quality requirement option shared by cut_front, cut_tail or cut_sliding. Range: 1~36 default: 20 (Q20)
+
+      --cut_front_window_size       the window size option of cut_front, default to cut_window_size if not specified
+
+      --cut_front_mean_quality      the mean quality requirement option for cut_front, default to cut_mean_quality if not specified
+
+      --cut_tail_window_size        the window size option of cut_tail, default to cut_window_size if not specified
+
+      --cut_tail_mean_quality       the mean quality requirement option for cut_tail, default to cut_mean_quality if not specified
+
+      --cut_right_window_size       the window size option of cut_right, default to cut_window_size if not specified
+
+      --cut_right_mean_quality      the mean quality requirement option for cut_right, default to cut_mean_quality if not specified
+
+
+  // quality filtering
+
+  -Q, --disable_quality_filtering   quality filtering is enabled by default. If this option is specified, quality filtering is disabled
+
+  -q, --qualified_quality_phred     the quality value that a base is qualified. Default 15 means phred quality <=Q15 is qualified
+
+  -u, --unqualified_percent_limit   how many percents of bases are allowed to be unqualified (0~100). Default 40 means 40%
+
+  -n, --n_base_limit                if one read's number of N base is >n_base_limit, then this read/pair is discarded. Default is 5
+
+  -e, --average_qual                if one read's average quality score <avg_qual, then this read/pair is discarded. Default 0 means no requirement
+
+
+  // length filtering
+
+  -L, --disable_length_filtering    length filtering is enabled by default. If this option is specified, length filtering is disabled
+
+  -l, --length_required             reads shorter than length_required will be discarded, default is 60
+
+      --length_limit                reads longer than length_limit will be discarded, default 0 means no limitation
+
+
+  // low complexity filtering
+
+      --no_low_complexity_filter    disable low complexity filter. The complexity is defined as the percentage of base that is different from its next base (base[i] != base[i+1])
+
+  -Y, --complexity_threshold        the threshold for low complexity filter (0~100). Default is 30, which means 30% complexity is required
+
+
+  // filter by indexes
+      --filter_by_index1            specify a file contains a list of barcodes of index1 to be filtered out, one barcode per line
+
+      --filter_by_index2            specify a file contains a list of barcodes of index2 to be filtered out, one barcode per line
+
+      --filter_by_index_threshold   the allowed difference of index barcode for index filtering, default 0 means completely identical
+
+
+  // base correction in overlapped regions of paired end data
+
+  -c, --disable_correction          disenable base correction in overlapped regions (only for PE data), default is enabled");
+
+  -v, --overlap_len_require         the minimum length to detect overlapped region of PE reads. This will affect overlap analysis based PE merge, adapter trimming and correction. 30 by default
+
+      --overlap_diff_limit          the maximum number of mismatched bases to detect overlapped region of PE reads. This will affect overlap analysis based PE merge, adapter trimming and correction. 5 by default
+
+      --overlap_diff_percent_limit  the maximum percentage of mismatched bases to detect overlapped region of PE reads. This will affect overlap analysis based PE merge, adapter trimming and correction. Default 20 means 20%
+
+
+  // umi
+
+  -u, --umi                         enable unique molecular identifier (UMI) preprocessing
+
+      --umi_loc                     specify the location of UMI, can be (index1/index2/read1/read2/per_index/per_read, default is none
+
+      --umi_len                     if the UMI is in read1/read2, its length should be provided
+
+      --umi_prefix                  if specified, an underline will be used to connect prefix and UMI (i.e. prefix=UMI, UMI=AATTCG, final=UMI_AATTCG). No prefix by default
+
+      --umi_skip                    if the UMI is in read1/read2, Seq2Fun can skip several bases following UMI, default is 0
+
+
+  // overrepresented sequence analysis
+
+  -p, --overrepresentation_analysis enable overrepresented sequence analysis
+
+  -P, --overrepresentation_sampling one in (--overrepresentation_sampling) reads will be computed for overrepresentation analysis (1~10000), smaller is slower, default is 20
+
+
+
+  // deprecated options
+
+     --cut_by_quality5              DEPRECATED, use --cut_front instead
+
+     --cut_by_quality3              DEPRECATED, use --cut_tail instead
+
+     --cut_by_quality_aggressive    DEPRECATED, use --cut_right instead
+
+     --discard_unmerged             DEPRECATED, no effect now, see the introduction for merging
+```
+
+
 ## Bugs or feature requests
 
 To inform us of any bugs or requests, please open a new issue or send an email to liu.peng2@mail.mcgill.ca or rocpengliu@gmail.com
