@@ -45,7 +45,9 @@ make
 There are four sub folders under seq2fun - src, bin, database and testdata. The bin folder contains the binary code we just complied. The testdata contains a small test data from the Case Study.
 From within the **testdata folder**, issue the following commands:
 ```
-../bin/seq2fun --sampletable sample.txt --tfmi birds_cdhit99_proteins.fmi --genemap birds_protein_ko_species_cdhit99.txt -w 8 --profiling -V --outputMappedCleanReads  
+../bin/seq2fun --sampletable sample.txt --tfmi birds_cdhit99_proteins.fmi --genemap birds_protein_ko_species_cdhit99.txt -w 8 --profiling -V --outputMappedCleanReads
+or if you want the trim the first 6 bases
+../bin/seq2fun --sampletable sample.txt --tfmi birds_cdhit99_proteins.fmi --genemap birds_protein_ko_species_cdhit99.txt --trim_front1 6 --trim_front2 6 -w 8 --profiling -V --outputMappedCleanReads  
 ```
 
 
@@ -124,6 +126,8 @@ Seq2Fun has two output modes: comparative and profiling mode (default).
 The comparative mode produces only the KO abundance table, while the profiling mode produces 4 tables 1). KO abundance table for all samples, and KO abundance table for each sample, 2). hit pathway, 3). hit species, 4). reads KO table, and 5). a html report summarizing these tables summarizing these tables.
 ```
 S2F_HOME/bin/seq2fun --sampletable sample.txt --tfmi S2F_HOME/database/birds/birds_cdhit99_proteins.fmi --genemap S2F_HOME/database/birds/birds_protein_ko_species_cdhit99.txt -w 8 --profiling
+of if you want to trim the first 6 bases
+S2F_HOME/bin/seq2fun --sampletable sample.txt --tfmi S2F_HOME/database/birds/birds_cdhit99_proteins.fmi --genemap S2F_HOME/database/birds/birds_protein_ko_species_cdhit99.txt --trim_front1 6 --trim_front2 6 -w 8 --profiling
 ```
 
 ### Results
