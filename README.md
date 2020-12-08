@@ -123,7 +123,7 @@ H1.CE2-M3-LT	H1.CE2-M3-LT_R1.fastq.gz	H1.CE2-M3-LT_R2.fastq.gz
 Seq2Fun has two output modes: comparative and profiling mode (default).
 The comparative mode produces only the KO abundance table, while the profiling mode produces 4 tables 1). KO abundance table for all samples, and KO abundance table for each sample, 2). hit pathway, 3). hit species, 4). reads KO table, and 5). a html report summarizing these tables summarizing these tables.
 ```
-S2F_HOME/bin/seq2fun --sampletable sample.txt --tfmi S2F_HOME/databas
+S2F_HOME/bin/seq2fun --sampletable sample.txt --tfmi S2F_HOME/database/birds/birds_cdhit99_proteins.fmi --genemap S2F_HOME/database/birds/birds_protein_ko_species_cdhit99.txt -w 8 --profiling
 ```
 
 ### Results
