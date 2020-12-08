@@ -1,3 +1,5 @@
+#include <valarray>
+
 #include "transsearcher.hpp"
 
 TransSearcher::TransSearcher(BwtFmiDB * tbwtfmiDB, Options * opt) {
@@ -490,7 +492,15 @@ TransSearcher::TransSearcher(BwtFmiDB * tbwtfmiDB, Options * opt) {
     // those tables could all be in configkj and shared between threads, initialized in configkj constructor
 
     std::memset(codon2aa, '*', sizeof (codon2aa));
+	
+	if(mOptions->transSearch.codonTable == Standard1){
     codon2aa[codon_to_int("TCA")] = 'S';
+	} else if (mOptions->transSearch.codonTable == ScenedesmusobliquusMitochondrial22){
+		codon2aa[codon_to_int("TCA")] = '*';
+	} else {
+		
+	}
+	
     codon2aa[codon_to_int("TCC")] = 'S';
     codon2aa[codon_to_int("TCG")] = 'S';
     codon2aa[codon_to_int("TCT")] = 'S';
@@ -500,16 +510,96 @@ TransSearcher::TransSearcher(BwtFmiDB * tbwtfmiDB, Options * opt) {
     codon2aa[codon_to_int("TTG")] = 'L';
     codon2aa[codon_to_int("TAC")] = 'Y';
     codon2aa[codon_to_int("TAT")] = 'Y';
+
+	if(mOptions->transSearch.codonTable == Standard1){
     codon2aa[codon_to_int("TAA")] = '*';
+	} else if(mOptions->transSearch.codonTable == CiliateDasycladaceanHexamitaNuclear6 || mOptions->transSearch.codonTable == KaryorelictNuclear27) {
+	codon2aa[codon_to_int("TAA")] = 'Q';
+	} else if(mOptions->transSearch.codonTable == MesodiniumNuclear29 ||
+			mOptions->transSearch.codonTable == CephalodiscidaeMitochondrial33) {
+	codon2aa[codon_to_int("TAA")] = 'Y';
+	} else if(mOptions->transSearch.codonTable == PeritrichNuclear30) {
+	codon2aa[codon_to_int("TAA")] = 'E';
+	} else {
+		
+	}
+	
+	if(mOptions->transSearch.codonTable == Standard1){
     codon2aa[codon_to_int("TAG")] = '*';
+	} else if(mOptions->transSearch.codonTable == CiliateDasycladaceanHexamitaNuclear6 || mOptions->transSearch.codonTable == KaryorelictNuclear27) {
+	codon2aa[codon_to_int("TAG")] = 'Q';
+	} else if (mOptions->transSearch.codonTable == ChlorophyceanMitochondrial16 || 
+			mOptions->transSearch.codonTable == ScenedesmusobliquusMitochondrial22) {
+		codon2aa[codon_to_int("TAG")] = 'L';
+	} else if(mOptions->transSearch.codonTable == MesodiniumNuclear29) {
+	codon2aa[codon_to_int("TAG")] = 'Y';
+	} else if(mOptions->transSearch.codonTable == PeritrichNuclear30) {
+	codon2aa[codon_to_int("TAG")] = 'E';
+	} else { 
+		
+	}
+	
     codon2aa[codon_to_int("TGC")] = 'C';
     codon2aa[codon_to_int("TGT")] = 'C';
-    codon2aa[codon_to_int("TGA")] = '*';
+	
+	if(mOptions->transSearch.codonTable == Standard1){
+		codon2aa[codon_to_int("TGA")] = '*';
+	} else if(mOptions->transSearch.codonTable == EuplotidNuclear10){
+		codon2aa[codon_to_int("TGA")] = 'C';
+	} else if (mOptions->transSearch.codonTable == VertebrateMitochondria2 || 
+			mOptions->transSearch.codonTable == YeastMitochondrial3 || 
+			mOptions->transSearch.codonTable == MoldProtozoanCoelenterateMitochondrialMycoplasmaSpiroplasma4 ||
+			mOptions->transSearch.codonTable == AscidianMitochondrial13 ||
+			mOptions->transSearch.codonTable == InvertebrateMitochondrial5 ||
+			mOptions->transSearch.codonTable == EchinodermFlatwormMitochondrial9 ||
+			mOptions->transSearch.codonTable == TrematodeMitochondrial21 ||
+			mOptions->transSearch.codonTable == RhabdopleuridaeMitochondrial24 ||
+			mOptions->transSearch.codonTable == BlastocrithidiaNuclear31 ||
+			mOptions->transSearch.codonTable == CephalodiscidaeMitochondrial33
+			){
+		codon2aa[codon_to_int("TGA")] = 'W';
+	} else {
+	}
+	
     codon2aa[codon_to_int("TGG")] = 'W';
+	
+	if(mOptions->transSearch.codonTable == Standard1){
     codon2aa[codon_to_int("CTA")] = 'L';
+	} else if(mOptions->transSearch.codonTable == YeastMitochondrial3){
+		codon2aa[codon_to_int("CTA")] = 'T';
+	} else {
+		
+	}
+	
+	if(mOptions->transSearch.codonTable == Standard1){
     codon2aa[codon_to_int("CTC")] = 'L';
+	} else if(mOptions->transSearch.codonTable == YeastMitochondrial3){
+		codon2aa[codon_to_int("CTC")] = 'T';
+	} else {
+		
+	}
+	
+	
+	if(mOptions->transSearch.codonTable == Standard1){
     codon2aa[codon_to_int("CTG")] = 'L';
+	} else if(mOptions->transSearch.codonTable == YeastMitochondrial3){
+		codon2aa[codon_to_int("CTG")] = 'T';
+	} else if (mOptions->transSearch.codonTable == AlternativeYeastNuclear12){
+		codon2aa[codon_to_int("CTG")] = 'S';
+	} else if (mOptions->transSearch.codonTable == PachysolentannophilusNuclear26){
+		codon2aa[codon_to_int("CTG")] = 'A';
+	} else {
+		
+	}
+	
+	if(mOptions->transSearch.codonTable == Standard1){
     codon2aa[codon_to_int("CTT")] = 'L';
+	} else if (mOptions->transSearch.codonTable == YeastMitochondrial3){
+		codon2aa[codon_to_int("CTT")] = 'T';
+	} else {
+		
+	}
+    
     codon2aa[codon_to_int("CCA")] = 'P';
     codon2aa[codon_to_int("CAT")] = 'H';
     codon2aa[codon_to_int("CAA")] = 'Q';
@@ -518,7 +608,20 @@ TransSearcher::TransSearcher(BwtFmiDB * tbwtfmiDB, Options * opt) {
     codon2aa[codon_to_int("CGC")] = 'R';
     codon2aa[codon_to_int("CGG")] = 'R';
     codon2aa[codon_to_int("CGT")] = 'R';
+	
+	if(mOptions->transSearch.codonTable == Standard1){
     codon2aa[codon_to_int("ATA")] = 'I';
+	} else if (mOptions->transSearch.codonTable == VertebrateMitochondria2 || 
+			mOptions->transSearch.codonTable == YeastMitochondrial3 || 
+			mOptions->transSearch.codonTable == InvertebrateMitochondrial5 ||
+			mOptions->transSearch.codonTable == AscidianMitochondrial13 ||
+			mOptions->transSearch.codonTable == TrematodeMitochondrial21
+			){
+		codon2aa[codon_to_int("ATA")] = 'M';
+	} else {
+		
+	}
+    
     codon2aa[codon_to_int("ATC")] = 'I';
     codon2aa[codon_to_int("ATT")] = 'I';
     codon2aa[codon_to_int("ATG")] = 'M';
@@ -528,12 +631,52 @@ TransSearcher::TransSearcher(BwtFmiDB * tbwtfmiDB, Options * opt) {
     codon2aa[codon_to_int("ACT")] = 'T';
     codon2aa[codon_to_int("AAC")] = 'N';
     codon2aa[codon_to_int("AAT")] = 'N';
+	
+	if(mOptions->transSearch.codonTable == Standard1){
     codon2aa[codon_to_int("AAA")] = 'K';
+	} else if(mOptions->transSearch.codonTable == EchinodermFlatwormMitochondrial9 ||
+			mOptions->transSearch.codonTable == TrematodeMitochondrial21){
+		codon2aa[codon_to_int("AAA")] = 'N';
+	}
+	
+	
     codon2aa[codon_to_int("AAG")] = 'K';
     codon2aa[codon_to_int("AGC")] = 'S';
     codon2aa[codon_to_int("AGT")] = 'S';
+	
+	if(mOptions->transSearch.codonTable == Standard1){
     codon2aa[codon_to_int("AGA")] = 'R';
+	} else if (mOptions->transSearch.codonTable == VertebrateMitochondria2){
+		codon2aa[codon_to_int("AGA")] = '*';
+	} else if (mOptions->transSearch.codonTable == EchinodermFlatwormMitochondrial9 ||
+			mOptions->transSearch.codonTable == InvertebrateMitochondrial5 ||
+			mOptions->transSearch.codonTable == TrematodeMitochondrial21 ||
+			mOptions->transSearch.codonTable == RhabdopleuridaeMitochondrial24 ||
+			mOptions->transSearch.codonTable == CephalodiscidaeMitochondrial33){
+		codon2aa[codon_to_int("AGA")] = 'S';
+	} else if (mOptions->transSearch.codonTable == AscidianMitochondrial13){
+		codon2aa[codon_to_int("AGA")] = 'G';
+	} else {
+		
+	}
+	
+	if(mOptions->transSearch.codonTable == Standard1){
     codon2aa[codon_to_int("AGG")] = 'R';
+	} else if (mOptions->transSearch.codonTable == VertebrateMitochondria2){
+		codon2aa[codon_to_int("AGG")] = '*';
+	} else if (mOptions->transSearch.codonTable == InvertebrateMitochondrial5 ||
+			mOptions->transSearch.codonTable == EchinodermFlatwormMitochondrial9 ||
+			mOptions->transSearch.codonTable == TrematodeMitochondrial21 ||
+			mOptions->transSearch.codonTable == RhabdopleuridaeMitochondrial24){
+		codon2aa[codon_to_int("AGG")] = 'S';
+	} else if (mOptions->transSearch.codonTable == AscidianMitochondrial13){
+		codon2aa[codon_to_int("AGG")] = 'G';
+	} else if(mOptions->transSearch.codonTable == CephalodiscidaeMitochondrial33){
+		codon2aa[codon_to_int("AGG")] = 'K';
+	} else {
+		
+	}
+	
     codon2aa[codon_to_int("CCC")] = 'P';
     codon2aa[codon_to_int("CCG")] = 'P';
     codon2aa[codon_to_int("CCT")] = 'P';
@@ -916,8 +1059,11 @@ void TransSearcher::flush_output(std::multimap<std::string, std::pair<std::strin
     {
         std::lock_guard<std::mutex> out_lock(m);
         mOptions->transSearch.tmpReadKOPairVec.push_back(tmpReadKOPair);
+		if(mOptions->verbose){
+			mOptions->transSearch.KOSet.insert(tmpReadKOPair.second);
+		}
         if (mOptions->mHomoSearchOptions.profiling) {
-            mOptions->transSearch.KOSet.insert(tmpReadKOPair.second);
+			mOptions->transSearch.KOSet.insert(tmpReadKOPair.second);
             preOrgKOAbunMMap.insert(tmpOrgKOAbunMMap.begin(), tmpOrgKOAbunMMap.end());
             //mOptions->transSearch.tOrgKOAbunMMap.insert(tmpOrgKOAbunMMap.begin(), tmpOrgKOAbunMMap.end());
         }
@@ -1198,8 +1344,12 @@ void TransSearcher::transSearch(Read *item, std::string &KOTag, std::multimap<st
     if (item->mSeq.length() >= mOptions->transSearch.minAAFragLength * 3) {
         if (mOptions->debug)
             std::cerr << "Getting fragments for read: " << item->mName << "\t" << item->mSeq.mStr << "\n";
-        //getAllFragmentsBits(item->sequence1);
-        getLongestFragmentsBits(item->mSeq.mStr);
+         
+		if(!mOptions->transSearch.allFragments){
+			getLongestFragmentsBits(item->mSeq.mStr);
+		} else {
+			getAllFragmentsBits(item->mSeq.mStr);
+		}
     }
 
     if (mOptions->debug)
@@ -1215,7 +1365,7 @@ void TransSearcher::transSearch(Read *item, std::string &KOTag, std::multimap<st
 
     if (extraoutput.length() > 0) {
         KOTag = extraoutput;
-        //std::cout << "\033[1;33m" << item->mName << " " << extraoutput << "\033[0m\n";
+        //std::cout << "\033[1;33m" << extraoutput << "\033[0m\n";
         tmpReadKOPair = std::make_pair(item->mName, extraoutput);
         if (mOptions->mHomoSearchOptions.profiling) {            
             tmpOrgKOAbunMMap.insert(tmpOrgKOAbunMultiMap.begin(), tmpOrgKOAbunMultiMap.end());
@@ -1237,16 +1387,24 @@ void TransSearcher::transSearch(Read *item1, Read *item2, std::string &KOTag, st
     if (item1->length() >= mOptions->transSearch.minAAFragLength * 3) {
         if (mOptions->debug)
             std::cerr << "Getting fragments for read1: " << item1->mName << "\t" << item1->mSeq.mStr << "\n";
-        //getAllFragmentsBits(item->sequence1);
-        getLongestFragmentsBits(item1->mSeq.mStr);
+        if(!mOptions->transSearch.allFragments){
+			getLongestFragmentsBits(item1->mSeq.mStr);
+		} else {
+			getAllFragmentsBits(item1->mSeq.mStr);
+		}
+        
     }
 
     query_len = static_cast<double> (item2->length()) / 3.0;
     if (item2->length() >= mOptions->transSearch.minAAFragLength * 3) {
         if (mOptions->debug)
             std::cerr << "Getting fragments for read2: " << item2->mName << "\t" << item2->mSeq.mStr << "\n";
-        //getAllFragmentsBits(item->sequence1);
-        getLongestFragmentsBits(item2->mSeq.mStr);
+        
+		if(!mOptions->transSearch.allFragments){
+			getLongestFragmentsBits(item2->mSeq.mStr);
+		} else {
+			getAllFragmentsBits(item2->mSeq.mStr);
+		}
     }
 
     if (mOptions->debug)

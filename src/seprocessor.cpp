@@ -127,16 +127,6 @@ bool SingleEndProcessor::process(){
         preStats.push_back(configs[t]->getPreStats1());
         postStats.push_back(configs[t]->getPostStats1());
     }
-//    cerr << "Read1 before filtering:"<<endl;
-//    finalPreStats->print();
-//    cerr << endl;
-//    cerr << "Read1 after filtering:"<<endl;
-//    finalPostStats->print();
-//
-//    cerr << endl;
-//    cerr << "Filtering result:"<<endl;
-//    finalFilterResult->print();
-
     int* dupHist = NULL;
     double* dupMeanTlen = NULL;
     double* dupMeanGC = NULL;
@@ -158,12 +148,6 @@ bool SingleEndProcessor::process(){
     rarefaction_map.clear();
     sortedPathwayFreqTupleVector.clear();
     sortedOrgKOFreqVec.clear();
-
-    // make JSON report
-//    JsonReporter jr(mOptions);
-//    jr.setDupHist(dupHist, dupMeanGC, dupRate);
-//    jr.report(finalFilterResult, finalPreStats, finalPostStats);
-    
     // make HTML report
     HtmlReporter hr(mOptions);
     hr.setDupHist(dupHist, dupMeanGC, dupRate);
@@ -176,7 +160,7 @@ bool SingleEndProcessor::process(){
         delete configs[t];
         configs[t] = NULL;
         delete transSearchers[t];
-        transSearchers = NULL;
+        transSearchers[t] = NULL;
     }
 
     delete finalPreStats;

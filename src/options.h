@@ -290,19 +290,46 @@ enum Mode
     tGREEDY
 };
 
+enum CodonTable {
+Standard1,
+VertebrateMitochondria2,
+YeastMitochondrial3,
+MoldProtozoanCoelenterateMitochondrialMycoplasmaSpiroplasma4,
+InvertebrateMitochondrial5,
+CiliateDasycladaceanHexamitaNuclear6,
+EchinodermFlatwormMitochondrial9,
+EuplotidNuclear10,
+AlternativeYeastNuclear12,
+AscidianMitochondrial13,
+InvertebrateMitochondiral5,
+ChlorophyceanMitochondrial16,
+TrematodeMitochondrial21,
+ScenedesmusobliquusMitochondrial22,
+RhabdopleuridaeMitochondrial24,
+PachysolentannophilusNuclear26,
+KaryorelictNuclear27,
+MesodiniumNuclear29,
+PeritrichNuclear30,
+BlastocrithidiaNuclear31,
+CephalodiscidaeMitochondrial33
+};
+
 class TransSearchOptions
 {
 public:
     TransSearchOptions()
     {
         mode = tGREEDY;
+		codonTable = Standard1;
         SEG = true;
         useEvalue = false;
         minEvalue = 0.01;
-        minAAFragLength = 25;
+		minAAFragLength = 25;
+        
         misMatches = 2;
         minScore = 100;
         seedLength = 7;
+		allFragments = false;
 
         size_t max_matches_SI = 10000;
         size_t max_match_ids = 10000;
@@ -316,6 +343,7 @@ public:
 public:
     string tfmi;
     string tmode;
+	string tCodonTable;
     bool SEG;
     bool useEvalue;
     double minEvalue;
@@ -324,11 +352,13 @@ public:
     unsigned int minScore;
     unsigned int seedLength;
     unsigned int maxTransLength;
+	bool allFragments;
 
     size_t max_matches_SI;
     size_t max_match_ids;
 
     Mode mode;
+	CodonTable codonTable;
     long transSearchMappedReads;
     std::set<std::string> KOSet;
     std::unordered_map<std::string, int> sampleKOAbunUMap;

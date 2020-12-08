@@ -188,26 +188,6 @@ bool PairEndProcessor::process(){
     Stats* finalPostStats2 = Stats::merge(postStats2);
     FilterResult* finalFilterResult = FilterResult::merge(filterResults);
     mOptions->mHomoSearchOptions.totalOrigReads = finalPreStats1->getReads();
-//    cerr << "Read1 before filtering:"<<endl;
-//    finalPreStats1->print();
-//    cerr << endl;
-//    cerr << "Read2 before filtering:"<<endl;
-//    finalPreStats2->print();
-//    cerr << endl;
-//    if(!mOptions->merge.enabled) {
-//        cerr << "Read1 after filtering:"<<endl;
-//        finalPostStats1->print();
-//        cerr << endl;
-//        cerr << "Read2 aftering filtering:"<<endl;
-//        finalPostStats2->print();
-//    } else {
-//        cerr << "Merged and filtered:"<<endl;
-//        finalPostStats1->print();
-//    }
-//
-//    cerr << endl;
-//    cerr << "Filtering result:"<<endl;
-//    finalFilterResult->print();
 
     int* dupHist = NULL;
     double* dupMeanTlen = NULL;

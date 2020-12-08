@@ -53,9 +53,11 @@ int main(int argc, char* argv[]) {
     cmd.add<string>("mode", 'K', "searching mode either tGREEDY or tMEM (maximum exactly match). By default greedy", false, "tGREEDY");
     cmd.add<int>("mismatch", 'E', "number of mismatched amino acid in sequence comparison with protein database with default value 2", false, 2);
     cmd.add<int>("minscore", 'j', "minimum matching score of amino acid sequence in comparison with protein database with default value 100", false, 100);
-    cmd.add<int>("minlength", 'J', "minimum matching length of amino acid sequence in comparison with protein database with default value 25, for GREEDY and MEM model", false, 25);
+    cmd.add<int>("minlength", 'J', "minimum matching length of amino acid sequence in comparison with protein database with default value 25, for GREEDY and MEM model", false);
     cmd.add<int>("maxtranslength", 'm', "maximum cutoff of translated peptides, it must be no less than minlength, with default 60", false, 60);
-    
+    cmd.add("allFragments", 0, "enable this function will force Seq2Fun to use all the translated AA fragments with length > minlength. This will slightly help to classify reads contain the true stop codon and start codon; This could have limited impact on the accuracy for comparative study and enable this function will slow down the Seq2Fun. by default is false, using --allFragments to enable it");
+	cmd.add<string>("codontable", 0, "select the codon table (same as blastx in NCBI), we provide 33 codon tables from 'https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi#SG31'. Be default is the Standard Code", false, "Standard1"); 
+	
     //selected pathways
     cmd.add<string>("pathway", 'Z', "list of selected pathways for target pathways analysis", false, "");
     cmd.add<string>("genefa", 'z', "the gene/protein sequences fasta file for retrieving proteins in selected pathways to construct database", false, "");
@@ -363,16 +365,76 @@ int main(int argc, char* argv[]) {
     } else if(opt.transSearch.tmode == "tMEM") {
         opt.transSearch.mode = tMEM;
     } else {
-        error_exit("you muse be use either tGREEDY or tMEM mode");
+        error_exit("you must be use either tGREEDY or tMEM mode");
     }
     
+	opt.transSearch.tCodonTable = cmd.get<string>("codontable");
+	if(opt.transSearch.tCodonTable == "Standard1"){
+		opt.transSearch.codonTable = Standard1;
+	} else if (opt.transSearch.tCodonTable == "VertebrateMitochondria2"){
+		opt.transSearch.codonTable = VertebrateMitochondria2;
+	} else if (opt.transSearch.tCodonTable == "YeastMitochondrial3"){
+		opt.transSearch.codonTable = YeastMitochondrial3;
+	} else if (opt.transSearch.tCodonTable == "MoldProtozoanCoelenterateMitochondrialMycoplasmaSpiroplasma4"){
+		opt.transSearch.codonTable = MoldProtozoanCoelenterateMitochondrialMycoplasmaSpiroplasma4;
+	} else if (opt.transSearch.tCodonTable == "InvertebrateMitochondrial5"){
+		opt.transSearch.codonTable = InvertebrateMitochondrial5;
+	}else if (opt.transSearch.tCodonTable == "CiliateDasycladaceanHexamitaNuclear6"){
+		opt.transSearch.codonTable = CiliateDasycladaceanHexamitaNuclear6;
+	} else if (opt.transSearch.tCodonTable == "EchinodermFlatwormMitochondrial9"){
+		opt.transSearch.codonTable = EchinodermFlatwormMitochondrial9;
+	} else if (opt.transSearch.tCodonTable == "EuplotidNuclear10"){
+		opt.transSearch.codonTable = EuplotidNuclear10;
+	} else if (opt.transSearch.tCodonTable == "AlternativeYeastNuclear12"){
+		opt.transSearch.codonTable = AlternativeYeastNuclear12;
+	} else if (opt.transSearch.tCodonTable == "AscidianMitochondrial13") {
+		opt.transSearch.codonTable = AscidianMitochondrial13;
+	} else if (opt.transSearch.tCodonTable == "InvertebrateMitochondiral5"){
+		opt.transSearch.codonTable = InvertebrateMitochondiral5;
+	} else if(opt.transSearch.tCodonTable == "ChlorophyceanMitochondrial16"){
+		opt.transSearch.codonTable = ChlorophyceanMitochondrial16;
+	}else if (opt.transSearch.tCodonTable == "PachysolentannophilusNuclear26"){
+		opt.transSearch.codonTable = PachysolentannophilusNuclear26;
+	} else if (opt.transSearch.tCodonTable == "TrematodeMitochondrial21"){
+		opt.transSearch.codonTable = TrematodeMitochondrial21;
+	} else if (opt.transSearch.tCodonTable == "ScenedesmusobliquusMitochondrial22"){
+		opt.transSearch.codonTable = ScenedesmusobliquusMitochondrial22;
+	} else if(opt.transSearch.tCodonTable == "RhabdopleuridaeMitochondrial24") {
+		opt.transSearch.codonTable = RhabdopleuridaeMitochondrial24;
+	} else if (opt.transSearch.tCodonTable == "KaryorelictNuclear27"){
+		opt.transSearch.codonTable = KaryorelictNuclear27;
+	} else if (opt.transSearch.tCodonTable == "MesodiniumNuclear29"){
+		opt.transSearch.codonTable = MesodiniumNuclear29;
+	} else if (opt.transSearch.tCodonTable == "PeritrichNuclear30"){
+		opt.transSearch.codonTable = PeritrichNuclear30;
+	} else if (opt.transSearch.tCodonTable == "BlastocrithidiaNuclear31"){
+		opt.transSearch.codonTable = BlastocrithidiaNuclear31;
+	} else if (opt.transSearch.tCodonTable == "CephalodiscidaeMitochondrial33") {
+		opt.transSearch.codonTable = CephalodiscidaeMitochondrial33;
+	} else {
+		error_exit("you must select one codon table");
+	}
+	
+	if(opt.verbose){
+		std::cout << "Codon table of " << opt.transSearch.tCodonTable << " is selected" << std::endl;
+	}
+	
     opt.transSearch.misMatches = cmd.get<int>("mismatch");
     opt.transSearch.minScore = cmd.get<int>("minscore");
-    opt.transSearch.minAAFragLength = cmd.get<int>("minlength");
+	if(cmd.get<int>("minlength") == 0){
+		if(opt.transSearch.mode == tGREEDY) {
+			opt.transSearch.minAAFragLength = 25;
+		} else {
+			opt.transSearch.minAAFragLength = 13;
+		}
+	} else {
+		opt.transSearch.minAAFragLength = cmd.get<int>("minlength");
+	}
+	
     opt.transSearch.maxTransLength = cmd.get<int>("maxtranslength");
     opt.transSearch.maxTransLength = max(opt.transSearch.maxTransLength, opt.transSearch.minAAFragLength);
     opt.transSearch.maxTransLength = min((unsigned)60, opt.transSearch.maxTransLength);   
-      
+    opt.transSearch.allFragments = cmd.exist("allFragments"); 
     opt.transSearch.tfmi = cmd.get<string>("tfmi");
     
     //read all database tables, maps;
@@ -415,8 +477,8 @@ int main(int argc, char* argv[]) {
         std::string outFName;
         opt.htmlFile = opt.mHomoSearchOptions.prefix + "_report.html";
         if (opt.outputMappedCleanReads) {
-            opt.out1 = opt.mHomoSearchOptions.prefix + "_mapped_R1.fastq.gz";
-            if(opt.isPaired()) opt.out2 = opt.mHomoSearchOptions.prefix + "_mapped_R2.fastq.gz";
+            opt.out1 = opt.mHomoSearchOptions.prefix + "_mapped_R1.fasta.gz";
+            if(opt.isPaired()) opt.out2 = opt.mHomoSearchOptions.prefix + "_mapped_R2.fasta.gz";
         }
         
         stringstream ss;
@@ -528,8 +590,8 @@ int main(int argc, char* argv[]) {
             opt.htmlFile = it.prefix + "_report.html";
 
             if (opt.outputMappedCleanReads) {
-                opt.out1 = it.prefix + "_mapped_R1.fastq.gz";
-                if(opt.isPaired()) opt.out2 = it.prefix + "_mapped_R2.fastq.gz";
+                opt.out1 = it.prefix + "_mapped_R1.fasta.gz";
+                if(opt.isPaired()) opt.out2 = it.prefix + "_mapped_R2.fasta.gz";
             }
             std::stringstream ss;
             for (int i = 0; i < argc; i++) {
