@@ -419,7 +419,7 @@ Use seq2fun or seq2fun --help to show the full usage options
 
 ## Bugs or feature requests
 
-To inform us of any bugs or requests, please open a new issue or send an email to liu.peng2@mail.mcgill.ca or rocpengliu@gmail.com
+To inform us of any bugs or requests, please open a new issue or send an email to liu.peng2@mail.mcgill.ca or rocpengliu@gmail.com or jeff.xia@mcgill.ca
 
 ## Seq2Fun History & Updates
 
