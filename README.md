@@ -2,7 +2,7 @@
 
 **Seq2Fun** is an ultra-fast, all-in-one functional profiling tool for RNA-seq data analysis for organisms without reference genomes.
 
-Users are encouraged to visit and follow the instructions in the Seq2Fun websit **www.seq2fun.ca** for more details.
+Users are strongly encouraged to visit and follow the instructions in the Seq2Fun websit **www.seq2fun.ca** for more details.
 
 
 ## Key features of Seq2Fun
