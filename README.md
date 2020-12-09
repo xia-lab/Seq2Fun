@@ -38,7 +38,7 @@ tar -xvzf seq2fun_v1.0.0.tar.gz
 Or 
 git clone https://github.com/xia-lab/Seq2Fun.git
 
-cd seq2fun/src/
+cd Seq2Fun/src/
 make clean
 make
 ```
