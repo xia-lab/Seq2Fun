@@ -35,9 +35,12 @@ Click [here](http://gofile.me/4esAc/ES16GlxFK). to download the source code. Fro
 
 ```
 tar -xvzf seq2fun_v1.0.0.tar.gz
+cd seq2fun/src/
+make clean
+make
+
 Or 
 git clone https://github.com/xia-lab/Seq2Fun.git
-
 cd Seq2Fun/src/
 make clean
 make
