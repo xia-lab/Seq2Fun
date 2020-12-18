@@ -34,7 +34,7 @@ We have tested Seq2Fun on Ubuntu (16.04 LTS and above) and macOS Catalina.
 Click [here](http://gofile.me/4esAc/ES16GlxFK). to download the source code. From within the folder containing the downloaded package, issue the following commands:
 
 ```
-tar -xvzf seq2fun_v1.0.0.tar.gz
+tar -xvzf seq2fun_v1.1.1.tar.gz
 cd seq2fun/src/
 make clean
 make
