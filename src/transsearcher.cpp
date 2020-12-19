@@ -493,9 +493,9 @@ TransSearcher::TransSearcher(BwtFmiDB * tbwtfmiDB, Options * opt) {
 
     std::memset(codon2aa, '*', sizeof (codon2aa));
 	
-	if(mOptions->transSearch.codonTable == transl_table_1){
+	if(mOptions->transSearch.codonTable == codontable1){
     codon2aa[codon_to_int("TCA")] = 'S';
-	} else if (mOptions->transSearch.codonTable == transl_table_22){
+	} else if (mOptions->transSearch.codonTable == codontable22){
 		codon2aa[codon_to_int("TCA")] = '*';
 	} else {
 		
@@ -511,30 +511,30 @@ TransSearcher::TransSearcher(BwtFmiDB * tbwtfmiDB, Options * opt) {
     codon2aa[codon_to_int("TAC")] = 'Y';
     codon2aa[codon_to_int("TAT")] = 'Y';
 
-	if(mOptions->transSearch.codonTable == transl_table_1){
+	if(mOptions->transSearch.codonTable == codontable1){
     codon2aa[codon_to_int("TAA")] = '*';
-	} else if(mOptions->transSearch.codonTable == transl_table_6 || mOptions->transSearch.codonTable == transl_table_27) {
+	} else if(mOptions->transSearch.codonTable == codontable6 || mOptions->transSearch.codonTable == codontable27) {
 	codon2aa[codon_to_int("TAA")] = 'Q';
-	} else if(mOptions->transSearch.codonTable == transl_table_29 ||
-			mOptions->transSearch.codonTable == transl_table_33 || 
-			mOptions->transSearch.codonTable == transl_table_14) {
+	} else if(mOptions->transSearch.codonTable == codontable29 ||
+			mOptions->transSearch.codonTable == codontable33 || 
+			mOptions->transSearch.codonTable == codontable14) {
 	codon2aa[codon_to_int("TAA")] = 'Y';
-	} else if(mOptions->transSearch.codonTable == transl_table_30) {
+	} else if(mOptions->transSearch.codonTable == codontable30) {
 	codon2aa[codon_to_int("TAA")] = 'E';
 	} else {
 		
 	}
 	
-	if(mOptions->transSearch.codonTable == transl_table_1){
+	if(mOptions->transSearch.codonTable == codontable1){
     codon2aa[codon_to_int("TAG")] = '*';
-	} else if(mOptions->transSearch.codonTable == transl_table_6 || mOptions->transSearch.codonTable == transl_table_27) {
+	} else if(mOptions->transSearch.codonTable == codontable6 || mOptions->transSearch.codonTable == codontable27) {
 	codon2aa[codon_to_int("TAG")] = 'Q';
-	} else if (mOptions->transSearch.codonTable == transl_table_16 || 
-			mOptions->transSearch.codonTable == transl_table_22) {
+	} else if (mOptions->transSearch.codonTable == codontable16 || 
+			mOptions->transSearch.codonTable == codontable22) {
 		codon2aa[codon_to_int("TAG")] = 'L';
-	} else if(mOptions->transSearch.codonTable == transl_table_29) {
+	} else if(mOptions->transSearch.codonTable == codontable29) {
 	codon2aa[codon_to_int("TAG")] = 'Y';
-	} else if(mOptions->transSearch.codonTable == transl_table_30) {
+	} else if(mOptions->transSearch.codonTable == codontable30) {
 	codon2aa[codon_to_int("TAG")] = 'E';
 	} else { 
 		
@@ -543,21 +543,21 @@ TransSearcher::TransSearcher(BwtFmiDB * tbwtfmiDB, Options * opt) {
     codon2aa[codon_to_int("TGC")] = 'C';
     codon2aa[codon_to_int("TGT")] = 'C';
 	
-	if(mOptions->transSearch.codonTable == transl_table_1){
+	if(mOptions->transSearch.codonTable == codontable1){
 		codon2aa[codon_to_int("TGA")] = '*';
-	} else if(mOptions->transSearch.codonTable == transl_table_10){
+	} else if(mOptions->transSearch.codonTable == codontable10){
 		codon2aa[codon_to_int("TGA")] = 'C';
-	} else if (mOptions->transSearch.codonTable == transl_table_2 || 
-			mOptions->transSearch.codonTable == transl_table_3 || 
-			mOptions->transSearch.codonTable == transl_table_4 ||
-			mOptions->transSearch.codonTable == transl_table_3 ||
-			mOptions->transSearch.codonTable == transl_table_5 ||
-			mOptions->transSearch.codonTable == transl_table_9 || 
-			mOptions->transSearch.codonTable == transl_table_14 || 
-			mOptions->transSearch.codonTable == transl_table_21 || 
-			mOptions->transSearch.codonTable == transl_table_24 || 
-			mOptions->transSearch.codonTable == transl_table_31 || 
-			mOptions->transSearch.codonTable == transl_table_33
+	} else if (mOptions->transSearch.codonTable == codontable2 || 
+			mOptions->transSearch.codonTable == codontable3 || 
+			mOptions->transSearch.codonTable == codontable4 ||
+			mOptions->transSearch.codonTable == codontable3 ||
+			mOptions->transSearch.codonTable == codontable5 ||
+			mOptions->transSearch.codonTable == codontable9 || 
+			mOptions->transSearch.codonTable == codontable14 || 
+			mOptions->transSearch.codonTable == codontable21 || 
+			mOptions->transSearch.codonTable == codontable24 || 
+			mOptions->transSearch.codonTable == codontable31 || 
+			mOptions->transSearch.codonTable == codontable33
 			){
 		codon2aa[codon_to_int("TGA")] = 'W';
 	} else {
@@ -565,38 +565,38 @@ TransSearcher::TransSearcher(BwtFmiDB * tbwtfmiDB, Options * opt) {
 	
     codon2aa[codon_to_int("TGG")] = 'W';
 	
-	if(mOptions->transSearch.codonTable == transl_table_1){
+	if(mOptions->transSearch.codonTable == codontable1){
     codon2aa[codon_to_int("CTA")] = 'L';
-	} else if(mOptions->transSearch.codonTable == transl_table_3){
+	} else if(mOptions->transSearch.codonTable == codontable3){
 		codon2aa[codon_to_int("CTA")] = 'T';
 	} else {
 		
 	}
 	
-	if(mOptions->transSearch.codonTable == transl_table_1){
+	if(mOptions->transSearch.codonTable == codontable1){
     codon2aa[codon_to_int("CTC")] = 'L';
-	} else if(mOptions->transSearch.codonTable == transl_table_3){
+	} else if(mOptions->transSearch.codonTable == codontable3){
 		codon2aa[codon_to_int("CTC")] = 'T';
 	} else {
 		
 	}
 	
 	
-	if(mOptions->transSearch.codonTable == transl_table_1){
+	if(mOptions->transSearch.codonTable == codontable1){
     codon2aa[codon_to_int("CTG")] = 'L';
-	} else if(mOptions->transSearch.codonTable == transl_table_3){
+	} else if(mOptions->transSearch.codonTable == codontable3){
 		codon2aa[codon_to_int("CTG")] = 'T';
-	} else if (mOptions->transSearch.codonTable == transl_table_12){
+	} else if (mOptions->transSearch.codonTable == codontable12){
 		codon2aa[codon_to_int("CTG")] = 'S';
-	} else if (mOptions->transSearch.codonTable == transl_table_26){
+	} else if (mOptions->transSearch.codonTable == codontable26){
 		codon2aa[codon_to_int("CTG")] = 'A';
 	} else {
 		
 	}
 	
-	if(mOptions->transSearch.codonTable == transl_table_1){
+	if(mOptions->transSearch.codonTable == codontable1){
     codon2aa[codon_to_int("CTT")] = 'L';
-	} else if (mOptions->transSearch.codonTable == transl_table_3){
+	} else if (mOptions->transSearch.codonTable == codontable3){
 		codon2aa[codon_to_int("CTT")] = 'T';
 	} else {
 		
@@ -611,13 +611,13 @@ TransSearcher::TransSearcher(BwtFmiDB * tbwtfmiDB, Options * opt) {
     codon2aa[codon_to_int("CGG")] = 'R';
     codon2aa[codon_to_int("CGT")] = 'R';
 	
-	if(mOptions->transSearch.codonTable == transl_table_1){
+	if(mOptions->transSearch.codonTable == codontable1){
     codon2aa[codon_to_int("ATA")] = 'I';
-	} else if (mOptions->transSearch.codonTable == transl_table_2 || 
-			mOptions->transSearch.codonTable == transl_table_3 || 
-			mOptions->transSearch.codonTable == transl_table_5 ||
-			mOptions->transSearch.codonTable == transl_table_13 ||
-			mOptions->transSearch.codonTable == transl_table_21
+	} else if (mOptions->transSearch.codonTable == codontable2 || 
+			mOptions->transSearch.codonTable == codontable3 || 
+			mOptions->transSearch.codonTable == codontable5 ||
+			mOptions->transSearch.codonTable == codontable13 ||
+			mOptions->transSearch.codonTable == codontable21
 			){
 		codon2aa[codon_to_int("ATA")] = 'M';
 	} else {
@@ -634,11 +634,11 @@ TransSearcher::TransSearcher(BwtFmiDB * tbwtfmiDB, Options * opt) {
     codon2aa[codon_to_int("AAC")] = 'N';
     codon2aa[codon_to_int("AAT")] = 'N';
 	
-	if(mOptions->transSearch.codonTable == transl_table_1){
+	if(mOptions->transSearch.codonTable == codontable1){
     codon2aa[codon_to_int("AAA")] = 'K';
-	} else if(mOptions->transSearch.codonTable == transl_table_9 || 
-			mOptions->transSearch.codonTable == transl_table_14 || 
-			mOptions->transSearch.codonTable == transl_table_21){
+	} else if(mOptions->transSearch.codonTable == codontable9 || 
+			mOptions->transSearch.codonTable == codontable14 || 
+			mOptions->transSearch.codonTable == codontable21){
 		codon2aa[codon_to_int("AAA")] = 'N';
 	}
 	
@@ -647,36 +647,36 @@ TransSearcher::TransSearcher(BwtFmiDB * tbwtfmiDB, Options * opt) {
     codon2aa[codon_to_int("AGC")] = 'S';
     codon2aa[codon_to_int("AGT")] = 'S';
 	
-	if(mOptions->transSearch.codonTable == transl_table_1){
+	if(mOptions->transSearch.codonTable == codontable1){
     codon2aa[codon_to_int("AGA")] = 'R';
-	} else if (mOptions->transSearch.codonTable == transl_table_2){
+	} else if (mOptions->transSearch.codonTable == codontable2){
 		codon2aa[codon_to_int("AGA")] = '*';
-	} else if (mOptions->transSearch.codonTable == transl_table_9 ||
-			mOptions->transSearch.codonTable == transl_table_5 || 
-			mOptions->transSearch.codonTable == transl_table_14 || 
-			mOptions->transSearch.codonTable == transl_table_21 ||
-			mOptions->transSearch.codonTable == transl_table_24 ||
-			mOptions->transSearch.codonTable == transl_table_33){
+	} else if (mOptions->transSearch.codonTable == codontable9 ||
+			mOptions->transSearch.codonTable == codontable5 || 
+			mOptions->transSearch.codonTable == codontable14 || 
+			mOptions->transSearch.codonTable == codontable21 ||
+			mOptions->transSearch.codonTable == codontable24 ||
+			mOptions->transSearch.codonTable == codontable33){
 		codon2aa[codon_to_int("AGA")] = 'S';
-	} else if (mOptions->transSearch.codonTable == transl_table_13){
+	} else if (mOptions->transSearch.codonTable == codontable13){
 		codon2aa[codon_to_int("AGA")] = 'G';
 	} else {
 		
 	}
 	
-	if(mOptions->transSearch.codonTable == transl_table_1){
+	if(mOptions->transSearch.codonTable == codontable1){
     codon2aa[codon_to_int("AGG")] = 'R';
-	} else if (mOptions->transSearch.codonTable == transl_table_2){
+	} else if (mOptions->transSearch.codonTable == codontable2){
 		codon2aa[codon_to_int("AGG")] = '*';
-	} else if (mOptions->transSearch.codonTable == transl_table_5 ||
-			mOptions->transSearch.codonTable == transl_table_9 || 
-			mOptions->transSearch.codonTable == transl_table_14 || 
-			mOptions->transSearch.codonTable == transl_table_21 ||
-			mOptions->transSearch.codonTable == transl_table_24){
+	} else if (mOptions->transSearch.codonTable == codontable5 ||
+			mOptions->transSearch.codonTable == codontable9 || 
+			mOptions->transSearch.codonTable == codontable14 || 
+			mOptions->transSearch.codonTable == codontable21 ||
+			mOptions->transSearch.codonTable == codontable24){
 		codon2aa[codon_to_int("AGG")] = 'S';
-	} else if (mOptions->transSearch.codonTable == transl_table_13){
+	} else if (mOptions->transSearch.codonTable == codontable13){
 		codon2aa[codon_to_int("AGG")] = 'G';
-	} else if(mOptions->transSearch.codonTable == transl_table_33){
+	} else if(mOptions->transSearch.codonTable == codontable33){
 		codon2aa[codon_to_int("AGG")] = 'K';
 	} else {
 		
