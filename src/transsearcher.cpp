@@ -636,7 +636,8 @@ TransSearcher::TransSearcher(BwtFmiDB * tbwtfmiDB, Options * opt) {
 	
 	if(mOptions->transSearch.codonTable == transl_table_1){
     codon2aa[codon_to_int("AAA")] = 'K';
-	} else if(mOptions->transSearch.codonTable == transl_table_9 ||
+	} else if(mOptions->transSearch.codonTable == transl_table_9 || 
+			mOptions->transSearch.codonTable == transl_table_14 || 
 			mOptions->transSearch.codonTable == transl_table_21){
 		codon2aa[codon_to_int("AAA")] = 'N';
 	}
@@ -651,7 +652,8 @@ TransSearcher::TransSearcher(BwtFmiDB * tbwtfmiDB, Options * opt) {
 	} else if (mOptions->transSearch.codonTable == transl_table_2){
 		codon2aa[codon_to_int("AGA")] = '*';
 	} else if (mOptions->transSearch.codonTable == transl_table_9 ||
-			mOptions->transSearch.codonTable == transl_table_5 ||
+			mOptions->transSearch.codonTable == transl_table_5 || 
+			mOptions->transSearch.codonTable == transl_table_14 || 
 			mOptions->transSearch.codonTable == transl_table_21 ||
 			mOptions->transSearch.codonTable == transl_table_24 ||
 			mOptions->transSearch.codonTable == transl_table_33){
@@ -667,7 +669,8 @@ TransSearcher::TransSearcher(BwtFmiDB * tbwtfmiDB, Options * opt) {
 	} else if (mOptions->transSearch.codonTable == transl_table_2){
 		codon2aa[codon_to_int("AGG")] = '*';
 	} else if (mOptions->transSearch.codonTable == transl_table_5 ||
-			mOptions->transSearch.codonTable == transl_table_9 ||
+			mOptions->transSearch.codonTable == transl_table_9 || 
+			mOptions->transSearch.codonTable == transl_table_14 || 
 			mOptions->transSearch.codonTable == transl_table_21 ||
 			mOptions->transSearch.codonTable == transl_table_24){
 		codon2aa[codon_to_int("AGG")] = 'S';
