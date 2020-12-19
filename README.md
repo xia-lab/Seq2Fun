@@ -246,7 +246,10 @@ Use seq2fun or seq2fun --help to show the full usage options
    -J, --minlength                  minimum matching length of amino acid sequence in comparison with protein database with default value 25, for GREEDY and MEM model
 
    -m, --maxtranslength             maximum cutoff of translated peptides, it must be no less than minlength, with default 60
-
+       --allFragments               enable this function will force Seq2Fun to use all the translated AA fragments with length > minlength. This will slightly help to classify reads contain the true stop codon and start codon; This could have limited impact on the accuracy for comparative study and enable this function will slow down the Seq2Fun. by default is false, using --allFragments to enable it
+       
+       --codontable                 select the codon table (same as blastx in NCBI), we provide 21 codon tables from 'https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi#SG31'. By default is the transl_table_1 (Standard Code)", false, "transl_table_1
+	
     
   //selected pathways
 
