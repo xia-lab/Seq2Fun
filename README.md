@@ -92,8 +92,8 @@ The samples can be download from here
 
 | Group | Chemicals (dose)	| Number of samples	| Number of reads	|
 | ----- | ----------------- | ----------------- | --------------- |
-| High	| EE2 (33 mg/ml)	  |    4	            |     20,000,000	|
-| Medium| EE2 (3.3 mg/ml)	  |    5	            |     25,000,000	|
+| High	| EE2 (31.9 mg/ml)	  |    4	            |     20,000,000	|
+| Medium| EE2 (2.3 mg/ml)	  |    5	            |     25,000,000	|
 | Control| DMSO         	  |    5	            |     25,000,000	|
 
 
@@ -246,9 +246,10 @@ Use seq2fun or seq2fun --help to show the full usage options
    -J, --minlength                  minimum matching length of amino acid sequence in comparison with protein database with default value 25, for GREEDY and MEM model
 
    -m, --maxtranslength             maximum cutoff of translated peptides, it must be no less than minlength, with default 60
+       
        --allFragments               enable this function will force Seq2Fun to use all the translated AA fragments with length > minlength. This will slightly help to classify reads contain the true stop codon and start codon; This could have limited impact on the accuracy for comparative study and enable this function will slow down the Seq2Fun. by default is false, using --allFragments to enable it
        
-       --codontable                 select the codon table (same as blastx in NCBI), we provide 21 codon tables from 'https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi#SG31'. By default is the transl_table_1 (Standard Code)", false, "transl_table_1
+       --codontable                 select the codon table (same as blastx in NCBI), we provide 21 codon tables from 'https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi#SG31'. By default is the transl_table_1 (Standard Code), the complete codon table can be seen below.
 	
     
   //selected pathways
@@ -426,6 +427,32 @@ Use seq2fun or seq2fun --help to show the full usage options
 
      --discard_unmerged             DEPRECATED, no effect now, see the introduction for merging
 ```
+
+### codon table
+We have followed the codon table from [NCBI](https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi);
+| Seq2Fun | NCBI |
+| ------- | ---- |
+|transl_table_1 |The Standard Code (transl_table=1)|
+|transl_table_2 |The Vertebrate Mitochondrial Code (transl_table=2)|
+|transl_table_3 |The Yeast Mitochondrial Code (transl_table=3)|
+|transl_table_4 |The Mold, Protozoan, and Coelenterate Mitochondrial Code and the Mycoplasma/Spiroplasma Code (transl_table=4)|
+|transl_table_5 |The Invertebrate Mitochondrial Code (transl_table=5)|
+|transl_table_6 |The Ciliate, Dasycladacean and Hexamita Nuclear Code (transl_table=6)|
+|transl_table_9 |The Echinoderm and Flatworm Mitochondrial Code (transl_table=9)|
+|transl_table_10 |The Euplotid Nuclear Code (transl_table=10)|
+|transl_table_12 |The Alternative Yeast Nuclear Code (transl_table=12)|
+|transl_table_13 |The Ascidian Mitochondrial Code (transl_table=13)|
+|transl_table_14 |The Alternative Flatworm Mitochondrial Code (transl_table=14)|
+|transl_table_16 |Chlorophycean Mitochondrial Code (transl_table=16)|
+|transl_table_21 |Trematode Mitochondrial Code (transl_table=21)|
+|transl_table_22 |Scenedesmus obliquus Mitochondrial Code (transl_table=22)|
+|transl_table_24 |Rhabdopleuridae Mitochondrial Code (transl_table=24)|
+|transl_table_26 |Pachysolen tannophilus Nuclear Code (transl_table=26)|
+|transl_table_27 |Karyorelict Nuclear Code (transl_table=27)|
+|transl_table_29 |Mesodinium Nuclear Code (transl_table=29)|
+|transl_table_30 |Peritrich Nuclear Code (transl_table=30)|
+|transl_table_31 |Blastocrithidia Nuclear Code (transl_table=31)|
+|transl_table_33 |Cephalodiscidae Mitochondrial UAA-Tyr Code (transl_table=33)|
 
 
 ## Bugs or feature requests
