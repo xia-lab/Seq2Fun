@@ -291,27 +291,27 @@ enum Mode
 };
 
 enum CodonTable {
-Standard1,
-VertebrateMitochondria2,
-YeastMitochondrial3,
-MoldProtozoanCoelenterateMitochondrialMycoplasmaSpiroplasma4,
-InvertebrateMitochondrial5,
-CiliateDasycladaceanHexamitaNuclear6,
-EchinodermFlatwormMitochondrial9,
-EuplotidNuclear10,
-AlternativeYeastNuclear12,
-AscidianMitochondrial13,
-InvertebrateMitochondiral5,
-ChlorophyceanMitochondrial16,
-TrematodeMitochondrial21,
-ScenedesmusobliquusMitochondrial22,
-RhabdopleuridaeMitochondrial24,
-PachysolentannophilusNuclear26,
-KaryorelictNuclear27,
-MesodiniumNuclear29,
-PeritrichNuclear30,
-BlastocrithidiaNuclear31,
-CephalodiscidaeMitochondrial33
+transl_table_1,
+transl_table_2,
+transl_table_3,
+transl_table_4,
+transl_table_5,
+transl_table_6,
+transl_table_9,
+transl_table_10,
+transl_table_12,
+transl_table_13,
+transl_table_14,
+transl_table_16,
+transl_table_21,
+transl_table_22,
+transl_table_24,
+transl_table_26,
+transl_table_27,
+transl_table_29,
+transl_table_30,
+transl_table_31,
+transl_table_33
 };
 
 class TransSearchOptions
@@ -320,7 +320,7 @@ public:
     TransSearchOptions()
     {
         mode = tGREEDY;
-		codonTable = Standard1;
+		codonTable = transl_table_1;
         SEG = true;
         useEvalue = false;
         minEvalue = 0.01;
