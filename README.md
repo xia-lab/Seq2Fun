@@ -429,7 +429,7 @@ Use seq2fun or seq2fun --help to show the full usage options
 ```
 
 ### codon table
-We have followed the codon table from [NCBI](https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi);
+We have followed the codon tables from [NCBI](https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi);
 | Seq2Fun | NCBI |
 | ------- | ---- |
 |transl_table_1 |The Standard Code (transl_table=1)|
