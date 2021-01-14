@@ -56,7 +56,7 @@ int main(int argc, char* argv[]) {
     cmd.add<int>("minlength", 'J', "minimum matching length of amino acid sequence in comparison with protein database with default value 25, for GREEDY and MEM model", false);
     cmd.add<int>("maxtranslength", 'm', "maximum cutoff of translated peptides, it must be no less than minlength, with default 60", false, 60);
     cmd.add("allFragments", 0, "enable this function will force Seq2Fun to use all the translated AA fragments with length > minlength. This will slightly help to classify reads contain the true stop codon and start codon; This could have limited impact on the accuracy for comparative study and enable this function will slow down the Seq2Fun. by default is false, using --allFragments to enable it");
-	cmd.add<string>("codontable", 0, "select the codon table (same as blastx in NCBI), we provide 20 codon tables from 'https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi#SG31'. By default is the transl_table_1 (Standard Code)", false, "transl_table_1"); 
+	cmd.add<string>("codontable", 0, "select the codon table (same as blastx in NCBI), we provide 20 codon tables from 'https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi#SG31'. By default is the codontable1 (Standard Code)", false, "codontable1"); 
 	
     //selected pathways
     cmd.add<string>("pathway", 'Z', "list of selected pathways for target pathways analysis", false, "");
@@ -369,48 +369,48 @@ int main(int argc, char* argv[]) {
     }
     
 	opt.transSearch.tCodonTable = cmd.get<string>("codontable");
-	if(opt.transSearch.tCodonTable == "transl_table_1"){
-		opt.transSearch.codonTable = transl_table_1;
-	} else if (opt.transSearch.tCodonTable == "transl_table_2"){
-		opt.transSearch.codonTable = transl_table_2;
-	} else if (opt.transSearch.tCodonTable == "transl_table_3"){
-		opt.transSearch.codonTable = transl_table_3;
-	} else if (opt.transSearch.tCodonTable == "transl_table_4"){
-		opt.transSearch.codonTable = transl_table_4;
-	} else if (opt.transSearch.tCodonTable == "transl_table_5"){
-		opt.transSearch.codonTable = transl_table_5;
-	}else if (opt.transSearch.tCodonTable == "transl_table_6"){
-		opt.transSearch.codonTable = transl_table_6;
-	} else if (opt.transSearch.tCodonTable == "transl_table_9"){
-		opt.transSearch.codonTable = transl_table_9;
-	} else if (opt.transSearch.tCodonTable == "transl_table_10"){
-		opt.transSearch.codonTable = transl_table_10;
-	} else if (opt.transSearch.tCodonTable == "transl_table_12"){
-		opt.transSearch.codonTable = transl_table_12;
-	} else if (opt.transSearch.tCodonTable == "transl_table_13") {
-		opt.transSearch.codonTable = transl_table_13;
-	} else if (opt.transSearch.tCodonTable == "transl_table_14"){
-		opt.transSearch.codonTable = transl_table_14;
-	} else if(opt.transSearch.tCodonTable == "transl_table_16"){
-		opt.transSearch.codonTable = transl_table_16;
-	}else if (opt.transSearch.tCodonTable == "transl_table_26"){
-		opt.transSearch.codonTable = transl_table_26;
-	} else if (opt.transSearch.tCodonTable == "transl_table_21"){
-		opt.transSearch.codonTable = transl_table_21;
-	} else if (opt.transSearch.tCodonTable == "transl_table_22"){
-		opt.transSearch.codonTable = transl_table_22;
-	} else if(opt.transSearch.tCodonTable == "transl_table_24") {
-		opt.transSearch.codonTable = transl_table_24;
-	} else if (opt.transSearch.tCodonTable == "transl_table_27"){
-		opt.transSearch.codonTable = transl_table_27;
-	} else if (opt.transSearch.tCodonTable == "transl_table_29"){
-		opt.transSearch.codonTable = transl_table_29;
-	} else if (opt.transSearch.tCodonTable == "transl_table_30"){
-		opt.transSearch.codonTable = transl_table_30;
-	} else if (opt.transSearch.tCodonTable == "transl_table_31"){
-		opt.transSearch.codonTable = transl_table_31;
-	} else if (opt.transSearch.tCodonTable == "transl_table_33") {
-		opt.transSearch.codonTable = transl_table_33;
+	if(opt.transSearch.tCodonTable == "codontable1"){
+		opt.transSearch.codonTable = codontable1;
+	} else if (opt.transSearch.tCodonTable == "codontable2"){
+		opt.transSearch.codonTable = codontable2;
+	} else if (opt.transSearch.tCodonTable == "codontable3"){
+		opt.transSearch.codonTable = codontable3;
+	} else if (opt.transSearch.tCodonTable == "codontable4"){
+		opt.transSearch.codonTable = codontable4;
+	} else if (opt.transSearch.tCodonTable == "codontable5"){
+		opt.transSearch.codonTable = codontable5;
+	}else if (opt.transSearch.tCodonTable == "codontable6"){
+		opt.transSearch.codonTable = codontable6;
+	} else if (opt.transSearch.tCodonTable == "codontable9"){
+		opt.transSearch.codonTable = codontable9;
+	} else if (opt.transSearch.tCodonTable == "codontable10"){
+		opt.transSearch.codonTable = codontable10;
+	} else if (opt.transSearch.tCodonTable == "codontable12"){
+		opt.transSearch.codonTable = codontable12;
+	} else if (opt.transSearch.tCodonTable == "codontable13") {
+		opt.transSearch.codonTable = codontable13;
+	} else if (opt.transSearch.tCodonTable == "codontable14"){
+		opt.transSearch.codonTable = codontable14;
+	} else if(opt.transSearch.tCodonTable == "codontable16"){
+		opt.transSearch.codonTable = codontable16;
+	}else if (opt.transSearch.tCodonTable == "codontable26"){
+		opt.transSearch.codonTable = codontable26;
+	} else if (opt.transSearch.tCodonTable == "codontable21"){
+		opt.transSearch.codonTable = codontable21;
+	} else if (opt.transSearch.tCodonTable == "codontable22"){
+		opt.transSearch.codonTable = codontable22;
+	} else if(opt.transSearch.tCodonTable == "codontable24") {
+		opt.transSearch.codonTable = codontable24;
+	} else if (opt.transSearch.tCodonTable == "codontable27"){
+		opt.transSearch.codonTable = codontable27;
+	} else if (opt.transSearch.tCodonTable == "codontable29"){
+		opt.transSearch.codonTable = codontable29;
+	} else if (opt.transSearch.tCodonTable == "codontable30"){
+		opt.transSearch.codonTable = codontable30;
+	} else if (opt.transSearch.tCodonTable == "codontable31"){
+		opt.transSearch.codonTable = codontable31;
+	} else if (opt.transSearch.tCodonTable == "codontable33") {
+		opt.transSearch.codonTable = codontable33;
 	} else {
 		error_exit("you must select one codon table");
 	}
