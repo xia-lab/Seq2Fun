@@ -1,0 +1,685 @@
+Install Seq2Fun
+Seq2Fun (version 1.0.0) is written in C/C++11 and can be installed on Linux or Mac OS X (with Xcode and Xcode Command Line Tools installed). We have tested Seq2Fun on Ubuntu (16.04 LTS and above) and macOS Catalina.
+
+Download & compile
+Click here to download the source code. From within the folder containing the downloaded package, issue the following commands:
+
+>tar -xvzf seq2fun_v1.0.0.tar.gz
+>cd seq2fun/src/
+>make clean
+>make
+Run a small test
+There are four sub folders under seq2fun - src, bin, database and testdata. The bin folder contains the binary code we just complied. The testdata contains a small test data from the Case Study. From within the testdata folder, issue the following commands:
+
+>../bin/seq2fun --sampletable sample.txt --tfmi birds_cdhit99_proteins.fmi --genemap birds_protein_ko_species_cdhit99.txt -w 8 --profiling -V --outputMappedCleanReads
+
+
+
+Seq2Fun full usage:
+1. Seq2Fun full usage options
+Use seq2fun or seq2fun --help to show the full usage options
+
+  options:
+
+  // input/output
+
+  -s, --sampletable,                (recommended) sample table consisting of 2 columns (read sample name (sample01_R1.fq.gz) prefix name (sample01)) for single-reads and 3 columns (forward read sample name (sample01_R1.fq.gz) reverse read sample name (sample01_R2.fq.gz) prefix name (sample01)) for paired-end reads. The columns must be separated by tab 
+
+  -i, --in1                         read1 input file name
+
+  -I, --in2                         read2 input file name
+
+  -X, --prefix                      (not recommended) prefix name for output files, eg: sample01
+
+      --outputMappedCleanReads,          enable output mapped clean reads into fastq.gz files, by default is false, using --outputMappedCleanReads to enable it
+
+
+  // Homology search;
+
+   -D, --genemap                    gene/protein KO species map
+
+       --profiling                  by default it is off. If this option is specified, 4 levels of output files will be generated, ko abundance table, hit pathway table, hit species table and ko reads mapping tableby default it is off. If this option is specified, 4 levels of output files will be generated, ko abundance table, hit pathway table, hit species table and ko reads mapping table
+
+    
+  // translated search
+
+   -d, --tfmi                       fmi index of Protein database
+
+   -K, --mode                       searching mode either tGREEDY or tMEM (maximum exactly match). By default greedy 
+
+   -E, --mismatch                   number of mismatched amino acid in sequence comparison with protein database with default value 2
+
+   -j, --minscore                   minimum matching score of amino acid sequence in comparison with protein database with default value 100
+
+   -J, --minlength                  minimum matching length of amino acid sequence in comparison with protein database with default value 25, for GREEDY and MEM model
+
+   -m, --maxtranslength             maximum cutoff of translated peptides, it must be no less than minlength, with default 60
+
+	--allFragments		    enable this function will force Seq2Fun to use all the translated AA fragments with length > minlength. This will slightly help to classify reads contain the true stop codon and start codon; This could have limited impact on the accuracy for comparative study and enable this function will slow down the Seq2Fun. by default is false, using --allFragments to enable it"
+
+	--codontable		    select the codon table (same as blastx in NCBI), we provide 33 codon tables from 'https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi#SG31'. Be default is the Standard Code
+
+
+  //selected pathways
+
+   -Z, --pathway                    list of selected pathways for target pathways analysis
+
+   -z, --genefa                     the gene/protein sequences fasta file for retrieving proteins in selected pathways to construct database
+
+    
+  // threading
+
+  -w, --thread                      worker thread number, default is 2
+
+    
+  -V, --verbose                     enable verbose
+
+      --debug                       enable debug
+
+
+      --phred64                     indicate the input is using phred64 scoring (it'll be converted to phred33, so the output will still be phred33)
+
+      --reads_to_process            specify how many reads/pairs to be processed. Default 0 means process all reads
+
+
+  // adapter
+
+  -A, --disable_adapter_trimming    adapter trimming is enabled by default. If this option is specified, adapter trimming is disabled
+
+  -a, --adapter_sequence            the adapter for read1. For SE data, if not specified, the adapter will be auto-detected. For PE data, this is used if R1/R2 are found not overlapped
+
+      --adapter_sequence_r2         the adapter for read2 (PE data only). This is used if R1/R2 are found not overlapped. If not specified, it will be the same as adapter_sequence
+
+      --adapter_fasta               specify a FASTA file to trim both read1 and read2 (if PE) by all the sequences in this FASTA file
+
+      --detect_adapter_for_pe       by default, the auto-detection for adapter is for SE data input only, turn on this option to enable it for PE data
+
+    
+  //polyA tail
+
+      --no_trim_polyA               by default, ployA tail will be trimmed. If this option is specified, polyA trimming is disabled
+
+
+  // trimming
+
+  -f, --trim_front1                 trimming how many bases in front for read1, default is 0
+
+  -t, --trim_tail1                  trimming how many bases in tail for read1, default is 0
+
+  -b, --max_len1                    if read1 is longer than max_len1, then trim read1 at its tail to make it as long as max_len1. Default 0 means no limitation
+
+  -F, --trim_front2                 trimming how many bases in front for read2. If it's not specified, it will follow read1's settings
+
+  -T, --trim_tail2                  trimming how many bases in tail for read2. If it's not specified, it will follow read1's settings
+
+  -B, --max_len2                    if read2 is longer than max_len2, then trim read2 at its tail to make it as long as max_len2. Default 0 means no limitation. If it's not specified, it will follow read1's settings
+
+
+  // polyG tail trimming
+
+  -g, --trim_poly_g                 force polyG tail trimming, by default trimming is automatically enabled for Illumina NextSeq/NovaSeq data
+
+      --poly_g_min_len              the minimum length to detect polyG in the read tail. 10 by default
+
+  -G, --disable_trim_poly_g         disable polyG tail trimming, by default trimming is automatically enabled for Illumina NextSeq/NovaSeq data
+
+
+  // polyX tail trimming
+
+  -x, --trim_poly_x                 enable polyX trimming in 3' ends
+
+      --poly_x_min_len              the minimum length to detect polyX in the read tail. 10 by default
+
+
+  // cutting by quality
+
+      --cut_front                   move a sliding window from front (5') to tail, drop the bases in the window if its mean quality < threshold, stop otherwise
+
+      --cut_tail                    move a sliding window from tail (3') to front, drop the bases in the window if its mean quality < threshold, stop otherwise
+
+  -r, --cut_right                   move a sliding window from front to tail, if meet one window with mean quality < threshold, drop the bases in the window and the right part, and then stop
+
+  -W, --cut_window_size             the window size option shared by cut_front, cut_tail or cut_sliding. Range: 1~1000, default: 4
+
+  -M, --cut_mean_quality            the mean quality requirement option shared by cut_front, cut_tail or cut_sliding. Range: 1~36 default: 20 (Q20)
+
+      --cut_front_window_size       the window size option of cut_front, default to cut_window_size if not specified
+
+      --cut_front_mean_quality      the mean quality requirement option for cut_front, default to cut_mean_quality if not specified
+
+      --cut_tail_window_size        the window size option of cut_tail, default to cut_window_size if not specified
+
+      --cut_tail_mean_quality       the mean quality requirement option for cut_tail, default to cut_mean_quality if not specified
+
+      --cut_right_window_size       the window size option of cut_right, default to cut_window_size if not specified
+
+      --cut_right_mean_quality      the mean quality requirement option for cut_right, default to cut_mean_quality if not specified
+
+
+  // quality filtering
+
+  -Q, --disable_quality_filtering   quality filtering is enabled by default. If this option is specified, quality filtering is disabled
+
+  -q, --qualified_quality_phred     the quality value that a base is qualified. Default 15 means phred quality <=Q15 is qualified
+
+  -u, --unqualified_percent_limit   how many percents of bases are allowed to be unqualified (0~100). Default 40 means 40%
+
+  -n, --n_base_limit                if one read's number of N base is >n_base_limit, then this read/pair is discarded. Default is 5
+
+  -e, --average_qual                if one read's average quality score <avg_qual, then this read/pair is discarded. Default 0 means no requirement
+
+
+  // length filtering
+
+  -L, --disable_length_filtering    length filtering is enabled by default. If this option is specified, length filtering is disabled
+
+  -l, --length_required             reads shorter than length_required will be discarded, default is 60
+
+      --length_limit                reads longer than length_limit will be discarded, default 0 means no limitation
+
+
+  // low complexity filtering
+
+      --no_low_complexity_filter    disable low complexity filter. The complexity is defined as the percentage of base that is different from its next base (base[i] != base[i+1])
+
+  -Y, --complexity_threshold        the threshold for low complexity filter (0~100). Default is 30, which means 30% complexity is required
+
+
+  // filter by indexes
+      --filter_by_index1            specify a file contains a list of barcodes of index1 to be filtered out, one barcode per line
+
+      --filter_by_index2            specify a file contains a list of barcodes of index2 to be filtered out, one barcode per line
+
+      --filter_by_index_threshold   the allowed difference of index barcode for index filtering, default 0 means completely identical
+
+
+  // base correction in overlapped regions of paired end data
+
+  -c, --disable_correction          disenable base correction in overlapped regions (only for PE data), default is enabled");
+
+  -v, --overlap_len_require         the minimum length to detect overlapped region of PE reads. This will affect overlap analysis based PE merge, adapter trimming and correction. 30 by default
+
+      --overlap_diff_limit          the maximum number of mismatched bases to detect overlapped region of PE reads. This will affect overlap analysis based PE merge, adapter trimming and correction. 5 by default
+
+      --overlap_diff_percent_limit  the maximum percentage of mismatched bases to detect overlapped region of PE reads. This will affect overlap analysis based PE merge, adapter trimming and correction. Default 20 means 20%
+
+
+  // umi
+
+  -u, --umi                         enable unique molecular identifier (UMI) preprocessing
+
+      --umi_loc                     specify the location of UMI, can be (index1/index2/read1/read2/per_index/per_read, default is none
+
+      --umi_len                     if the UMI is in read1/read2, its length should be provided
+
+      --umi_prefix                  if specified, an underline will be used to connect prefix and UMI (i.e. prefix=UMI, UMI=AATTCG, final=UMI_AATTCG). No prefix by default
+
+      --umi_skip                    if the UMI is in read1/read2, Seq2Fun can skip several bases following UMI, default is 0
+
+
+  // overrepresented sequence analysis
+
+  -p, --overrepresentation_analysis enable overrepresented sequence analysis
+
+  -P, --overrepresentation_sampling one in (--overrepresentation_sampling) reads will be computed for overrepresentation analysis (1~10000), smaller is slower, default is 20
+
+
+
+  // deprecated options
+
+     --cut_by_quality5              DEPRECATED, use --cut_front instead
+
+     --cut_by_quality3              DEPRECATED, use --cut_tail instead
+
+     --cut_by_quality_aggressive    DEPRECATED, use --cut_right instead
+
+     --discard_unmerged             DEPRECATED, no effect now, see the introduction for merging
+
+                            
+2. Running Seq2Fun
+Back to top
+In order to make it clear and just for demonstration purpose, after downloading and installation of seq2fun, we first refer the path to seq2fun installation directory (e.g. /home/peng/Software/seq2fun) to "S2F_HOME".
+This "S2F_HOME" contains several directories, e.g., bin contains executable files seq2fun mkbwt mkfmi, therefore the location of executable file seq2fun is S2F_HOME/bin/seq2fun
+Similarly, we create a new directory "database" in S2F_HOME, which is used to store databases of different groups of organisms. After downloading the database, we put them in the database directory, e.g., mammals, birds, fishes. Each database contains .fmi, protein_ko_species_cdhit99.txt files. Here, the database path is S2F_HOME/database/. Otherwise, you can put the database anywhere that is clear to you.
+2.1. a typical run for a single sample of pair-end (PE) reads with comparative mode, which will only generate a KO abundance table for each sample (total KO abundance table will not be produced, using -s batch mode to produce it) (not recommended):
+
+S2F_HOME/bin/seq2fun -i A1.CE2-S1_R1.fastq.gz -I A1.CE2-S1_R2.fastq.gz --tfmi S2F_HOME/database/birds/birds_cdhit99_proteins.fmi --genemap S2F_HOME/database/birds/birds_protein_ko_species_cdhit99.txt --prefix A1.CE2-S1_R1 -w 8
+                            
+or for batch sample processing, and it will produce total KO abundance table for all samples, and KO abundant table for each sample (recommended)
+S2F_HOME/bin/seq2fun --sampletable sample.txt --tfmi S2F_HOME/database/birds/birds_cdhit99_proteins.fmi --genemap S2F_HOME/database/birds/birds_protein_ko_species_cdhit99.txt --prefix A1.CE2-S1_R1 -w 8
+                            
+a sample.txt is a table consisting of three columns separated by tab ("\t"). The first column is the prefix name of sample, the second one is filename of forward reads, the last one is the filename of reverse reads.
+A1.CE2-S1   A1.CE2-S1_R1.fastq.gz   A1.CE2-S1_R2.fastq.gz
+
+A3.CE1-M2   A3.CE1-M2_R1.fastq.gz   A3.CE1-M2_R2.fastq.gz
+
+...                     ...                     ...
+
+                            
+2.2. a typical run for a single sample of pair-end (PE) reads with profiling mode, which will generate 5 levels of tables of a KO abundance, hit pathway, hit species, reads ko, as well as a html reports summarizing these tables and rarefaction curve, as well as reads quality checks.
+S2F_HOME/bin/seq2fun -i A1.CE2-S1_R1.fastq.gz -I A1.CE2-S1_R2.fastq.gz --tfmi S2F_HOME/database/birds/birds_cdhit99_proteins.fmi --genemap S2F_HOME/database/birds/birds_protein_ko_species_cdhit99.txt --prefix A1.CE2-S1 -w 8 --profiling
+                            
+or for batch sample processing
+S2F_HOME/bin/seq2fun --sampletable sample.txt --tfmi S2F_HOME/database/birds/birds_cdhit99_proteins.fmi --genemap S2F_HOME/database/birds/birds_protein_ko_species_cdhit99.txt --prefix A1.CE2-S1 -w 8 --profiling
+                            
+3. Input files
+Back to top
+Seq2Fun supports both paired-end(PE) and single-end(SE) reads from various sequencing platforms e.g., Illumina. There is no reads length limitation. It supports both fastq and fastq.gz file format.
+
+3.1 For PE reads using -i or --in1 and -I or --in2 for forward and reverse reads, respectively.
+e.g.: -i A1.CE2-S1_R1.fastq.gz -I A1.CE2-S1_R1.fastq.gz
+
+3.2 For SE reads using -i or --in1 for forward reads.
+e.g.: -i A1.CE2-S1_R1.fastq.gz
+4. Batch sample processing (highly recommended)
+Back to top
+It is highly recommended to use bach processing mode. Batch sample processing not only avoids repeatedly loading and deleting database when processing many samples, but also produces KO abundance table consisting all samples.
+
+Using -s or --sampletable table to specify the file containing reads files and output file.
+e.g.: -s sample.txt
+
+4.1 For PE reads using -i or --in1 and -I or --in2 for forward and reverse reads, respectively.
+For PE reads, sample_table must consist of three columns using tab ("\t") as a separator. The first column is prefix name of sample, the second is the filename of forward reads, the last one is the filename of reverse reads.
+A1.CE2-S1   A1.CE2-S1_R1.fastq.gz   A1.CE2-S1_R2.fastq.gz
+
+A3.CE1-M2   A3.CE1-M2_R1.fastq.gz   A3.CE1-M2_R2.fastq.gz
+
+...                     ...                     ...
+
+                            
+4.2 For SE reads, sample_table must consist of two columns using the tab ("\t") as a separator. The first column is the prefix name of sample and the second one is the filename of forward reads
+A1.CE2-S1   A1.CE2-S1_R1.fastq.gz
+
+A3.CE1-M2   A3.CE1-M2_R1.fastq.gz
+
+...                     ...
+
+                            
+5. Output files
+Back to top
+By default, Seq2Fun generate only 1 main output text file KO abundance tables for all samples and each sample.
+If you are using --profiling mode, there are 5 main output text files: KO abundance table, hit pathway table and hit species table, reads ko table (reads annotation table); and a html reports containing tables and figures of summary these tables, as well as reads quality check.
+
+5.1 If you use input files from 2.1
+Using -X or --prefix to specify the prefix name of output files
+e.g.: -X A1.CE2-S1
+
+5.2 If you use batch sample process mode from 3.1, the last column in sample.txt is the prefix name of output files
+Using -s or --sampletable to specify file containing both input and output files.
+e.g.: -s sample.txt
+
+5.3.1. An output file of KO abundance table for all samples. It is only generated by batch mode
+KO_ID   A1.CE2-S1-LT    A2.CE2-M4-LT    B1.CE2-S2-LT    B2.CE2-M5-LT    C1.CE2-S3-LT    D1.CE2-S4-LT    D2.CE2-H2-LT    E1.CE2-S5-LT    E2.CE2-H3-LT    F1.CE2-M1-LT    F2.CE2-H4-LT    G1.CE2-M2-LT    G2.CE2-H5-LT    H1.CE2-M3-LT    KO_name
+
+K00002	118             96              386             131             147             141             106             129             120             98              148             117             136             121             AKR1A1, adh; alcohol dehydrogenase (NADP+) [EC:1.1.1.2]
+
+K00006	629             604             235             648             664             506             628             499             670             455             838             615             579             521             GPD1; glycerol-3-phosphate dehydrogenase (NAD+) [EC:1.1.1.8]
+
+K00008	971             755             715             770             1122            770             1058            1010            1023            829             1055            1351            954             1139            SORD, gutB; L-iditol 2-dehydrogenase [EC:1.1.1.14]
+
+K00010	17              18              31              17              17              14              15              17              17              17              15              9               20              25              iolG; myo-inositol 2-dehydrogenase   D-chiro-inositol 1-dehydrogenase [EC:1.1.1.18 1.1.1.369]
+
+K00011	276             292             1581            303             315             336             290             305             353             263             316             279             290             296             AKR1B; aldehyde reductase [EC:1.1.1.21]
+
+K00012	130             94              609             112             111             134             127             344             103             193             163             382             116             299             UGDH, ugd; UDPglucose 6-dehydrogenase [EC:1.1.1.22]
+
+...
+
+5.3.2. An output file of KO abundance (A1.CE2-S1_ko_abundance.txt) is a 3 columns table separated by '\t', with KO id, count and KO name.See also 4.7 html report
+KO_id	reads_count	KO_name
+
+K14736	64798           TF; transferrin
+
+K03231	32934           EEF1A; elongation factor 1-alpha
+
+K00522	30426           FTH1; ferritin heavy chain [EC:1.16.3.2]
+
+K00134	29734           GAPDH, gapA; glyceraldehyde 3-phosphate dehydrogenase [EC:1.2.1.12]
+
+K08757	24860           APOA1; apolipoprotein A-I
+
+K02261	22467           COX2; cytochrome c oxidase subunit 2
+
+...     ...             ...
+
+                            
+5.4. (Using --profiling mode) An output file of hit pathway (A1.CE2-S1_pathway_hits.txt) is a 5 columns table separated by '\t', with pathway ID, pathway name, KO ID, KO count and KO name.See also 4.7 html report
+pathway_id	pathway_name                    KO_id	ko_count    KO_name
+
+map00010	Glycolysis_/_Gluconeogenesis	K00002	118             AKR1A1, adh; alcohol dehydrogenase (NADP+) [EC:1.1.1.2]
+
+map00010	Glycolysis_/_Gluconeogenesis	K00016	12019           LDH, ldh; L-lactate dehydrogenase [EC:1.1.1.27]
+
+map00010	Glycolysis_/_Gluconeogenesis	K00121	573             frmA, ADH5, adhC; S-(hydroxymethyl)glutathione dehydrogenase   alcohol dehydrogenase [EC:1.1.1.284 1.1.1.1]
+
+map00010	Glycolysis_/_Gluconeogenesis	K00128	3721            ALDH; aldehyde dehydrogenase (NAD+) [EC:1.2.1.3]
+
+map00010	Glycolysis_/_Gluconeogenesis	K00129	13              E1.2.1.5; aldehyde dehydrogenase (NAD(P)+) [EC:1.2.1.5]
+
+map00010	Glycolysis_/_Gluconeogenesis	K00134	29734           GAPDH, gapA; glyceraldehyde 3-phosphate dehydrogenase [EC:1.2.1.12]
+
+map00010	Glycolysis_/_Gluconeogenesis	K00149	4504            ALDH9A1; aldehyde dehydrogenase family 9 member A1 [EC:1.2.1.47 1.2.1.3]
+
+...             ...                             ...     ...         ...
+
+                            
+5.5. (Using --profiling mode) An output file of hit species (A1.CE2-S1_species_hits.txt) is a 2 columns table separated by '\t', with species name and number of KOs assigned to this species.See also 4.7 html report
+species                         number_of_KOs
+
+Nipponia_nippon                 2381
+
+Columba_livia                   2258
+
+Egretta_garzetta                2254
+
+Pygoscelis_adeliae              2174
+
+Athene_cunicularia              2098
+
+Apteryx_mantelli_mantelli	2044
+
+Gallus_gallus                   1972
+
+Empidonax_traillii              1969
+
+Falco_cherrug                   1928
+
+...                             ...
+
+                            
+5.6. (Using --profiling mode) An output file of reads KO (A1.CE2-S1_reads_ko.txt) is a 3 columns table separated by '\t', with read ID, KO ID and KO name. See also 4.7 html report
+reads_id                                KO_id	KO_name
+
+A00266:275:HLFTWDSXX:2:1101:10013:26537	K14736	TF; transferrin
+
+A00266:275:HLFTWDSXX:2:1101:10122:16235	K14736	TF; transferrin
+
+A00266:275:HLFTWDSXX:2:1101:10122:17174	K03883	ND5; NADH-ubiquinone oxidoreductase chain 5 [EC:7.1.1.2]
+
+A00266:275:HLFTWDSXX:2:1101:10122:2174	K00602	purH; phosphoribosylaminoimidazolecarboxamide formyltransferase / IMP cyclohydrolase [EC:2.1.2.3 3.5.4.10]
+
+A00266:275:HLFTWDSXX:2:1101:10140:28510	K00799	GST, gst; glutathione S-transferase [EC:2.5.1.18]
+
+A00266:275:HLFTWDSXX:2:1101:10149:34225	K06238	COL6A; collagen, type VI, alpha
+
+A00266:275:HLFTWDSXX:2:1101:10185:19382	K03883	ND5; NADH-ubiquinone oxidoreductase chain 5 [EC:7.1.1.2]
+
+A00266:275:HLFTWDSXX:2:1101:10212:16423	K11188	PRDX6; peroxiredoxin 6, 1-Cys peroxiredoxin [EC:1.11.1.7 1.11.1.15 3.1.1.-]
+
+A00266:275:HLFTWDSXX:2:1101:10212:36777	K08737	MSH6; DNA mismatch repair protein MSH6
+
+...                                     ...     ...
+
+                            
+5.7. (Using --profiling mode) A html report for functional summary (A1.CE2-S1_functional.html) summarizing these tables in tables and figures
+
+                            
+6. Protein database for translated search
+Back to top
+Translating each read into amino acid sequences and subsequently searching them in the protein database to find their homologies. If homologies identified, the homology protein's ID will be assigned to read
+Seq2Fun provides various pre-built databases of protein sequences. The size of the protein database has a huge impact on the speed of Seq2Fun.
+To speed up and avoid un-informative protein sequences in the database, we only include protein sequences involved in KEGG pathways.
+The protein database was built from fasta file of protein sequences based on burrows wheeler transform (BWT) and FM index for fast search. Download the pre-built database from here.
+Or you can build your own protein database (see xx).
+
+Using -d or --tfmi to specify protein database
+e.g.: -d birds_cdhit99_proteins.fmi
+7. Protein_KO_organism mapping table
+Back to top
+Each assigned read has protein IDs attached, this is used for search its corresponding KO from protein_KO_organism map.
+For most cases, one read could be annotated with multiple protein ids, which usually are homology proteins from same or different species and share the same KO id.
+Occasionally, one read could be annotated with multiple KO ids. In this case, only KO id with the highest frequency is kept. e.g.: read A00266:275:HLFTWDSXX:2:1101:10013:26537 mapped to K03841 and K01689 for 10 and 5 times, respectively. Only K03841 was kept for read A00266:275:HLFTWDSXX:2:1101:10013:26537. Also, see 4.3.
+Protein_KO_organism table is a mapping table linking Protein id to KO id and species name.
+
+Using -D or --genemap to specify protein_ko table file
+e.g.: -D bird_protein_ko_species_cdhit99.txt
+
+It contains 3 columns separated by '\t'. The first column is protein id, it must be the same protein id in protein database from 5. The second column is KO ID, corresponding to its protein ID, and last is the species name used for hit species table.
+aam_106481982	K00844	Apteryx_mantelli_mantelli
+
+aam_106481985	K05494	Apteryx_mantelli_mantelli
+
+aam_106481990	K12852	Apteryx_mantelli_mantelli
+
+aam_106481998	K14525	Apteryx_mantelli_mantelli
+
+aam_106482001	K03172	Apteryx_mantelli_mantelli
+
+aam_106482002	K00907	Apteryx_mantelli_mantelli
+
+aam_106482005	K05768	Apteryx_mantelli_mantelli
+
+aam_106482007	K03766	Apteryx_mantelli_mantelli
+
+aam_106482010	K03172	Apteryx_mantelli_mantelli
+
+aam_106482012	K03994	Apteryx_mantelli_mantelli
+
+...             ...     ...
+
+                            
+8. Single sample profiling
+Back to top
+It is known that it is very difficulty to obtain larger number of samples for lots of environmental species, and sometimes only one sample for each experimental group. In this case, it is very difficult to conduct comparative study without enough statistical power
+To cope with this challenge, --profiling mode is implemented in Seq2Fun. Using this mode, 4 main levels output files KO abundance table, hit pathway table, hit species table and read KO table are generated. An additional html report summarizing and visualizing these tables is also generated.
+A rarefaction curve is also generated in html report to show the sequence depth against number of KOs. This figure infers 1). the sequence depth is enough or not. It is useful when considering the difficulty to obtaining enough samples or hight-quality RNA for environmental species. 2). If you have too much reads and you want a faster processing, you can use --reads_to_process to specify the number of reads to process.
+By default profiling mode is off, using --profiling to turn it on, it is ~20% slower than non-profiling mode and could consume a little bit more memory at the last stage of generating tables
+e.g.: --profiling
+
+see more details about the output files in 4.3 - 4.7.
+
+9. MEM or GREEDY modes in amino acid sequences search in the database
+Back to top
+Seq2Fun translates clean read into amino acid sequences with all six possible open reading frames, followed by searching and comparing with reference protein sequences in database. Seq2Fun offers two searching modes of maximum exact matches (MEM) and GREEDY. MEM mode is a fast running mode and implemented as that translated amino acid sequences must be perfectly matched with reference protein sequences without any mismatches. Any mismatched amino acid sequence and its corresponding read will be discarded. It is designed for organisms who have reference sequence in the database. However, due to the evolutionary distance between the target organism and reference organisms as well as sequencing error, there could be mismatches between amino acid sequences translated from reads and reference protein sequences. Using MEM mode could result in the various number of unmapped reads and rapid sensitivity decay depending on the phylogenetic distance between organisms as well as the number of sequencing errors. Therefore, Greedy mode is introduced to allow mismatches between query and subject sequences to overcome the evolutionary divergences and sequencing errors. Greedy mode is designed for organisms who do not have reference sequences in database.
+The default mode is Greedy mode. Or using -K or --mode to specify mode.
+e.g.: -K greedy
+The MEM mode can be turn on e.g.: -K mem
+
+10. Minimum matching length of amino acid sequence with reference protein sequences
+Back to top
+The minimum matching length determines cut off length of how long the amino acid sequence matches with reference protein sequences. It is used for both MEM and GREEDY modes. Our results in the tested datasets show that minlength generally has complicated impacts in Greedy mode with the hightest values of coefficient of determination R square obtained with minlength ranging from 19 to 28. Therefore, the default value of minlength is set to 25, which means that the matching amino acid length must be no less than 25 aa. However, it is should be carefully tested on different organisms especially when your organisms have large evolutionary distances with organisms in the database. Decreasing the minlength would help overcome the large sequence divergence between query and subject sequences. But it would tradeoff specificity, resulting in some false positive matches. Using -J or --minlength to set minimum matching length with defulat value 25
+e.g.: -J 25
+11. Allowed amino acid mismatches (Greedy mode only)
+Back to top
+Seq2Fun employs GREEDY model to overcome evolutionary distance and sequencing error. It is implemented with setting the number of mismatches. The number of mismatches depends on the nature of protein itself, evolutionary distance and sequence error. Our results in the tested datasets show that minlength generally has negative impacts in Greedy mode. Therefore, the default value of minlength is set to 2, that means allowing two amino acid mismatches. However, it is should be carefully tested on different organisms especially when your organisms have large evolutionary distances with organisms in the database. Increasing the number of mismatches would help overcome the large sequence divergence between query and subject sequences. But it would tradeoff specificity, resulting in some false positive matches. As there are more than 20 amino acids, increasing the number of mismatches could result in exponential increasing searches in the database (also dependent on composition in the database) and would significantly slow down the search speed.This number of mismatches will translate into the affection of abundance values of KO in the output table.
+Using -E or --mismatch to specify number of amino acid mismatches with default value of 2.
+e.g.: -E 2
+12. Minimum matching score (Greedy mode only)
+Back to top
+Matching score based on blosum62 is used to assess how closely the translated amino acid sequence with mutations match with reference protein sequences. Just as number of the mismatched amino acids, it could trades off sensitivity and precision. Decreasing the value of the minimum matching score will increase sensitivity with a decreasing precision. It could have affect on the runtime as it servers as filter to filter out low blosum62 score AA fragments. Therefore, higher minimum matching score could results in a speed gain. Based on our assessment in three datasets, the minimum matching score has very limited affect on the overall gene abundance quantification. Thus, we set the default minimum matching score to 100.
+Using -j or --minscore to specify minimum matching score
+e.g.: -j 100
+13. Keep all the translated amino acid fragments(not recommended)
+Back to top
+After read translation into all possible amino acid fragments using the six reading frames, only the top longest fragments are select for homolog search. This filtering will greatly reduce the number of false translations if there is no true stop codon in that read, which in turn can increase the speed of Seq2Fun. This hard filtering will probably filter out some reads containing true stop codon, but it has very limited on the downstream analysis such as fold change in comparative studies.
+We offer the option to keep all the fragments, but their length must be > minimum matching length.
+Using --allFragments keep all the fragments
+e.g.: --allFragments
+14. Select codon table
+Back to top
+Select the codon table (same as blastx in NCBI), we provide 33 codon tables from 'https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi#SG31'. Be default is the Standard Code
+Standard1
+
+VertebrateMitochondria2
+
+YeastMitochondrial3
+
+MoldProtozoanCoelenterateMitochondrialMycoplasmaSpiroplasma4
+
+InvertebrateMitochondrial5
+
+CiliateDasycladaceanHexamitaNuclear6
+
+EchinodermFlatwormMitochondrial9
+
+EuplotidNuclear10
+
+AlternativeYeastNuclear12
+
+AscidianMitochondrial13
+
+InvertebrateMitochondiral5
+
+ChlorophyceanMitochondrial16
+
+TrematodeMitochondrial21
+
+ScenedesmusobliquusMitochondrial22
+
+RhabdopleuridaeMitochondrial24
+
+PachysolentannophilusNuclear26
+
+KaryorelictNuclear27
+
+MesodiniumNuclear29
+
+PeritrichNuclear30
+
+BlastocrithidiaNuclear31
+
+CephalodiscidaeMitochondrial33
+
+							
+Using --codontable to specify the codon table; "Standard1" is the default
+e.g.: --codontable VertebrateMitochondria2
+15. Trim the fist 6 base of read
+Back to top
+The fist 6 base of a read could have higher mismatch rates due to the random-hexamer priming, we advise to trim the fist 6 bases of a read
+Using --trim_front1 and/or --trim_front2 for single or pair-end reads
+e.g.: --trim_front1 6 --trim_front2 6
+16. Custom built database
+Back to top
+Seq2Fun fully supports customer built database. Seq2Fun needs two input files, FM index file, which is built from protein sequences and used for database; and protein_ko_species table, which is used for mapping protein ID in database to KO ID as well as for hit species table. To build your own database, you must supply a protein fasta file
+e.g.: birds.fasta
+>gga_419912
+
+MEGNEGDPPGAHRRRDSHGRRPSREINAEDQVAQETEEVFRSYTFYRYQQEREEGGAEVPMDPEIMEIQQELGSTGSQVGRRLAIIGDDINKRYDAEFRHMLKSLQPTKENAYEYFTTIASSLFDSGINWGRVIALLGFGYCMAIHVYQQGITGFLRRIARYVTEFMLRNRIARWIAQQGGWVAALDLDNVYMKYMLVVLALVMVGHLVVRRFFRP
+
+>gga_427365
+
+MAGDGGVYRLRCSLLGHEQDVRGITRGLFPEGGFVSVSRDRTARLWTPDGLNRGFTEMHCMRGHSNFVSCVCIIPPSDLYPRGLIATGGNDHNICVFTVDNTAPLYVLKGHTNTVCSLSSGKFGTLLSGSWDTTCKVWLNDRCMMTLQGHTAAIWAVKILPEQGLMLTGSADKTIKLWKAGRCERTYAGHEDCVRGLAILSEMEFLSCSNDASVRRWHISGECLHVYYGHTNYIYSVSVFPHCKDFITTGEDRSLRIWKQGECVQTIRLPAQSVWCCCVLDNDDIVVGASDGIIRVFTKSLERTASAEEIQAFENELSQASIDPKTGDLGDINADDLPGKEHLKDPGMRDGQTRLIKDNGKVEAYQWSVSEGRWIKIGDVVGSSGGTQQTSGKVLFEGKEYDYVFTIDVNESGPSYKLPYNISDDPWLTAYNFLQKNDLNPMFLDQVAKFIIDNTKGQAPLNTNTEFSDPFTGAGRYVPGSSSLSNTAPAADPFTGMGAYQSAKAENIYFPKKDAVTFDQANPTQILGKLKELNGNAAEEQKLTEDDLIILEKLLSATCNTSAEMPTAQQIQTLWKAINWPEDIVFPALDILRLSVRHPIVNENFCGEKAHVQFIHLLLKFLNPQGKPANQLLALRALCNCFVSQAGQKLLMEQRDEIMTQAIEVKSGNNKNVHIALATLTLNYAVCLHKVNNIEGKAQCLSVISTVMEVVKDLEAVFRLLVALGTLISDDKNAVQLAKSLGVDSQIKKYVSVSEPAKVKECCRFVLNLL
+
+...
+
+                            
+Please be noted that the protein sequences must consist of the standarad 20 amino acid in the uppercase.
+S2F_HOME/bin/mkbwt -n 8 -a ACDEFGHIKLMNPQRSTVWY -o brids_proteins birds.fasta;
+S2F_HOME/bin/mkfmi brids_proteins;
+                            
+It generate a fmi file named brids_proteins.fmi. See 5. Protein database for translated search.
+
+To use the database, you must prepare a mapping file containing protein ID and its corresponding KO ID, as well as species name, separated by "\t".
+e.g.: birds_protein_KO_organism.txt.
+Please be noted that the protein ID in the first column must be unique and identical with protein ID in birds.fasta, and must be corresponding to KO ID in the second column.
+gga_419912  K14021  Gallus_gallus
+
+gga_427365  K14018  Gallus_gallus
+
+...             ...     ...
+
+                            
+17. Selected pathway analysis
+Back to top
+Using database containing all the KEGG pathways tends to produce some pathways unrelated to the research questions. In addition, full pathway analysis could compromise statistical power in some degree. Seq2Fun allows users to select a list of pathways that are closely related to their research interests. Moreover, reducing number of pathways for analysis would accelerate Seq2Fun.
+
+To use selected pathways, you must provide a txt file consisting your selected pathways, which can only be selected from file pathway_name_453.txt; this pathway_name_453.txt contains all 453 pathways from KEGG database.
+
+Here is an example of selected pathway file, e.g. pathway_list.txt; it must consist only one column.
+
+map00010:Glycolysis_/_Gluconeogenesis
+
+map00020:Citrate_cycle_(TCA_cycle)
+
+map00030:Pentose_phosphate_pathway
+
+map00040:Pentose_and_glucuronate_interconversions
+
+map00051:Fructose_and_mannose_metabolism
+
+map00052:Galactose_metabolism
+
+map00053:Ascorbate_and_aldarate_metabolism
+
+map00061:Fatty_acid_biosynthesis
+
+map00062:Fatty_acid_elongation
+
+map00071:Fatty_acid_degradation
+
+                        
+Second, the protein sequences fasta file must be provided, in which protein sequences in the selected pathways will be retrieved for database construction. It can be downloaded from our prebuild database directory, e.g. birds_cdhit99.fasta in birds.tar.gz. Also see Download database in INSTALLATION.
+
+Here is an example of birds_cdhit99.fasta; each id must be like this.
+
+>gga_419912
+
+MEGNEGDPPGAHRRRDSHGRRPSREINAEDQVAQETEEVFRSYTFYRYQQEREEGGAEVPMDPEIMEIQQELGSTGSQVGRRLAIIGDDINKRYDAEFRHMLKSLQPTKENAYEYFTTIASSLFDSGINWGRVIALLGFGYCMAIHVYQQGITGFLRRIARYVTEFMLRNRIARWIAQQGGWVAALDLDNVYMKYMLVVLALVMVGHLVVRRFFRP
+
+>gga_427365
+
+MAGDGGVYRLRCSLLGHEQDVRGITRGLFPEGGFVSVSRDRTARLWTPDGLNRGFTEMHCMRGHSNFVSCVCIIPPSDLYPRGLIATGGNDHNICVFTVDNTAPLYVLKGHTNTVCSLSSGKFGTLLSGSWDTTCKVWLNDRCMMTLQGHTAAIWAVKILPEQGLMLTGSADKTIKLWKAGRCERTYAGHEDCVRGLAILSEMEFLSCSNDASVRRWHISGECLHVYYGHTNYIYSVSVFPHCKDFITTGEDRSLRIWKQGECVQTIRLPAQSVWCCCVLDNDDIVVGASDGIIRVFTKSLERTASAEEIQAFENELSQASIDPKTGDLGDINADDLPGKEHLKDPGMRDGQTRLIKDNGKVEAYQWSVSEGRWIKIGDVVGSSGGTQQTSGKVLFEGKEYDYVFTIDVNESGPSYKLPYNISDDPWLTAYNFLQKNDLNPMFLDQVAKFIIDNTKGQAPLNTNTEFSDPFTGAGRYVPGSSSLSNTAPAADPFTGMGAYQSAKAENIYFPKKDAVTFDQANPTQILGKLKELNGNAAEEQKLTEDDLIILEKLLSATCNTSAEMPTAQQIQTLWKAINWPEDIVFPALDILRLSVRHPIVNENFCGEKAHVQFIHLLLKFLNPQGKPANQLLALRALCNCFVSQAGQKLLMEQRDEIMTQAIEVKSGNNKNVHIALATLTLNYAVCLHKVNNIEGKAQCLSVISTVMEVVKDLEAVFRLLVALGTLISDDKNAVQLAKSLGVDSQIKKYVSVSEPAKVKECCRFVLNLL
+
+...
+
+                        
+To use the selected pathways, you must specify --pathway pathway_list.txt --genefa birds_cdhit99.fasta --genemap birds_protein_ko_species_cdhit99_no_chicken.txt
+
+the whole command could like this
+S2F_HOME/bin/seq2fun -w 8 -i left.fastq.gz -I right.fastq.gz --prefix sample01 --pathway pathway_list.txt --genefa birds_cdhit_99_no_chichen_new.fasta -D birds_protein_ko_species_cdhit99_no_chicken.txt
+
+It will produce a temp dir selected_pathway_database, which contains 4 files, selected_pathway_protein_aas.pep.fasta is the protein sequences in selected pathways, which is retrieved from e.g. birds_cdhit99.fasta, proteins.sa, proteins.bwt and proteins.fmi, which is the database used for Seq2Fun.
+
+You can also use customized database for selected pathways. See 13.Custom built database
+
+18. Automatically trimming polyA tail in reads
+Back to top
+Reads with polyA tail could affect protein comparison, resulting in a high artificial matching score. Removing or trimming reads containing polyA tail could increase precision.
+By default, trimming polyA tail is activated.
+If you want to disable this function
+using --no_trim_polyA
+19. Minimum length for merging overlapped PE read pair (PE reads only)
+Back to top
+The length of query amino acid sequences could have heavily impact the comparison with reference protein sequences. It generally believes that the longer of query sequences, the higher precision of protein annotation. Therefore, merging overlapped PE read into longer read could yield longer translated amino acid sequences, which could reduce number of ill mapped reads and boost annotation precision. The default value of minimum length for merging PE read pair is 30 bp if the read pair is overlapped.
+Using -v or --overlap_len_require to specify miminum length of overlapped PE read pair
+e.g: -v 30
+
+20. Maximum cutoff length of translated peptides
+Back to top
+Seq2Fun only keeps the longest AA fragment for identification of homologies in protein database, this will filter out lots of false fragments and accelerate Seq2Fun. In some cases, only keeping at most the longest fragments could filter out a proportion of fragments that originated from the merged PE reads if start and stop codons are present in the middle of the reads. Therefore, we recap the maximum cut-off length of peptide fragment to be 60 aa (by default, user can change this cut-off), which will prevent the filtering out of some true peptide fragments from the merged reads.
+Using -m or --maxtranslength to specify maximum cutoff length of translated peptides.
+Note: --maxtranslength must be larger than the --minlength (minimum matching length of amino acid sequence) in 9.
+e.g: -m 60
+
+21. Output mapped reads
+Back to top
+For non-model organisms, it could be important to obtain the assembled genes/contigs of interest.
+Seq2Fun offers a feature to capture and label each mapped clean read with KO tag and output as fastq.gz files. The clean reads can be directly used to assembled into genes/contigs using various de novo assemblers such as Trinity, et al. Because of only a small proportion (~30%) of total reads are mapped and retrieved, the de novo assembly for each genes is very fast and usually can be finished within several minutes.
+Various downstream analysis such as designing primers, comparable analysis, on these assembled genes/contigs can be applied, and this will greatly compensate the information loss by Seq2Fun compared with the conventional de novo assemblers.
+
+Using --outputMappedCleanReads to enable this function.
+
+Forward mapped clean reads file A1.CE2-S1-LT_mapped_R1.fastq.gz:
+@A00266:275:HLFTWDSXX:2:2608:9625:19977 1:N:0:TTACCGAC+CGAATACG K02912
+CCAGGAACTTTCTGAACCCCGTGGGCAGCATGTGCTTTGTCTTCTTATTGCTGCCGTAGCCAATGTTGGGCATCAGGATCTGACCCTTGAACCGCCTGCGA
++
+FFFFFF:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+@A00266:275:HLFTWDSXX:2:1101:7437:1000 1:N:0:TTACCGAC+CGAATACG K00016
+CGACTCTCCCCTTCTTGCTGACGAACTCCTGCAGTTACTACCACAATCTTGGAGTTGGCTGTGACAGCATAGTCTTTGTC
++ FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+
+Reverse mapped clean reads file A1.CE2-S1-LT_mapped_R2.fastq.gz:
+@A00266:275:HLFTWDSXX:2:2608:9625:19977 2:N:0:TTACCGAC+CGAATACG K02912
+TGTGAAACCTAAAATCGTCAAGAAGAGGACCAAGAAGTTCATCCGCCATCAGTCGGATCGTTATGTCAAGATCAAGCGCAACTGGCGTAAACCGAGAGGTA
++
+FFFFFFFFFFF,FFFFF:FFFFFF:FFFFFFFFFF,FFFFFFFFFFFF:FFFFF,FFFFFFFFFFFF,FF:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+@A00266:275:HLFTWDSXX:2:1101:7437:1000 2:N:0:TTACCGAC+CGAATACG K00016
+GACAAAGACTATGCTGTCACAGCCAACTCCAAGATTGTGGTAGTAACTGCAGGAGTTCGTCAGCAAGAAGGGGAGAGTCG
++
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF:FFFFFFFFFFFFFF:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+22. General guideline for parameter settings
+Back to top
+Several parameters drives the trade-offs between sensitivity and precision. The default parameter setting is obtained from the parameter sensitivity test on four organisms: mouse, chicken, zebrafish and roundworm. If your studied species has no or limited number of close-related reference species in the database. You can tune parameters to obtain a better balance between sensitivity and precision.
+For example: 1) increasing the number of mismatches (--mismatch) from default 2 to 3 or 4; 2) or decreasing the minimum matching length (--minlength) from default 25; 3) or decreasing the minimum BLOSUM62 score (--minscore) from default 100; 4) or decreasing the maximum length cutoff of the translated amino acid sequences for overlapped paired-end reads from default 60; will increase the mapping reads or the mapping chance for the highly divergent homologs.
+It is worth mentioning that this parameter adjustment could slow down the Seq2Fun and/or increase the false positives with various degrees.
+

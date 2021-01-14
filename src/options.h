@@ -291,27 +291,27 @@ enum Mode
 };
 
 enum CodonTable {
-transl_table_1,
-transl_table_2,
-transl_table_3,
-transl_table_4,
-transl_table_5,
-transl_table_6,
-transl_table_9,
-transl_table_10,
-transl_table_12,
-transl_table_13,
-transl_table_14,
-transl_table_16,
-transl_table_21,
-transl_table_22,
-transl_table_24,
-transl_table_26,
-transl_table_27,
-transl_table_29,
-transl_table_30,
-transl_table_31,
-transl_table_33
+codontable1,
+codontable2,
+codontable3,
+codontable4,
+codontable5,
+codontable6,
+codontable9,
+codontable10,
+codontable12,
+codontable13,
+codontable14,
+codontable16,
+codontable21,
+codontable22,
+codontable24,
+codontable26,
+codontable27,
+codontable29,
+codontable30,
+codontable31,
+codontable33
 };
 
 class TransSearchOptions
@@ -320,7 +320,7 @@ public:
     TransSearchOptions()
     {
         mode = tGREEDY;
-		codonTable = transl_table_1;
+		codonTable = codontable1;
         SEG = true;
         useEvalue = false;
         minEvalue = 0.01;
@@ -405,11 +405,13 @@ class Sample{
 public:
     Sample(){
         prefix = "";
+        path = "";
         in1 = "";
         in2 = "";
     }
 public:
     string prefix;
+    string path;
     string in1;
     string in2;
 };

@@ -650,6 +650,7 @@ void Options::parseSampleTable() {
 
         Sample s;
         s.prefix = trimStr(splitted[0]);
+        s.path = dirname(s.prefix);
         s.in1 = trimStr(splitted[1]);
         if(splitted.size()>=3)
             s.in2 = trimStr(splitted[2]);
