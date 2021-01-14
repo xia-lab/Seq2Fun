@@ -533,7 +533,7 @@ inline void writeSampleKOTable(std::vector< std::pair<std::string, std::unordere
     }
     allKOIdsSet.clear();
     
-    std::string fileoutname = "All_sample_KO_abundance_table.txt";
+    std::string fileoutname = joinpath(opt.samples.front().path, "All_sample_KO_abundance_table.txt");
     std::ofstream * fout = new std::ofstream();
     fout->open(fileoutname.c_str(), std::ofstream::out);
     if(!fout->is_open()) error_exit("Can not open all_all_sample_KO_abundance_table.txt");
@@ -541,7 +541,7 @@ inline void writeSampleKOTable(std::vector< std::pair<std::string, std::unordere
 
     *fout << "KO_ID" << "\t";
     for (auto & it : sampleKOTableVec) {
-        *fout << it.first << "\t";
+        *fout << basename(it.first) << "\t";
     }
     *fout << "KO_name\n";
 
