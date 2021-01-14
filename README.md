@@ -48,7 +48,7 @@ make
 ### Step 2. Run a small test 
 There are four sub folders under seq2fun - src, bin, database and testdata. The bin folder contains the binary code we just complied. The testdata contains a small test data from the Case Study.
 From within the **testdata folder**, issue the following commands:
-due to the large size of database, please download the birds.tar.gz](http://gofile.me/4esAc/G0QBrqmvn) to the **testdata folder**;
+due to the large size of database, please download the [birds.tar.gz](http://gofile.me/4esAc/G0QBrqmvn) to the **testdata folder**;
 ```
 tar -xzvf birds.tar.gz;
 
