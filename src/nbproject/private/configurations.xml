@@ -219,6 +219,8 @@
         <gdb_interceptlist>
           <gdbinterceptoptions gdb_all="false" gdb_unhandled="true" gdb_unexpected="true"/>
         </gdb_interceptlist>
+        <gdb_signals>
+        </gdb_signals>
         <gdb_options>
           <DebugOptions>
           </DebugOptions>
@@ -231,9 +233,15 @@
       <runprofile version="9">
         <runcommandpicklist>
           <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
+          <runcommandpicklistitem>home/peng/NetBeansProjects/github/Seq2Fun/bin/seq2fun --sampletable /home/peng/NetBeansProjects/github/Seq2Fun/testdata/sample.txt --tfmi /home/peng/NetBeansProjects/github/Seq2Fun/testdata/ birds_cdhit99_proteins.fmi --genemap birds_cdhit99_proteins.fmi/birds_protein_ko_species_cdhit99.txt  -w 8 --profiling -V </runcommandpicklistitem>
+          <runcommandpicklistitem>home/peng/NetBeansProjects/github/Seq2Fun/bin/  --sampletable /home/peng/NetBeansProjects/github/Seq2Fun/testdata/sample.txt --tfmi /home/peng/NetBeansProjects/github/Seq2Fun/testdata/ birds_cdhit99_proteins.fmi --genemap birds_cdhit99_proteins.fmi/birds_protein_ko_species_cdhit99.txt  -w 8 --profiling -V</runcommandpicklistitem>
+          <runcommandpicklistitem>/home/peng/NetBeansProjects/github/Seq2Fun/bin/seq2fun --sampletable /home/peng/NetBeansProjects/github/Seq2Fun/testdata/sample.txt --tfmi /home/peng/NetBeansProjects/github/Seq2Fun/testdata/ birds_cdhit99_proteins.fmi --genemap birds_cdhit99_proteins.fmi/birds_protein_ko_species_cdhit99.txt  -w 8 --profiling -V</runcommandpicklistitem>
+          <runcommandpicklistitem>/home/peng/NetBeansProjects/github/Seq2Fun/bin/seq2fun --sampletable /home/peng/NetBeansProjects/github/Seq2Fun/testdata/sample.txt --tfmi /home/peng/NetBeansProjects/github/Seq2Fun/testdata/ birds_cdhit99_proteins.fmi --genemap /home/peng/NetBeansProjects/github/Seq2Fun/testdata/birds_protein_ko_species_cdhit99.txt  -w 8 --profiling -V</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}"/seq2fun  --sampletable /home/peng/NetBeansProjects/github/Seq2Fun/testdata/sample.txt --tfmi /home/peng/NetBeansProjects/github/Seq2Fun/testdata/ birds_cdhit99_proteins.fmi --genemap /home/peng/NetBeansProjects/github/Seq2Fun/testdata/birds_protein_ko_species_cdhit99.txt  -w 8 --profiling -V</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" --sampletable /home/peng/NetBeansProjects/github/Seq2Fun/testdata/sample.txt --tfmi /home/peng/NetBeansProjects/github/Seq2Fun/testdata/ birds_cdhit99_proteins.fmi --genemap /home/peng/NetBeansProjects/github/Seq2Fun/testdata/birds_protein_ko_species_cdhit99.txt  -w 8 --profiling -V</runcommandpicklistitem>
         </runcommandpicklist>
-        <runcommand>"${OUTPUT_PATH}"</runcommand>
-        <rundir></rundir>
+        <runcommand>"${OUTPUT_PATH}" --sampletable /home/peng/NetBeansProjects/github/Seq2Fun/testdata/sample.txt --tfmi /home/peng/NetBeansProjects/github/Seq2Fun/testdata/ birds_cdhit99_proteins.fmi --genemap /home/peng/NetBeansProjects/github/Seq2Fun/testdata/birds_protein_ko_species_cdhit99.txt  -w 8 --profiling -V</runcommand>
+        <rundir>/home/peng/NetBeansProjects/github/Seq2Fun/.</rundir>
         <buildfirst>false</buildfirst>
         <terminal-type>0</terminal-type>
         <remove-instrumentation>0</remove-instrumentation>

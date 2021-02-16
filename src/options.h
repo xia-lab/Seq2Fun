@@ -25,6 +25,7 @@ using namespace std;
 
 class MergeOptions {
 public:
+
     MergeOptions() {
         enabled = false;
         includeUnmerged = false;
@@ -38,6 +39,7 @@ public:
 
 class DuplicationOptions {
 public:
+
     DuplicationOptions() {
         enabled = true;
         keylen = 12;
@@ -51,6 +53,7 @@ public:
 
 class IndexFilterOptions {
 public:
+
     IndexFilterOptions() {
         enabled = false;
         threshold = 0;
@@ -64,6 +67,7 @@ public:
 
 class LowComplexityFilterOptions {
 public:
+
     LowComplexityFilterOptions() {
         enabled = false;
         threshold = 0.3;
@@ -75,6 +79,7 @@ public:
 
 class OverrepresentedSequenceAnasysOptions {
 public:
+
     OverrepresentedSequenceAnasysOptions() {
         enabled = false;
         sampling = 20;
@@ -86,6 +91,7 @@ public:
 
 class PolyGTrimmerOptions {
 public:
+
     PolyGTrimmerOptions() {
         enabled = false;
         minLen = 10;
@@ -97,6 +103,7 @@ public:
 
 class PolyXTrimmerOptions {
 public:
+
     PolyXTrimmerOptions() {
         enabled = false;
         minLen = 10;
@@ -108,6 +115,7 @@ public:
 
 class UMIOptions {
 public:
+
     UMIOptions() {
         enabled = false;
         location = UMI_LOC_NONE;
@@ -125,6 +133,7 @@ public:
 
 class CorrectionOptions {
 public:
+
     CorrectionOptions() {
         enabled = true;
     }
@@ -134,6 +143,7 @@ public:
 
 class QualityCutOptions {
 public:
+
     QualityCutOptions() {
         enabledFront = false;
         enabledTail = false;
@@ -174,6 +184,7 @@ public:
 
 class SplitOptions {
 public:
+
     SplitOptions() {
         enabled = false;
         needEvaluation = false;
@@ -199,6 +210,7 @@ public:
 
 class AdapterOptions {
 public:
+
     AdapterOptions() {
         enabled = true;
         polyA = true;
@@ -223,6 +235,7 @@ public:
 
 class TrimmingOptions {
 public:
+
     TrimmingOptions() {
         front1 = 0;
         tail1 = 0;
@@ -248,6 +261,7 @@ public:
 
 class QualityFilteringOptions {
 public:
+
     QualityFilteringOptions() {
         enabled = true;
         // '0' = Q15
@@ -270,6 +284,7 @@ public:
 
 class ReadLengthFilteringOptions {
 public:
+
     ReadLengthFilteringOptions() {
         enabled = false;
         requiredLength = 15;
@@ -284,57 +299,55 @@ public:
     int maxLength;
 };
 
-enum Mode
-{
+enum Mode {
     tMEM,
     tGREEDY
 };
 
 enum CodonTable {
-codontable1,
-codontable2,
-codontable3,
-codontable4,
-codontable5,
-codontable6,
-codontable9,
-codontable10,
-codontable12,
-codontable13,
-codontable14,
-codontable16,
-codontable21,
-codontable22,
-codontable24,
-codontable26,
-codontable27,
-codontable29,
-codontable30,
-codontable31,
-codontable33
+    codontable1,
+    codontable2,
+    codontable3,
+    codontable4,
+    codontable5,
+    codontable6,
+    codontable9,
+    codontable10,
+    codontable12,
+    codontable13,
+    codontable14,
+    codontable16,
+    codontable21,
+    codontable22,
+    codontable24,
+    codontable26,
+    codontable27,
+    codontable29,
+    codontable30,
+    codontable31,
+    codontable33
 };
 
-class TransSearchOptions
-{
+class TransSearchOptions {
 public:
-    TransSearchOptions()
-    {
+
+    TransSearchOptions() {
         mode = tGREEDY;
-		codonTable = codontable1;
+        codonTable = codontable1;
         SEG = true;
         useEvalue = false;
         minEvalue = 0.01;
-		minAAFragLength = 25;
-        
+        minAAFragLength = 19;
+
         misMatches = 2;
-        minScore = 100;
+        minScore = 80;
         seedLength = 7;
-		allFragments = false;
+        allFragments = false;
 
         size_t max_matches_SI = 10000;
         size_t max_match_ids = 10000;
         tmpReadKOPairVec.clear();
-        transSearchMappedReads = (long)0;
+        transSearchMappedReads = (long) 0;
         transSearchFinished = false;
         sampleKOAbunUMap.clear();
         KOSet.clear();
@@ -343,7 +356,7 @@ public:
 public:
     string tfmi;
     string tmode;
-	string tCodonTable;
+    string tCodonTable;
     bool SEG;
     bool useEvalue;
     double minEvalue;
@@ -352,27 +365,26 @@ public:
     unsigned int minScore;
     unsigned int seedLength;
     unsigned int maxTransLength;
-	bool allFragments;
+    bool allFragments;
 
     size_t max_matches_SI;
     size_t max_match_ids;
 
     Mode mode;
-	CodonTable codonTable;
+    CodonTable codonTable;
     long transSearchMappedReads;
     std::set<std::string> KOSet;
     std::unordered_map<std::string, int> sampleKOAbunUMap;
-    std::vector<std::pair<std::string, std::string>> tmpReadKOPairVec;       //KO freq;
+    std::vector<std::pair<std::string, std::string>> tmpReadKOPairVec; //KO freq;
     bool transSearchFinished;
 };
 
-class HomoSearchOptions
-{
+class HomoSearchOptions {
 public:
-    HomoSearchOptions()
-    {
+
+    HomoSearchOptions() {
         profiling = false;
-        totalOrigReads = (long)0;
+        totalOrigReads = (long) 0;
         totalKOs = 0;
         genemap = "";
         prefix = "";
@@ -396,14 +408,15 @@ public:
     std::multimap<std::string, std::string> pathway_ko_multimap;
     std::unordered_map<std::string, int> pathway_ko_stats_umap;
     std::map<std::string, std::string> ko_fullname_map;
-    
+
     std::ifstream filein;
     std::string fileName;
 };
 
-class Sample{
+class Sample {
 public:
-    Sample(){
+
+    Sample() {
         prefix = "";
         path = "";
         in1 = "";
@@ -416,7 +429,7 @@ public:
     string in2;
 };
 
-class Options{
+class Options {
 public:
     Options();
     void init();
@@ -450,9 +463,9 @@ public:
     string seq2funProgPath;
     //seq2fun dir;
     string seq2funDir;
-    
+
     bool screenout;
-    
+
     // file name of unpaired read1 output
     string unpaired1;
     // file name of unpaired read2 output
