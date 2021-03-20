@@ -229,10 +229,10 @@ bool PairEndProcessor::process(){
     sortedPathwayFreqTupleVector.clear();
     sortedOrgKOFreqVec.clear();
     
-    //    JsonReporter jr(mOptions);
-//    jr.setDupHist(dupHist, dupMeanGC, dupRate);
-//    jr.setInsertHist(mInsertSizeHist, peakInsertSize);
-//    jr.report(finalFilterResult, finalPreStats1, finalPostStats1, finalPreStats2, finalPostStats2);
+    JsonReporter jr(mOptions);
+    jr.setDupHist(dupHist, dupMeanGC, dupRate);
+    jr.setInsertHist(mInsertSizeHist, peakInsertSize);
+    jr.report(finalFilterResult, finalPreStats1, finalPostStats1, finalPreStats2, finalPostStats2);
 
     // make HTML report
     HtmlReporter hr(mOptions);

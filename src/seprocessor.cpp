@@ -148,6 +148,12 @@ bool SingleEndProcessor::process(){
     rarefaction_map.clear();
     sortedPathwayFreqTupleVector.clear();
     sortedOrgKOFreqVec.clear();
+    
+    // make JSON report
+    JsonReporter jr(mOptions);
+    jr.setDupHist(dupHist, dupMeanGC, dupRate);
+    jr.report(finalFilterResult, finalPreStats, finalPostStats);
+    
     // make HTML report
     HtmlReporter hr(mOptions);
     hr.setDupHist(dupHist, dupMeanGC, dupRate);

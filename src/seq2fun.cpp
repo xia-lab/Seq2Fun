@@ -47,7 +47,7 @@ int main(int argc, char* argv[]) {
     // Homology search;
     cmd.add<string>("genemap", 'D', "gene/protein KO species map", false, "");
     cmd.add("profiling", 0, "profiling mode, by default is false, using --profiling to enable it");
-    
+
     // translated search
     cmd.add<string>("tfmi", 'd', "fmi index of Protein database", false, "");
     cmd.add<string>("mode", 'K', "searching mode either tGREEDY or tMEM (maximum exactly match). By default greedy", false, "tGREEDY");
@@ -56,12 +56,12 @@ int main(int argc, char* argv[]) {
     cmd.add<int>("minlength", 'J', "minimum matching length of amino acid sequence in comparison with protein database with default value 25, for GREEDY and MEM model", false);
     cmd.add<int>("maxtranslength", 'm', "maximum cutoff of translated peptides, it must be no less than minlength, with default 60", false, 60);
     cmd.add("allFragments", 0, "enable this function will force Seq2Fun to use all the translated AA fragments with length > minlength. This will slightly help to classify reads contain the true stop codon and start codon; This could have limited impact on the accuracy for comparative study and enable this function will slow down the Seq2Fun. by default is false, using --allFragments to enable it");
-	cmd.add<string>("codontable", 0, "select the codon table (same as blastx in NCBI), we provide 20 codon tables from 'https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi#SG31'. By default is the codontable1 (Standard Code)", false, "codontable1"); 
-	
+    cmd.add<string>("codontable", 0, "select the codon table (same as blastx in NCBI), we provide 20 codon tables from 'https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi#SG31'. By default is the codontable1 (Standard Code)", false, "codontable1");
+
     //selected pathways
     cmd.add<string>("pathway", 'Z', "list of selected pathways for target pathways analysis", false, "");
     cmd.add<string>("genefa", 'z', "the gene/protein sequences fasta file for retrieving proteins in selected pathways to construct database", false, "");
-    
+
     // threading
     cmd.add<int>("thread", 'w', "worker thread number, default is 2", false, 2);
     cmd.add("verbose", 'V', "enable verbose");
@@ -176,7 +176,7 @@ int main(int argc, char* argv[]) {
     opt.phred64 = cmd.exist("phred64");
     opt.verbose = cmd.exist("verbose");
     opt.debug = cmd.exist("debug");
-    
+
     // adapter cutting
     opt.adapter.enabled = !cmd.exist("disable_adapter_trimming");
     opt.adapter.detectAdapterForPE = cmd.exist("detect_adapter_for_pe");
@@ -311,7 +311,7 @@ int main(int argc, char* argv[]) {
     opt.overlapRequire = cmd.get<int>("overlap_len_require");
     opt.overlapDiffLimit = cmd.get<int>("overlap_diff_limit");
     opt.overlapDiffPercentLimit = cmd.get<int>("overlap_diff_percent_limit");
-    
+
     // umi
     opt.umi.enabled = cmd.exist("umi");
     opt.umi.length = cmd.get<int>("umi_len");
@@ -353,110 +353,110 @@ int main(int argc, char* argv[]) {
     string blacklist2 = cmd.get<string>("filter_by_index2");
     int indexFilterThreshold = cmd.get<int>("filter_by_index_threshold");
     opt.initIndexFiltering(blacklist1, blacklist2, indexFilterThreshold);
-    
+
     //homology search
     opt.mHomoSearchOptions.genemap = cmd.get<string>("genemap");
     opt.mHomoSearchOptions.profiling = cmd.exist("profiling");
-    
+
     //translated search
     opt.transSearch.tmode = cmd.get<string>("mode");
-    if(opt.transSearch.tmode == "tGREEDY"){
+    if (opt.transSearch.tmode == "tGREEDY") {
         opt.transSearch.mode = tGREEDY;
-    } else if(opt.transSearch.tmode == "tMEM") {
+    } else if (opt.transSearch.tmode == "tMEM") {
         opt.transSearch.mode = tMEM;
     } else {
         error_exit("you must be use either tGREEDY or tMEM mode");
     }
-    
-	opt.transSearch.tCodonTable = cmd.get<string>("codontable");
-	if(opt.transSearch.tCodonTable == "codontable1"){
-		opt.transSearch.codonTable = codontable1;
-	} else if (opt.transSearch.tCodonTable == "codontable2"){
-		opt.transSearch.codonTable = codontable2;
-	} else if (opt.transSearch.tCodonTable == "codontable3"){
-		opt.transSearch.codonTable = codontable3;
-	} else if (opt.transSearch.tCodonTable == "codontable4"){
-		opt.transSearch.codonTable = codontable4;
-	} else if (opt.transSearch.tCodonTable == "codontable5"){
-		opt.transSearch.codonTable = codontable5;
-	}else if (opt.transSearch.tCodonTable == "codontable6"){
-		opt.transSearch.codonTable = codontable6;
-	} else if (opt.transSearch.tCodonTable == "codontable9"){
-		opt.transSearch.codonTable = codontable9;
-	} else if (opt.transSearch.tCodonTable == "codontable10"){
-		opt.transSearch.codonTable = codontable10;
-	} else if (opt.transSearch.tCodonTable == "codontable12"){
-		opt.transSearch.codonTable = codontable12;
-	} else if (opt.transSearch.tCodonTable == "codontable13") {
-		opt.transSearch.codonTable = codontable13;
-	} else if (opt.transSearch.tCodonTable == "codontable14"){
-		opt.transSearch.codonTable = codontable14;
-	} else if(opt.transSearch.tCodonTable == "codontable16"){
-		opt.transSearch.codonTable = codontable16;
-	}else if (opt.transSearch.tCodonTable == "codontable26"){
-		opt.transSearch.codonTable = codontable26;
-	} else if (opt.transSearch.tCodonTable == "codontable21"){
-		opt.transSearch.codonTable = codontable21;
-	} else if (opt.transSearch.tCodonTable == "codontable22"){
-		opt.transSearch.codonTable = codontable22;
-	} else if(opt.transSearch.tCodonTable == "codontable24") {
-		opt.transSearch.codonTable = codontable24;
-	} else if (opt.transSearch.tCodonTable == "codontable27"){
-		opt.transSearch.codonTable = codontable27;
-	} else if (opt.transSearch.tCodonTable == "codontable29"){
-		opt.transSearch.codonTable = codontable29;
-	} else if (opt.transSearch.tCodonTable == "codontable30"){
-		opt.transSearch.codonTable = codontable30;
-	} else if (opt.transSearch.tCodonTable == "codontable31"){
-		opt.transSearch.codonTable = codontable31;
-	} else if (opt.transSearch.tCodonTable == "codontable33") {
-		opt.transSearch.codonTable = codontable33;
-	} else {
-		error_exit("you must select one codon table");
-	}
-	
-	if(opt.verbose){
-		std::cout << "Codon table of " << opt.transSearch.tCodonTable << " is selected" << std::endl;
-	}
-	
+
+    opt.transSearch.tCodonTable = cmd.get<string>("codontable");
+    if (opt.transSearch.tCodonTable == "codontable1") {
+        opt.transSearch.codonTable = codontable1;
+    } else if (opt.transSearch.tCodonTable == "codontable2") {
+        opt.transSearch.codonTable = codontable2;
+    } else if (opt.transSearch.tCodonTable == "codontable3") {
+        opt.transSearch.codonTable = codontable3;
+    } else if (opt.transSearch.tCodonTable == "codontable4") {
+        opt.transSearch.codonTable = codontable4;
+    } else if (opt.transSearch.tCodonTable == "codontable5") {
+        opt.transSearch.codonTable = codontable5;
+    } else if (opt.transSearch.tCodonTable == "codontable6") {
+        opt.transSearch.codonTable = codontable6;
+    } else if (opt.transSearch.tCodonTable == "codontable9") {
+        opt.transSearch.codonTable = codontable9;
+    } else if (opt.transSearch.tCodonTable == "codontable10") {
+        opt.transSearch.codonTable = codontable10;
+    } else if (opt.transSearch.tCodonTable == "codontable12") {
+        opt.transSearch.codonTable = codontable12;
+    } else if (opt.transSearch.tCodonTable == "codontable13") {
+        opt.transSearch.codonTable = codontable13;
+    } else if (opt.transSearch.tCodonTable == "codontable14") {
+        opt.transSearch.codonTable = codontable14;
+    } else if (opt.transSearch.tCodonTable == "codontable16") {
+        opt.transSearch.codonTable = codontable16;
+    } else if (opt.transSearch.tCodonTable == "codontable26") {
+        opt.transSearch.codonTable = codontable26;
+    } else if (opt.transSearch.tCodonTable == "codontable21") {
+        opt.transSearch.codonTable = codontable21;
+    } else if (opt.transSearch.tCodonTable == "codontable22") {
+        opt.transSearch.codonTable = codontable22;
+    } else if (opt.transSearch.tCodonTable == "codontable24") {
+        opt.transSearch.codonTable = codontable24;
+    } else if (opt.transSearch.tCodonTable == "codontable27") {
+        opt.transSearch.codonTable = codontable27;
+    } else if (opt.transSearch.tCodonTable == "codontable29") {
+        opt.transSearch.codonTable = codontable29;
+    } else if (opt.transSearch.tCodonTable == "codontable30") {
+        opt.transSearch.codonTable = codontable30;
+    } else if (opt.transSearch.tCodonTable == "codontable31") {
+        opt.transSearch.codonTable = codontable31;
+    } else if (opt.transSearch.tCodonTable == "codontable33") {
+        opt.transSearch.codonTable = codontable33;
+    } else {
+        error_exit("you must select one codon table");
+    }
+
+    if (opt.verbose) {
+        std::cout << "Codon table of " << opt.transSearch.tCodonTable << " is selected" << std::endl;
+    }
+
     opt.transSearch.misMatches = cmd.get<int>("mismatch");
     opt.transSearch.minScore = cmd.get<int>("minscore");
-	if(cmd.get<int>("minlength") == 0){
-		if(opt.transSearch.mode == tGREEDY) {
-			opt.transSearch.minAAFragLength = 25;
-		} else {
-			opt.transSearch.minAAFragLength = 13;
-		}
-	} else {
-		opt.transSearch.minAAFragLength = cmd.get<int>("minlength");
-	}
-	
+    if (cmd.get<int>("minlength") == 0) {
+        if (opt.transSearch.mode == tGREEDY) {
+            opt.transSearch.minAAFragLength = 25;
+        } else {
+            opt.transSearch.minAAFragLength = 13;
+        }
+    } else {
+        opt.transSearch.minAAFragLength = cmd.get<int>("minlength");
+    }
+
     opt.transSearch.maxTransLength = cmd.get<int>("maxtranslength");
     opt.transSearch.maxTransLength = max(opt.transSearch.maxTransLength, opt.transSearch.minAAFragLength);
-    opt.transSearch.maxTransLength = min((unsigned)60, opt.transSearch.maxTransLength);   
-    opt.transSearch.allFragments = cmd.exist("allFragments"); 
+    opt.transSearch.maxTransLength = min((unsigned) 60, opt.transSearch.maxTransLength);
+    opt.transSearch.allFragments = cmd.exist("allFragments");
     opt.transSearch.tfmi = cmd.get<string>("tfmi");
-    
+
     //read all database tables, maps;
     opt.readDB();
-    
+
     // for selected pathway and customized database
     opt.mHomoSearchOptions.pathway = cmd.get<string>("pathway");
     opt.mHomoSearchOptions.genefa = cmd.get<string>("genefa");
-    
-    if(!opt.mHomoSearchOptions.pathway.empty() && !opt.mHomoSearchOptions.genefa.empty()){
-        if(!opt.transSearch.tfmi.empty()){
+
+    if (!opt.mHomoSearchOptions.pathway.empty() && !opt.mHomoSearchOptions.genefa.empty()) {
+        if (!opt.transSearch.tfmi.empty()) {
             cerr << "you used selected pathway, will ignored the --tfmi file you provided";
         }
         opt.mkSelectedPathwayDB();
-    } 
-    
-    if(opt.transSearch.tfmi.empty()){
-       error_exit("you must provide BWTFMI file using --tfmi file or using --pathway and --genefa"); 
+    }
+
+    if (opt.transSearch.tfmi.empty()) {
+        error_exit("you must provide BWTFMI file using --tfmi file or using --pathway and --genefa");
     } else {
         check_file_valid(opt.transSearch.tfmi);
     }
-    
+
     BwtFmiDB * tbwtfmiDB = new BwtFmiDB(& opt);
 
     // I/O
@@ -476,11 +476,12 @@ int main(int argc, char* argv[]) {
         opt.in2 = cmd.get<string>("in2");
         std::string outFName;
         opt.htmlFile = opt.mHomoSearchOptions.prefix + "_report.html";
+        opt.htmlFile = opt.mHomoSearchOptions.prefix + "_report.json";
         if (opt.outputMappedCleanReads) {
             opt.out1 = opt.mHomoSearchOptions.prefix + "_mapped_R1.fasta.gz";
-            if(opt.isPaired()) opt.out2 = opt.mHomoSearchOptions.prefix + "_mapped_R2.fasta.gz";
+            if (opt.isPaired()) opt.out2 = opt.mHomoSearchOptions.prefix + "_mapped_R2.fasta.gz";
         }
-        
+
         stringstream ss;
         for (int i = 0; i < argc; i++) {
             ss << argv[i] << " ";
@@ -566,7 +567,7 @@ int main(int argc, char* argv[]) {
 
         Processor p(&opt);
         p.process(tbwtfmiDB);
-        
+
         time_t t_finished = time(NULL);
         cerr << endl << command << endl;
         cerr << endl << "Seq2Fun v" << SEQ2FUNR_VER << ", time used: " << (t_finished) - t_begin << " seconds, mapping " << opt.transSearch.transSearchMappedReads << " reads out of " << opt.mHomoSearchOptions.totalOrigReads << " (" << getPercetage(opt.transSearch.transSearchMappedReads, opt.mHomoSearchOptions.totalOrigReads) << " %)" << endl << endl;
@@ -580,18 +581,19 @@ int main(int argc, char* argv[]) {
         int count = 0;
         for (auto & it : opt.samples) {
             time_t t_cycleBegin = time(NULL);
-            count ++;
+            count++;
             std::stringstream msgSS;
-            msgSS << "processing sample: " << it.prefix << ", " <<  count << " out of " << opt.samples.size() << " samples" << "\n";
+            msgSS << "processing sample: " << it.prefix << ", " << count << " out of " << opt.samples.size() << " samples" << "\n";
             loginfo(msgSS.str());
             opt.mHomoSearchOptions.prefix = it.prefix;
             opt.in1 = it.in1;
             opt.in2 = it.in2;
             opt.htmlFile = it.prefix + "_report.html";
+            opt.jsonFile = it.prefix + "_report.json";
 
             if (opt.outputMappedCleanReads) {
                 opt.out1 = it.prefix + "_mapped_R1.fasta.gz";
-                if(opt.isPaired()) opt.out2 = it.prefix + "_mapped_R2.fasta.gz";
+                if (opt.isPaired()) opt.out2 = it.prefix + "_mapped_R2.fasta.gz";
             }
             std::stringstream ss;
             for (int i = 0; i < argc; i++) {
@@ -688,12 +690,12 @@ int main(int argc, char* argv[]) {
             opt.transSearch.transSearchMappedReads = 0;
             opt.mHomoSearchOptions.totalOrigReads = 0;
         }
-        
+
         writeSampleKOTable(sampleKOTableVec, opt);
-        
+
         time_t t_total = time(NULL);
         cerr << endl << "Seq2Fun v" << SEQ2FUNR_VER << ", time used: " << (t_total) - t_begin << " seconds, processed " << opt.samples.size() << " samples" << endl << endl;
-    }   
-    if(tbwtfmiDB) delete tbwtfmiDB;
+    }
+    if (tbwtfmiDB) delete tbwtfmiDB;
     return 0;
 }

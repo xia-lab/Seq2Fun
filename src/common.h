@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#define SEQ2FUNR_VER "1.1.1"
+#define SEQ2FUNR_VER "1.1.2"
 
 #define _DEBUG false
 
@@ -45,7 +45,7 @@ static const int PACK_SIZE = 10000;//1000000
 // if one pack is produced, but not consumed, it will be kept in the memory
 // this number limit the number of in memory packs
 // if the number of in memory packs is full, the producer thread should sleep
-static const int PACK_IN_MEM_LIMIT = 80;//500000
+static const int PACK_IN_MEM_LIMIT = 100;//500000
 
 // if read number is more than this, warn it
 static const int WARN_STANDALONE_READ_LIMIT = 500000;//5000000
