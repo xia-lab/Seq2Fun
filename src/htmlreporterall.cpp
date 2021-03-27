@@ -333,28 +333,28 @@ void HtmlReporterAll::printAnnotationResults(ofstream& ofs) {
         ofs << "</div>\n";
 
         ofs << "<div class='section_div'>\n";
-        ofs << "<div class='section_title' onclick=showOrHide('top_kos')><a name='summary'>Top abundant KOs</a></div>\n";
+        ofs << "<div class='section_title' onclick=showOrHide('top_kos')><a name='summary'>Top abundant KOs</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
         ofs << "<div id='top_kos'>\n";
         reportKOBarPlot(ofs);
         ofs << "</div>\n";
         ofs << "</div>\n";
 
         ofs << "<div class='section_div'>\n";
-        ofs << "<div class='section_title' onclick=showOrHide('top_pathways')><a name='summary'>Hit pathways</a></div>\n";
+        ofs << "<div class='section_title' onclick=showOrHide('top_pathways')><a name='summary'>Hit pathways</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
         ofs << "<div id='top_pathways'>\n";
         reportPathwayBarPlot(ofs);
         ofs << "</div>\n";
         ofs << "</div>\n";
 
         ofs << "<div class='section_div'>\n";
-        ofs << "<div class='section_title' onclick=showOrHide('top_org')><a name='summary'>Hit Species</a></div>\n";
+        ofs << "<div class='section_title' onclick=showOrHide('top_org')><a name='summary'>Hit Species</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
         ofs << "<div id='top_org'>\n";
         reportOrgBarPlot(ofs);
         ofs << "</div>\n";
         ofs << "</div>\n";
 
         ofs << "<div class='section_div'>\n";
-        ofs << "<div class='section_title' onclick=showOrHide('reads_quality')><a name='summary'>Reads Quality</a></div>\n";
+        ofs << "<div class='section_title' onclick=showOrHide('reads_quality')><a name='summary'>Reads Quality</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
         ofs << "<div id='reads_quality' style='display:none'>\n";
         reportReadsQualityPlot3D(ofs);
         ofs << "</div>\n";
@@ -362,14 +362,14 @@ void HtmlReporterAll::printAnnotationResults(ofstream& ofs) {
         
     } else {
         ofs << "<div class='section_div'>\n";
-        ofs << "<div class='section_title' onclick=showOrHide('top_kos')><a name='summary'>Top abundant KOs</a></div>\n";
+        ofs << "<div class='section_title' onclick=showOrHide('top_kos')><a name='summary'>Top abundant KOs</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
         ofs << "<div id='top_kos'>\n";
         reportKOBarPlot(ofs);
         ofs << "</div>\n";
         ofs << "</div>\n";
 
         ofs << "<div class='section_div'>\n";
-        ofs << "<div class='section_title' onclick=showOrHide('reads_quality')><a name='summary'>Reads Quality</a></div>\n";
+        ofs << "<div class='section_title' onclick=showOrHide('reads_quality')><a name='summary'>Reads Quality</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
         ofs << "<div id='reads_quality' style='display:none'>\n";
         reportReadsQualityPlot3D(ofs);
         ofs << "</div>\n";
@@ -477,7 +477,6 @@ void HtmlReporterAll::reportReadsQualityPlot3D(ofstream& ofs) {
     
     ofs << "<div class='subsection_title' onclick=showOrHide('pre_reads1_quality_3d_curve')><a name='summary'>Prefilter Reads1 (click to show/hide) </a></div>\n";
     ofs << "<div class='figure' id='pre_reads1_quality_3d_curve' style='height:600px;'></div>\n";
-    ofs << "</div>\n";
     ofs << "\n<script type=\"text/javascript\">" << endl;
     string json_str = "var data=[";
     for (Sample & sample : mOptions->samples) {
@@ -513,7 +512,6 @@ void HtmlReporterAll::reportReadsQualityPlot3D(ofstream& ofs) {
     
     ofs << "<div class='subsection_title' onclick=showOrHide('post_reads1_quality_3d_curve')><a name='summary'>Postfilter Reads1 (click to show/hide) </a></div>\n";
     ofs << "<div class='figure' id='post_reads1_quality_3d_curve' style='height:600px;'></div>\n";
-    ofs << "</div>\n";
     ofs << "\n<script type=\"text/javascript\">" << endl;
     
 
@@ -553,7 +551,6 @@ void HtmlReporterAll::reportReadsQualityPlot3D(ofstream& ofs) {
     
         ofs << "<div class='subsection_title' onclick=showOrHide('pre_reads2_quality_3d_curve')><a name='summary'>Prefilter Reads2 (click to show/hide) </a></div>\n";
         ofs << "<div class='figure' id='pre_reads2_quality_3d_curve' style='height:600px;'></div>\n";
-        ofs << "</div>\n";
         ofs << "\n<script type=\"text/javascript\">" << endl;
         
         json_str.clear();
@@ -589,7 +586,6 @@ void HtmlReporterAll::reportReadsQualityPlot3D(ofstream& ofs) {
 
         ofs << "<div class='subsection_title' onclick=showOrHide('post_reads2_quality_3d_curve')><a name='summary'>Postfilter Reads2 (click to show/hide) </a></div>\n";
         ofs << "<div class='figure' id='post_reads2_quality_3d_curve' style='height:600px;'></div>\n";
-        ofs << "</div>\n";
         ofs << "\n<script type=\"text/javascript\">" << endl;
 
         json_str.clear();
@@ -808,8 +804,8 @@ void HtmlReporterAll::reportKOBarPlot(ofstream& ofs){
 
 void HtmlReporterAll::reportPathwayBarPlot(ofstream& ofs){
     
-    ofs << "<div class='subsection_title' onclick=showOrHide('ko_table')><a name='summary'>Hit Pathways Table (full list) (click to show/hide) </a></div>\n";
-    ofs << "<div id='ko_table' style='overflow:auto; height: 400px;'>\n";
+    ofs << "<div class='subsection_title' onclick=showOrHide('pathway_table')><a name='summary'> Pathways Table (full list) (click to show/hide) </a></div>\n";
+    ofs << "<div id='pathway_table' style='overflow:auto; height: 400px;'>\n";
     ofs << "<table class='summary_table'>\n";
     ofs << "<tr><td class='exlarge' style='font-size:14px;color:#ffffff;background:#008000'>" << "Sample" << "</td>";
     for(auto & it : smNmVec){
@@ -833,7 +829,7 @@ void HtmlReporterAll::reportPathwayBarPlot(ofstream& ofs){
 
 void HtmlReporterAll::reportOrgBarPlot(ofstream& ofs){
     
-    ofs << "<div class='subsection_title' onclick=showOrHide('org_table')><a name='summary'>Hit Species Table (full list) (click to show/hide) </a></div>\n";
+    ofs << "<div class='subsection_title' onclick=showOrHide('org_table')><a name='summary'>Hit Species Table (full list) </a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
     ofs << "<div id='org_table' style='overflow:auto; height: 400px;'>\n";
     ofs << "<table class='summary_table'>\n";
     ofs << "<tr><td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "Sample" << "</td>";

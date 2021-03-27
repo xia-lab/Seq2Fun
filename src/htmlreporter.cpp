@@ -386,8 +386,7 @@ void HtmlReporter::reportKOBarPlot(ofstream& ofs){
     mOptions->transSearch.sortedKOFreqTupleVector.clear();
     mOptions->transSearch.sortedKOFreqTupleVector.shrink_to_fit();
 
-    ofs << "<div class='subsection_title' onclick=showOrHide('top_ko_figure')><a name='summary'>Top-hit KO bar plot<font color='#88CCFF' > (click to show/hide) </font></a></div>\n";
-    ofs << "<div id='top_ko_figure'>\n";
+    ofs << "<div class='subsection_title' onclick=showOrHide('plot_ko_hits')><a name='summary'>Top-hit KO bar plot<font color='#88CCFF' > (click to show/hide) </font></a></div>\n";
     ofs << "<div class='figure' id='plot_ko_hits' style='height:400px;'></div>\n";
 
     ofs << "\n<script type=\"text/javascript\">" << endl;
@@ -455,8 +454,7 @@ void HtmlReporter::reportPathway(ofstream& ofs){
     mOptions->transSearch.sortedPathwayFreqTupleVector.clear();
     mOptions->transSearch.sortedPathwayFreqTupleVector.shrink_to_fit();
     
-    ofs << "<div class='subsection_title' onclick=showOrHide('pathway_hits_figure')><a name='summary'>Top-hit pathway bar plot<font color='#88CCFF' > (click to show/hide) </font></a></div>\n";
-    ofs << "<div id='pathway_hits_figure'>\n";
+    ofs << "<div class='subsection_title' onclick=showOrHide('plot_pathway_hits')><a name='summary'>Top-hit pathway bar plot<font color='#88CCFF' > (click to show/hide) </font></a></div>\n";
     ofs << "<div class='figure' id='plot_pathway_hits' style='height:600px;'></div>\n";
     
     ofs << "\n<script type=\"text/javascript\">" << endl;
@@ -521,8 +519,7 @@ void HtmlReporter::reportSpecies(ofstream& ofs){
     mOptions->transSearch.sortedOrgFreqVec.clear();
     mOptions->transSearch.sortedOrgFreqVec.shrink_to_fit();
 
-    ofs << "<div class='subsection_title' onclick=showOrHide('top_ko_figure')><a name='summary'>Top-hit Species bar plot<font color='#88CCFF' > (click to show/hide) </font></a></div>\n";
-    ofs << "<div id='top_species_figure'>\n";
+    ofs << "<div class='subsection_title' onclick=showOrHide('plot_species_hits')><a name='summary'>Top-hit Species bar plot<font color='#88CCFF' > (click to show/hide) </font></a></div>\n";
     ofs << "<div class='figure' id='plot_species_hits' style='height:400px;'></div>\n";
 
     ofs << "\n<script type=\"text/javascript\">" << endl;
@@ -541,7 +538,7 @@ void HtmlReporter::reportSpecies(ofstream& ofs){
     ofs << json_str;
     ofs << "</script>" << endl;
     
-    ofs << "<div class='subsection_title' onclick=showOrHide('top_ko_table')><a name='summary'>Hit species Table (full list)<font color='#88CCFF' > (click to show/hide) </font></a></div>\n";
+    ofs << "<div class='subsection_title' onclick=showOrHide('top_species_table')><a name='summary'>Hit species Table (full list)<font color='#88CCFF' > (click to show/hide) </font></a></div>\n";
     ofs << "<div id='top_species_table' style='overflow-y:auto; height: 400px;'>\n";
     ofs << "<table class='summary_table'>\n";
     ofs << "<tr><td class='colmedium' style='font-size:14px;color:#ffffff;background:#008000'>" << "Species" << "</td><td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "Number of KOs" << "</td></tr>\n";
@@ -596,21 +593,21 @@ void HtmlReporter::printAnnotationResults(ofstream& ofs) {
 
     if (mOptions->mHomoSearchOptions.profiling) {
         ofs << "<div class='section_div'>\n";
-        ofs << "<div class='section_title' onclick=showOrHide('rarefaction')><a name='summary'>Rarefaction curve</a></div>\n";
+        ofs << "<div class='section_title' onclick=showOrHide('rarefaction')><a name='summary'>Rarefaction curve</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
         ofs << "<div id='rarefaction'>\n";
         reportRarefaction(ofs);
         ofs << "</div>\n";
         ofs << "</div>\n";
 
         ofs << "<div class='section_div'>\n";
-        ofs << "<div class='section_title' onclick=showOrHide('top_kos')><a name='summary'>Top abundant KOs</a></div>\n";
+        ofs << "<div class='section_title' onclick=showOrHide('top_kos')><a name='summary'>Top abundant KOs</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
         ofs << "<div id='top_kos'>\n";
         reportKOBarPlot(ofs);
         ofs << "</div>\n";
         ofs << "</div>\n";
         
         ofs << "<div class='section_div'>\n";
-        ofs << "<div class='section_title' onclick=showOrHide('top_pathways')><a name='summary'>Top-hit pathways</a></div>\n";
+        ofs << "<div class='section_title' onclick=showOrHide('top_pathways')><a name='summary'>Top-hit pathways</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
         ofs << "<div id='top_pathways'>\n";
 
         reportPathway(ofs);
@@ -619,7 +616,7 @@ void HtmlReporter::printAnnotationResults(ofstream& ofs) {
         ofs << "</div>\n";
 
         ofs << "<div class='section_div'>\n";
-        ofs << "<div class='section_title' onclick=showOrHide('hitted_species')><a name='summary'>Top-hit species</a></div>\n";
+        ofs << "<div class='section_title' onclick=showOrHide('hitted_species')><a name='summary'>Top-hit species</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
         ofs << "<div id='hitted_species'>\n";
 
         reportSpecies(ofs);
@@ -628,7 +625,7 @@ void HtmlReporter::printAnnotationResults(ofstream& ofs) {
         ofs << "</div>\n";
     } else {
         ofs << "<div class='section_div'>\n";
-        ofs << "<div class='section_title' onclick=showOrHide('top_kos')><a name='summary'>Top abundant KOs</a></div>\n";
+        ofs << "<div class='section_title' onclick=showOrHide('top_kos')><a name='summary'>Top abundant KOs</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
         ofs << "<div id='top_kos'>\n";
         reportKOBarPlot(ofs);
         ofs << "</div>\n";
