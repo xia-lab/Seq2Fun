@@ -1,7 +1,7 @@
 #include "threadconfig.h"
 #include "util.h"
 
-ThreadConfig::ThreadConfig(Options* opt, int threadId, bool paired){
+ThreadConfig::ThreadConfig(Options* opt, BwtFmiDB* tbwtfmiDB, int threadId, bool paired){
     mOptions = opt;
     mThreadId = threadId;
     mWorkingSplit = threadId;
@@ -11,8 +11,7 @@ ThreadConfig::ThreadConfig(Options* opt, int threadId, bool paired){
     if(paired){
         mPreStats2 = new Stats(mOptions, true);
         mPostStats2 = new Stats(mOptions, true);
-    }
-    else {
+    } else {
         mPreStats2 = NULL;
         mPostStats2 = NULL;
     }
@@ -21,10 +20,16 @@ ThreadConfig::ThreadConfig(Options* opt, int threadId, bool paired){
 
     mFilterResult = new FilterResult(opt, paired);
     mCanBeStopped = false;
+    mBwtfmiDB = tbwtfmiDB;
+    mTransSearcher = new TransSearcher(mOptions, mBwtfmiDB);
 }
 
 ThreadConfig::~ThreadConfig() {
     cleanup();
+    if(mTransSearcher){
+        delete mTransSearcher;
+        mTransSearcher = NULL;
+    }
 }
 
 void ThreadConfig::cleanup() {

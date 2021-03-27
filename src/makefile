@@ -48,13 +48,13 @@ bwt/mkbwt:
 
 seq2fun: makefile bwt/mkbwt seq2fun.o transsearcher.o fragment.o bwtfmiDB.o \
 	adaptertrimmer.o basecorrector.o \
-	duplicate.o evaluator.o fastareader.o fastqreader.o filter.o filterresult.o htmlreporter.o \
+	duplicate.o evaluator.o fastareader.o fastqreader.o filter.o filterresult.o htmlreporter.o htmlreporterall.o \
 	jsonreporter.o  nucleotidetree.o options.o overlapanalysis.o peprocessor.o \
 	polyx.o processor.o read.o seprocessor.o sequence.o stats.o threadconfig.o umiprocessor.o \
 	unittest.o writer.o writerthread.o $(BLASTOBJS)
 	$(CXX) $(LDFLAGS) -o seq2fun seq2fun.o transsearcher.o fragment.o bwtfmiDB.o \
 	adaptertrimmer.o basecorrector.o \
-	duplicate.o evaluator.o fastareader.o fastqreader.o filter.o filterresult.o htmlreporter.o \
+	duplicate.o evaluator.o fastareader.o fastqreader.o filter.o filterresult.o htmlreporter.o htmlreporterall.o \
 	jsonreporter.o  nucleotidetree.o options.o overlapanalysis.o peprocessor.o \
 	polyx.o processor.o read.o seprocessor.o sequence.o stats.o threadconfig.o umiprocessor.o \
 	unittest.o writer.o writerthread.o $(BWTOBJS) $(BLASTOBJS) $(LDLIBS)

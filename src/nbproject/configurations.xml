@@ -58,6 +58,7 @@
       <in>filterresult.cpp</in>
       <in>fragment.cpp</in>
       <in>htmlreporter.cpp</in>
+      <in>htmlreporterall.cpp</in>
       <in>jsonreporter.cpp</in>
       <in>nucleotidetree.cpp</in>
       <in>options.cpp</in>
@@ -210,6 +211,10 @@
         </ccTool>
       </item>
       <item path="htmlreporter.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="2">
+        </ccTool>
+      </item>
+      <item path="htmlreporterall.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="2">
         </ccTool>
       </item>

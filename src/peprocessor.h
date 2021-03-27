@@ -20,6 +20,7 @@
 #include <map>
 #include <future>
 #include <deque>
+#include <time.h>
 
 #include "fastqreader.h"
 #include "util.h"
@@ -36,7 +37,6 @@
 #include "writerthread.h"
 #include "duplicate.h"
 #include "read.h"
-#include "transsearcher.hpp"
 #include "bwtfmiDB.h"
 
 using namespace std;
@@ -67,21 +67,22 @@ public:
     bool process();
 
 private:
-    bool processPairEnd(ReadPairPack* pack, ThreadConfig* config, TransSearcher * transSearcher);
+    bool processPairEnd(ReadPairPack* pack, ThreadConfig* config);
     bool processRead(Read* r, ReadPair* originalRead, bool reversed);
     void initPackRepository();
     void destroyPackRepository();
     void producePack(ReadPairPack* pack);
-    void consumePack(ThreadConfig* config, TransSearcher * transSearcher);
+    void consumePack(ThreadConfig* config);
     void producerTask();
-    void consumerTask(ThreadConfig* config, TransSearcher * transSearcher);
+    void consumerTask(ThreadConfig* config);
     void initConfig(ThreadConfig* config);
     void initOutput();
     void closeOutput();
     void statInsertSize(Read* r1, Read* r2, OverlapResult& ov, int frontTrimmed1 = 0, int frontTrimmed2 = 0);
     int getPeakInsertSize();
     void writeTask(WriterThread* config);
-    void S2FReport();
+    void prepareResults(std::vector< std::unordered_map<std::string, uint32 > > & totalKoFreqVecResults,
+                        std::vector< std::unordered_map<std::string, std::unordered_map<std::string, double> > > & totalOrgKOFreqVecResults);
 
 private:
     ReadPairRepository mRepo;
@@ -105,15 +106,10 @@ private:
     WriterThread* mUnpairedRightWriter;
     WriterThread* mMergedWriter;
     WriterThread* mFailedWriter;
+    WriterThread* mReadsKOWriter;
     Duplicate* mDuplicate;
     BwtFmiDB *tbwtfmiDB;
     std::string fileoutname;
-    
-    std::vector<std::tuple<std::string, int, std::string>> sortedKOFreqTupleVector;
-    std::vector<std::tuple<std::string, double, std::string, int, int> > sortedPathwayFreqTupleVector;
-    std::map<int, int> rarefaction_map;
-    std::vector<std::pair<string, int>> sortedOrgKOFreqVec;
-    std::multimap<std::string, std::string> preOrgKOMMap;
 };
 
 

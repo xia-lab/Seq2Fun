@@ -1,13 +1,6 @@
 #include <stdio.h>
-#include "fastqreader.h"
-#include "unittest.h"
 #include <time.h>
-#include "cmdline.h"
 #include <sstream>
-#include "util.h"
-#include "options.h"
-#include "processor.h"
-#include "evaluator.h"
 #include <map>
 #include <fstream>
 #include <cmath>
@@ -15,7 +8,16 @@
 #include <vector>
 #include <unordered_map>
 #include <utility> 
+
+#include "fastqreader.h"
+#include "unittest.h"
+#include "cmdline.h"
+#include "util.h"
+#include "options.h"
+#include "processor.h"
+#include "evaluator.h"
 #include "bwtfmiDB.h"
+#include "htmlreporterall.h"
 
 string command;
 mutex logmtx;
@@ -23,6 +25,7 @@ mutex logmtx;
 int main(int argc, char* argv[]) {
     // display version info if no argument is given
     time_t t_begin = time(NULL);
+
     if (argc == 1) {
         cerr << "Seq2Fun: high-throughput functional profiling of RNA-seq data for non-model organisms" << endl << "version " << SEQ2FUNR_VER << endl;
     }
@@ -43,6 +46,7 @@ int main(int argc, char* argv[]) {
     cmd.add<string>("in2", 'I', "read2 input file name", false, "");
     cmd.add<string>("prefix", 'X', "prefix name for output files, eg: sample01", false, "");
     cmd.add("outputMappedCleanReads", 0, "enable output mapped clean reads into fastq.gz files, by default is false, using --outputMappedCleanReads to enable it");
+    cmd.add("outputReadsKOMap", 0, "enable output mapped clean reads-KO map into .gz files, by default is false, using --outputReadsKOMap to enable it");
 
     // Homology search;
     cmd.add<string>("genemap", 'D', "gene/protein KO species map", false, "");
@@ -52,8 +56,8 @@ int main(int argc, char* argv[]) {
     cmd.add<string>("tfmi", 'd', "fmi index of Protein database", false, "");
     cmd.add<string>("mode", 'K', "searching mode either tGREEDY or tMEM (maximum exactly match). By default greedy", false, "tGREEDY");
     cmd.add<int>("mismatch", 'E', "number of mismatched amino acid in sequence comparison with protein database with default value 2", false, 2);
-    cmd.add<int>("minscore", 'j', "minimum matching score of amino acid sequence in comparison with protein database with default value 100", false, 100);
-    cmd.add<int>("minlength", 'J', "minimum matching length of amino acid sequence in comparison with protein database with default value 25, for GREEDY and MEM model", false);
+    cmd.add<int>("minscore", 'j', "minimum matching score of amino acid sequence in comparison with protein database with default value 80", false, 80);
+    cmd.add<int>("minlength", 'J', "minimum matching length of amino acid sequence in comparison with protein database with default value 19, for GREEDY and MEM model", false, 19);
     cmd.add<int>("maxtranslength", 'm', "maximum cutoff of translated peptides, it must be no less than minlength, with default 60", false, 60);
     cmd.add("allFragments", 0, "enable this function will force Seq2Fun to use all the translated AA fragments with length > minlength. This will slightly help to classify reads contain the true stop codon and start codon; This could have limited impact on the accuracy for comparative study and enable this function will slow down the Seq2Fun. by default is false, using --allFragments to enable it");
     cmd.add<string>("codontable", 0, "select the codon table (same as blastx in NCBI), we provide 20 codon tables from 'https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi#SG31'. By default is the codontable1 (Standard Code)", false, "codontable1");
@@ -169,7 +173,7 @@ int main(int argc, char* argv[]) {
     // threading
     opt.thread = cmd.get<int>("thread");
     int n_t = std::thread::hardware_concurrency();
-    opt.thread = std::min(std::min(opt.thread, 16), n_t);
+    opt.thread = std::min(std::min(opt.thread, 32), n_t);
 
     opt.compression = 4;
     opt.readsToProcess = cmd.get<int>("reads_to_process");
@@ -463,6 +467,7 @@ int main(int argc, char* argv[]) {
     opt.mHomoSearchOptions.sampleTable = cmd.get<string>("sampletable");
     opt.mHomoSearchOptions.prefix = cmd.get<string>("prefix");
     opt.outputMappedCleanReads = cmd.exist("outputMappedCleanReads");
+    opt.outputReadsKOMap = cmd.exist("outputReadsKOMap");
 
     if (opt.mHomoSearchOptions.prefix.empty() && opt.mHomoSearchOptions.sampleTable.empty()) {
         error_exit("You must specify output file using --prefix or using --sampletable, which contains prefix string");
@@ -472,14 +477,19 @@ int main(int argc, char* argv[]) {
 
     //for single file;
     if (!opt.mHomoSearchOptions.prefix.empty()) {
+        opt.transSearch.startTime = t_begin;
         opt.in1 = cmd.get<string>("in1");
         opt.in2 = cmd.get<string>("in2");
         std::string outFName;
         opt.htmlFile = opt.mHomoSearchOptions.prefix + "_report.html";
-        opt.htmlFile = opt.mHomoSearchOptions.prefix + "_report.json";
+        opt.jsonFile = opt.mHomoSearchOptions.prefix + "_report.json";
         if (opt.outputMappedCleanReads) {
             opt.out1 = opt.mHomoSearchOptions.prefix + "_mapped_R1.fasta.gz";
             if (opt.isPaired()) opt.out2 = opt.mHomoSearchOptions.prefix + "_mapped_R2.fasta.gz";
+        }
+
+        if (opt.outputReadsKOMap) {
+            opt.outReadsKOMap = opt.mHomoSearchOptions.prefix + "_readsKOMap.txt.gz";
         }
 
         stringstream ss;
@@ -487,6 +497,7 @@ int main(int argc, char* argv[]) {
             ss << argv[i] << " ";
         }
         command = ss.str();
+        opt.mHomoSearchOptions.commandStr = command;
 
         bool supportEvaluation = !opt.inputFromSTDIN && opt.in1 != "/dev/stdin";
         Evaluator eva(&opt);
@@ -560,27 +571,28 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        opt.transSearch.tmpReadKOPairVec.clear();
-        opt.transSearch.transSearchMappedReads = 0;
-        opt.mHomoSearchOptions.totalOrigReads = 0;
-        opt.transSearch.KOSet.clear();
-
         Processor p(&opt);
         p.process(tbwtfmiDB);
 
-        time_t t_finished = time(NULL);
         cerr << endl << command << endl;
-        cerr << endl << "Seq2Fun v" << SEQ2FUNR_VER << ", time used: " << (t_finished) - t_begin << " seconds, mapping " << opt.transSearch.transSearchMappedReads << " reads out of " << opt.mHomoSearchOptions.totalOrigReads << " (" << getPercetage(opt.transSearch.transSearchMappedReads, opt.mHomoSearchOptions.totalOrigReads) << " %)" << endl << endl;
-        opt.transSearch.tmpReadKOPairVec.clear();
-        opt.transSearch.KOSet.clear();
-        opt.transSearch.transSearchMappedReads = 0;
-        opt.mHomoSearchOptions.totalOrigReads = 0;
+        cerr << endl << "Seq2Fun v" << SEQ2FUNR_VER << ", time used: " << convertSeconds(opt.transSearch.timeLapse) << ", mapping " <<
+                opt.transSearch.nTransMappedKOReads << " reads out of " <<
+                opt.mHomoSearchOptions.nTotalReads << " (" <<
+                getPercentage(opt.transSearch.nTransMappedKOReads, opt.mHomoSearchOptions.nTotalReads) << " %); " <<
+                "mapped " << opt.transSearch.koUSet.size() << " KOs out of " <<
+                opt.transSearch.nKODB << " KOs (" <<
+                getPercentage(opt.transSearch.koUSet.size(), opt.transSearch.nKODB) <<
+                " %)" << endl << endl;
+        
+        opt.transSearch.reset2Default();
+        opt.mHomoSearchOptions.reset2Default();
     } else {
         opt.parseSampleTable();
-        std::vector< std::pair<std::string, std::unordered_map<std::string, int> > > sampleKOTableVec;
+        //std::vector< std::pair<std::string, std::unordered_map<std::string, int> > > sampleKOTableVec;
         int count = 0;
         for (auto & it : opt.samples) {
             time_t t_cycleBegin = time(NULL);
+            opt.transSearch.startTime = t_cycleBegin;
             count++;
             std::stringstream msgSS;
             msgSS << "processing sample: " << it.prefix << ", " << count << " out of " << opt.samples.size() << " samples" << "\n";
@@ -595,11 +607,17 @@ int main(int argc, char* argv[]) {
                 opt.out1 = it.prefix + "_mapped_R1.fasta.gz";
                 if (opt.isPaired()) opt.out2 = it.prefix + "_mapped_R2.fasta.gz";
             }
+
+            if (opt.outputReadsKOMap) {
+                opt.outReadsKOMap = opt.mHomoSearchOptions.prefix + "_readsKOMap.txt.gz";
+            }
+
             std::stringstream ss;
             for (int i = 0; i < argc; i++) {
                 ss << argv[i] << " ";
             }
             command = ss.str();
+            opt.mHomoSearchOptions.commandStr = command;
 
             bool supportEvaluation = !opt.inputFromSTDIN && opt.in1 != "/dev/stdin";
             Evaluator eva(&opt);
@@ -672,29 +690,29 @@ int main(int argc, char* argv[]) {
                     opt.polyGTrim.enabled = true;
                 }
             }
-            opt.transSearch.sampleKOAbunUMap.clear();
-            opt.transSearch.tmpReadKOPairVec.clear();
-            opt.transSearch.KOSet.clear();
-            opt.transSearch.transSearchMappedReads = 0;
-            opt.mHomoSearchOptions.totalOrigReads = 0;
-
+            
             Processor p(&opt);
             p.process(tbwtfmiDB);
-            time_t t_cycleEnd = time(NULL);
             cerr << endl << command << endl;
-            cerr << endl << "Seq2Fun v" << SEQ2FUNR_VER << ", time used: " << (t_cycleEnd) - t_cycleBegin << " seconds, mapping " << opt.transSearch.transSearchMappedReads << " reads out of " << opt.mHomoSearchOptions.totalOrigReads << " (" << getPercetage(opt.transSearch.transSearchMappedReads, opt.mHomoSearchOptions.totalOrigReads) << " %)" << endl << endl;
-            sampleKOTableVec.push_back(std::make_pair(it.prefix, opt.transSearch.sampleKOAbunUMap));
-            opt.transSearch.sampleKOAbunUMap.clear();
-            opt.transSearch.tmpReadKOPairVec.clear();
-            opt.transSearch.KOSet.clear();
-            opt.transSearch.transSearchMappedReads = 0;
-            opt.mHomoSearchOptions.totalOrigReads = 0;
+            cerr << endl << "Seq2Fun v" << SEQ2FUNR_VER << ", time used: " << convertSeconds(opt.transSearch.timeLapse) <<
+                    ", mapping " << opt.transSearch.nTransMappedKOReads << " reads out of " <<
+                    opt.mHomoSearchOptions.nTotalReads << " (" <<
+                    getPercentage(opt.transSearch.nTransMappedKOReads, opt.mHomoSearchOptions.nTotalReads) << " %); " <<
+                    "mapped " << opt.transSearch.koUSet.size() << " KOs out of " <<
+                    opt.transSearch.nKODB << " KOs (" <<
+                    getPercentage(opt.transSearch.koUSet.size(), opt.transSearch.nKODB) <<
+                    " %)" << endl << endl;
+            opt.transSearch.reset2Default();
+            opt.mHomoSearchOptions.reset2Default();
         }
 
-        writeSampleKOTable(sampleKOTableVec, opt);
+        HtmlReporterAll hra(&opt);
+        hra.report();
+        //writeSampleKOTable(sampleKOTableVec, opt);
 
         time_t t_total = time(NULL);
-        cerr << endl << "Seq2Fun v" << SEQ2FUNR_VER << ", time used: " << (t_total) - t_begin << " seconds, processed " << opt.samples.size() << " samples" << endl << endl;
+        auto timeUsed = difftime(t_total, t_begin);
+        cerr << endl << "Seq2Fun v" << SEQ2FUNR_VER << ", time used: " << convertSeconds(timeUsed) << ", processed " << opt.samples.size() << " samples" << endl << endl;
     }
     if (tbwtfmiDB) delete tbwtfmiDB;
     return 0;

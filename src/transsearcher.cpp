@@ -2,9 +2,13 @@
 
 #include "transsearcher.hpp"
 
-TransSearcher::TransSearcher(BwtFmiDB * tbwtfmiDB, Options * opt) {
+TransSearcher::TransSearcher(Options * opt, BwtFmiDB * tbwtfmiDB) {
     mOptions = opt;
     this->tbwtfmiDB = tbwtfmiDB;
+    subKoFreqUMap.clear();
+    subOrgKOAbunUMMap.clear();
+    orgSet.clear();
+    koUSet.clear();
     blosum_subst = {
         {'A',
             {'S', 'V', 'T', 'G', 'C', 'P', 'M', 'K', 'L', 'I', 'E', 'Q', 'R', 'Y', 'F', 'H', 'D', 'N', 'W'}},
@@ -492,15 +496,15 @@ TransSearcher::TransSearcher(BwtFmiDB * tbwtfmiDB, Options * opt) {
     // those tables could all be in configkj and shared between threads, initialized in configkj constructor
 
     std::memset(codon2aa, '*', sizeof (codon2aa));
-	
-	if(mOptions->transSearch.codonTable == codontable1){
-    codon2aa[codon_to_int("TCA")] = 'S';
-	} else if (mOptions->transSearch.codonTable == codontable22){
-		codon2aa[codon_to_int("TCA")] = '*';
-	} else {
-		
-	}
-	
+
+    if (mOptions->transSearch.codonTable == codontable1) {
+        codon2aa[codon_to_int("TCA")] = 'S';
+    } else if (mOptions->transSearch.codonTable == codontable22) {
+        codon2aa[codon_to_int("TCA")] = '*';
+    } else {
+
+    }
+
     codon2aa[codon_to_int("TCC")] = 'S';
     codon2aa[codon_to_int("TCG")] = 'S';
     codon2aa[codon_to_int("TCT")] = 'S';
@@ -511,97 +515,97 @@ TransSearcher::TransSearcher(BwtFmiDB * tbwtfmiDB, Options * opt) {
     codon2aa[codon_to_int("TAC")] = 'Y';
     codon2aa[codon_to_int("TAT")] = 'Y';
 
-	if(mOptions->transSearch.codonTable == codontable1){
-    codon2aa[codon_to_int("TAA")] = '*';
-	} else if(mOptions->transSearch.codonTable == codontable6 || mOptions->transSearch.codonTable == codontable27) {
-	codon2aa[codon_to_int("TAA")] = 'Q';
-	} else if(mOptions->transSearch.codonTable == codontable29 ||
-			mOptions->transSearch.codonTable == codontable33 || 
-			mOptions->transSearch.codonTable == codontable14) {
-	codon2aa[codon_to_int("TAA")] = 'Y';
-	} else if(mOptions->transSearch.codonTable == codontable30) {
-	codon2aa[codon_to_int("TAA")] = 'E';
-	} else {
-		
-	}
-	
-	if(mOptions->transSearch.codonTable == codontable1){
-    codon2aa[codon_to_int("TAG")] = '*';
-	} else if(mOptions->transSearch.codonTable == codontable6 || mOptions->transSearch.codonTable == codontable27) {
-	codon2aa[codon_to_int("TAG")] = 'Q';
-	} else if (mOptions->transSearch.codonTable == codontable16 || 
-			mOptions->transSearch.codonTable == codontable22) {
-		codon2aa[codon_to_int("TAG")] = 'L';
-	} else if(mOptions->transSearch.codonTable == codontable29) {
-	codon2aa[codon_to_int("TAG")] = 'Y';
-	} else if(mOptions->transSearch.codonTable == codontable30) {
-	codon2aa[codon_to_int("TAG")] = 'E';
-	} else { 
-		
-	}
-	
+    if (mOptions->transSearch.codonTable == codontable1) {
+        codon2aa[codon_to_int("TAA")] = '*';
+    } else if (mOptions->transSearch.codonTable == codontable6 || mOptions->transSearch.codonTable == codontable27) {
+        codon2aa[codon_to_int("TAA")] = 'Q';
+    } else if (mOptions->transSearch.codonTable == codontable29 ||
+            mOptions->transSearch.codonTable == codontable33 ||
+            mOptions->transSearch.codonTable == codontable14) {
+        codon2aa[codon_to_int("TAA")] = 'Y';
+    } else if (mOptions->transSearch.codonTable == codontable30) {
+        codon2aa[codon_to_int("TAA")] = 'E';
+    } else {
+
+    }
+
+    if (mOptions->transSearch.codonTable == codontable1) {
+        codon2aa[codon_to_int("TAG")] = '*';
+    } else if (mOptions->transSearch.codonTable == codontable6 || mOptions->transSearch.codonTable == codontable27) {
+        codon2aa[codon_to_int("TAG")] = 'Q';
+    } else if (mOptions->transSearch.codonTable == codontable16 ||
+            mOptions->transSearch.codonTable == codontable22) {
+        codon2aa[codon_to_int("TAG")] = 'L';
+    } else if (mOptions->transSearch.codonTable == codontable29) {
+        codon2aa[codon_to_int("TAG")] = 'Y';
+    } else if (mOptions->transSearch.codonTable == codontable30) {
+        codon2aa[codon_to_int("TAG")] = 'E';
+    } else {
+
+    }
+
     codon2aa[codon_to_int("TGC")] = 'C';
     codon2aa[codon_to_int("TGT")] = 'C';
-	
-	if(mOptions->transSearch.codonTable == codontable1){
-		codon2aa[codon_to_int("TGA")] = '*';
-	} else if(mOptions->transSearch.codonTable == codontable10){
-		codon2aa[codon_to_int("TGA")] = 'C';
-	} else if (mOptions->transSearch.codonTable == codontable2 || 
-			mOptions->transSearch.codonTable == codontable3 || 
-			mOptions->transSearch.codonTable == codontable4 ||
-			mOptions->transSearch.codonTable == codontable3 ||
-			mOptions->transSearch.codonTable == codontable5 ||
-			mOptions->transSearch.codonTable == codontable9 || 
-			mOptions->transSearch.codonTable == codontable14 || 
-			mOptions->transSearch.codonTable == codontable21 || 
-			mOptions->transSearch.codonTable == codontable24 || 
-			mOptions->transSearch.codonTable == codontable31 || 
-			mOptions->transSearch.codonTable == codontable33
-			){
-		codon2aa[codon_to_int("TGA")] = 'W';
-	} else {
-	}
-	
+
+    if (mOptions->transSearch.codonTable == codontable1) {
+        codon2aa[codon_to_int("TGA")] = '*';
+    } else if (mOptions->transSearch.codonTable == codontable10) {
+        codon2aa[codon_to_int("TGA")] = 'C';
+    } else if (mOptions->transSearch.codonTable == codontable2 ||
+            mOptions->transSearch.codonTable == codontable3 ||
+            mOptions->transSearch.codonTable == codontable4 ||
+            mOptions->transSearch.codonTable == codontable3 ||
+            mOptions->transSearch.codonTable == codontable5 ||
+            mOptions->transSearch.codonTable == codontable9 ||
+            mOptions->transSearch.codonTable == codontable14 ||
+            mOptions->transSearch.codonTable == codontable21 ||
+            mOptions->transSearch.codonTable == codontable24 ||
+            mOptions->transSearch.codonTable == codontable31 ||
+            mOptions->transSearch.codonTable == codontable33
+            ) {
+        codon2aa[codon_to_int("TGA")] = 'W';
+    } else {
+    }
+
     codon2aa[codon_to_int("TGG")] = 'W';
-	
-	if(mOptions->transSearch.codonTable == codontable1){
-    codon2aa[codon_to_int("CTA")] = 'L';
-	} else if(mOptions->transSearch.codonTable == codontable3){
-		codon2aa[codon_to_int("CTA")] = 'T';
-	} else {
-		
-	}
-	
-	if(mOptions->transSearch.codonTable == codontable1){
-    codon2aa[codon_to_int("CTC")] = 'L';
-	} else if(mOptions->transSearch.codonTable == codontable3){
-		codon2aa[codon_to_int("CTC")] = 'T';
-	} else {
-		
-	}
-	
-	
-	if(mOptions->transSearch.codonTable == codontable1){
-    codon2aa[codon_to_int("CTG")] = 'L';
-	} else if(mOptions->transSearch.codonTable == codontable3){
-		codon2aa[codon_to_int("CTG")] = 'T';
-	} else if (mOptions->transSearch.codonTable == codontable12){
-		codon2aa[codon_to_int("CTG")] = 'S';
-	} else if (mOptions->transSearch.codonTable == codontable26){
-		codon2aa[codon_to_int("CTG")] = 'A';
-	} else {
-		
-	}
-	
-	if(mOptions->transSearch.codonTable == codontable1){
-    codon2aa[codon_to_int("CTT")] = 'L';
-	} else if (mOptions->transSearch.codonTable == codontable3){
-		codon2aa[codon_to_int("CTT")] = 'T';
-	} else {
-		
-	}
-    
+
+    if (mOptions->transSearch.codonTable == codontable1) {
+        codon2aa[codon_to_int("CTA")] = 'L';
+    } else if (mOptions->transSearch.codonTable == codontable3) {
+        codon2aa[codon_to_int("CTA")] = 'T';
+    } else {
+
+    }
+
+    if (mOptions->transSearch.codonTable == codontable1) {
+        codon2aa[codon_to_int("CTC")] = 'L';
+    } else if (mOptions->transSearch.codonTable == codontable3) {
+        codon2aa[codon_to_int("CTC")] = 'T';
+    } else {
+
+    }
+
+
+    if (mOptions->transSearch.codonTable == codontable1) {
+        codon2aa[codon_to_int("CTG")] = 'L';
+    } else if (mOptions->transSearch.codonTable == codontable3) {
+        codon2aa[codon_to_int("CTG")] = 'T';
+    } else if (mOptions->transSearch.codonTable == codontable12) {
+        codon2aa[codon_to_int("CTG")] = 'S';
+    } else if (mOptions->transSearch.codonTable == codontable26) {
+        codon2aa[codon_to_int("CTG")] = 'A';
+    } else {
+
+    }
+
+    if (mOptions->transSearch.codonTable == codontable1) {
+        codon2aa[codon_to_int("CTT")] = 'L';
+    } else if (mOptions->transSearch.codonTable == codontable3) {
+        codon2aa[codon_to_int("CTT")] = 'T';
+    } else {
+
+    }
+
     codon2aa[codon_to_int("CCA")] = 'P';
     codon2aa[codon_to_int("CAT")] = 'H';
     codon2aa[codon_to_int("CAA")] = 'Q';
@@ -610,20 +614,20 @@ TransSearcher::TransSearcher(BwtFmiDB * tbwtfmiDB, Options * opt) {
     codon2aa[codon_to_int("CGC")] = 'R';
     codon2aa[codon_to_int("CGG")] = 'R';
     codon2aa[codon_to_int("CGT")] = 'R';
-	
-	if(mOptions->transSearch.codonTable == codontable1){
-    codon2aa[codon_to_int("ATA")] = 'I';
-	} else if (mOptions->transSearch.codonTable == codontable2 || 
-			mOptions->transSearch.codonTable == codontable3 || 
-			mOptions->transSearch.codonTable == codontable5 ||
-			mOptions->transSearch.codonTable == codontable13 ||
-			mOptions->transSearch.codonTable == codontable21
-			){
-		codon2aa[codon_to_int("ATA")] = 'M';
-	} else {
-		
-	}
-    
+
+    if (mOptions->transSearch.codonTable == codontable1) {
+        codon2aa[codon_to_int("ATA")] = 'I';
+    } else if (mOptions->transSearch.codonTable == codontable2 ||
+            mOptions->transSearch.codonTable == codontable3 ||
+            mOptions->transSearch.codonTable == codontable5 ||
+            mOptions->transSearch.codonTable == codontable13 ||
+            mOptions->transSearch.codonTable == codontable21
+            ) {
+        codon2aa[codon_to_int("ATA")] = 'M';
+    } else {
+
+    }
+
     codon2aa[codon_to_int("ATC")] = 'I';
     codon2aa[codon_to_int("ATT")] = 'I';
     codon2aa[codon_to_int("ATG")] = 'M';
@@ -633,55 +637,55 @@ TransSearcher::TransSearcher(BwtFmiDB * tbwtfmiDB, Options * opt) {
     codon2aa[codon_to_int("ACT")] = 'T';
     codon2aa[codon_to_int("AAC")] = 'N';
     codon2aa[codon_to_int("AAT")] = 'N';
-	
-	if(mOptions->transSearch.codonTable == codontable1){
-    codon2aa[codon_to_int("AAA")] = 'K';
-	} else if(mOptions->transSearch.codonTable == codontable9 || 
-			mOptions->transSearch.codonTable == codontable14 || 
-			mOptions->transSearch.codonTable == codontable21){
-		codon2aa[codon_to_int("AAA")] = 'N';
-	}
-	
-	
+
+    if (mOptions->transSearch.codonTable == codontable1) {
+        codon2aa[codon_to_int("AAA")] = 'K';
+    } else if (mOptions->transSearch.codonTable == codontable9 ||
+            mOptions->transSearch.codonTable == codontable14 ||
+            mOptions->transSearch.codonTable == codontable21) {
+        codon2aa[codon_to_int("AAA")] = 'N';
+    }
+
+
     codon2aa[codon_to_int("AAG")] = 'K';
     codon2aa[codon_to_int("AGC")] = 'S';
     codon2aa[codon_to_int("AGT")] = 'S';
-	
-	if(mOptions->transSearch.codonTable == codontable1){
-    codon2aa[codon_to_int("AGA")] = 'R';
-	} else if (mOptions->transSearch.codonTable == codontable2){
-		codon2aa[codon_to_int("AGA")] = '*';
-	} else if (mOptions->transSearch.codonTable == codontable9 ||
-			mOptions->transSearch.codonTable == codontable5 || 
-			mOptions->transSearch.codonTable == codontable14 || 
-			mOptions->transSearch.codonTable == codontable21 ||
-			mOptions->transSearch.codonTable == codontable24 ||
-			mOptions->transSearch.codonTable == codontable33){
-		codon2aa[codon_to_int("AGA")] = 'S';
-	} else if (mOptions->transSearch.codonTable == codontable13){
-		codon2aa[codon_to_int("AGA")] = 'G';
-	} else {
-		
-	}
-	
-	if(mOptions->transSearch.codonTable == codontable1){
-    codon2aa[codon_to_int("AGG")] = 'R';
-	} else if (mOptions->transSearch.codonTable == codontable2){
-		codon2aa[codon_to_int("AGG")] = '*';
-	} else if (mOptions->transSearch.codonTable == codontable5 ||
-			mOptions->transSearch.codonTable == codontable9 || 
-			mOptions->transSearch.codonTable == codontable14 || 
-			mOptions->transSearch.codonTable == codontable21 ||
-			mOptions->transSearch.codonTable == codontable24){
-		codon2aa[codon_to_int("AGG")] = 'S';
-	} else if (mOptions->transSearch.codonTable == codontable13){
-		codon2aa[codon_to_int("AGG")] = 'G';
-	} else if(mOptions->transSearch.codonTable == codontable33){
-		codon2aa[codon_to_int("AGG")] = 'K';
-	} else {
-		
-	}
-	
+
+    if (mOptions->transSearch.codonTable == codontable1) {
+        codon2aa[codon_to_int("AGA")] = 'R';
+    } else if (mOptions->transSearch.codonTable == codontable2) {
+        codon2aa[codon_to_int("AGA")] = '*';
+    } else if (mOptions->transSearch.codonTable == codontable9 ||
+            mOptions->transSearch.codonTable == codontable5 ||
+            mOptions->transSearch.codonTable == codontable14 ||
+            mOptions->transSearch.codonTable == codontable21 ||
+            mOptions->transSearch.codonTable == codontable24 ||
+            mOptions->transSearch.codonTable == codontable33) {
+        codon2aa[codon_to_int("AGA")] = 'S';
+    } else if (mOptions->transSearch.codonTable == codontable13) {
+        codon2aa[codon_to_int("AGA")] = 'G';
+    } else {
+
+    }
+
+    if (mOptions->transSearch.codonTable == codontable1) {
+        codon2aa[codon_to_int("AGG")] = 'R';
+    } else if (mOptions->transSearch.codonTable == codontable2) {
+        codon2aa[codon_to_int("AGG")] = '*';
+    } else if (mOptions->transSearch.codonTable == codontable5 ||
+            mOptions->transSearch.codonTable == codontable9 ||
+            mOptions->transSearch.codonTable == codontable14 ||
+            mOptions->transSearch.codonTable == codontable21 ||
+            mOptions->transSearch.codonTable == codontable24) {
+        codon2aa[codon_to_int("AGG")] = 'S';
+    } else if (mOptions->transSearch.codonTable == codontable13) {
+        codon2aa[codon_to_int("AGG")] = 'G';
+    } else if (mOptions->transSearch.codonTable == codontable33) {
+        codon2aa[codon_to_int("AGG")] = 'K';
+    } else {
+
+    }
+
     codon2aa[codon_to_int("CCC")] = 'P';
     codon2aa[codon_to_int("CCG")] = 'P';
     codon2aa[codon_to_int("CCT")] = 'P';
@@ -1059,22 +1063,33 @@ void TransSearcher::eval_match_scores(SI *si, Fragment *frag) {
     }
 }
 
-void TransSearcher::flush_output(std::multimap<std::string, std::pair<std::string, double> > & preOrgKOAbunMMap) {
+//void TransSearcher::flush_output(std::multimap<std::string, std::pair<std::string, double> > & preOrgKOAbunMMap) {
+//    static std::mutex m;
+//    {
+//        std::lock_guard<std::mutex> out_lock(m);
+//        mOptions->transSearch.tmpReadKOPairVec.push_back(tmpReadKOPair);
+//        if (mOptions->verbose) {
+//            mOptions->transSearch.KOSet.insert(tmpReadKOPair.second);
+//        }
+//        if (mOptions->mHomoSearchOptions.profiling) {
+//            mOptions->transSearch.KOSet.insert(tmpReadKOPair.second);
+//            preOrgKOAbunMMap.insert(tmpOrgKOAbunMMap.begin(), tmpOrgKOAbunMMap.end());
+//            //mOptions->transSearch.tOrgKOAbunMMap.insert(tmpOrgKOAbunMMap.begin(), tmpOrgKOAbunMMap.end());
+//        }
+//    }
+//    extraoutput = "";
+//    tmpOrgKOAbunMMap.clear();
+//}
+
+void TransSearcher::flush_output(){
     static std::mutex m;
     {
         std::lock_guard<std::mutex> out_lock(m);
-        mOptions->transSearch.tmpReadKOPairVec.push_back(tmpReadKOPair);
-		if(mOptions->verbose){
-			mOptions->transSearch.KOSet.insert(tmpReadKOPair.second);
-		}
-        if (mOptions->mHomoSearchOptions.profiling) {
-			mOptions->transSearch.KOSet.insert(tmpReadKOPair.second);
-            preOrgKOAbunMMap.insert(tmpOrgKOAbunMMap.begin(), tmpOrgKOAbunMMap.end());
-            //mOptions->transSearch.tOrgKOAbunMMap.insert(tmpOrgKOAbunMMap.begin(), tmpOrgKOAbunMMap.end());
+        if (mOptions->verbose) {
+            mOptions->transSearch.koUSet.insert(koUSet.begin(), koUSet.end());
         }
     }
-    extraoutput = "";
-    tmpOrgKOAbunMMap.clear();
+    koUSet.clear();
 }
 
 void TransSearcher::clearFragments() {
@@ -1204,36 +1219,17 @@ void TransSearcher::classify_greedyblosum() {
     }
 
     tmpKOVec.clear();
-    tmpKOProteinMMap.clear();
+    tmpKOProteinUMMap.clear();
     for (auto it : match_ids) {
         auto ko = mOptions->mHomoSearchOptions.db_map.find(it);
-        tmpKOVec.push_back(ko->second);
-        if (mOptions->mHomoSearchOptions.profiling) {
-            tmpKOProteinMMap.insert(std::pair<std::string, std::string> (ko->second, ko->first)); //ko protein;
-        }
-    }
-
-    extraoutput = getMostFreqStrFromVec(tmpKOVec);
-    if (extraoutput.length() > 0) {
-        if (mOptions->mHomoSearchOptions.profiling) {
-            tmpOrgKOAbunMultiMap.clear();
-            if (tmpKOProteinMMap.size() == 1) {
-                auto proteinID = tmpKOProteinMMap.begin()->second;
-                auto org = mOptions->mHomoSearchOptions.org_map.find(proteinID)->second;
-                auto KOAbunPair = std::make_pair(tmpKOProteinMMap.begin()->first, (double) 1);
-                tmpOrgKOAbunMultiMap.insert(std::pair<std::string, std::pair < std::string, double> >(org, KOAbunPair));
-            } else {
-                auto count = tmpKOProteinMMap.count(extraoutput);
-                double doubleNum = (double) 1 / count;
-                auto it = tmpKOProteinMMap.equal_range(extraoutput);
-                for (auto itr = it.first; itr != it.second; ++itr) {
-                    auto org = mOptions->mHomoSearchOptions.org_map.find(itr->second)->second;
-                    auto KOAbunPair = std::make_pair(it.first->first, doubleNum);
-                    tmpOrgKOAbunMultiMap.insert(std::pair<std::string, std::pair < std::string, double > >(org, KOAbunPair));
-                }
+        if (ko != mOptions->mHomoSearchOptions.db_map.end()) {
+            tmpKOVec.push_back(ko->second);
+            if (mOptions->mHomoSearchOptions.profiling) {
+                tmpKOProteinUMMap.insert(std::pair<std::string, std::string> (ko->second, ko->first)); //ko protein;
             }
         }
     }
+    extraoutput = getMostFreqStrFromVec(tmpKOVec);
 }
 
 void TransSearcher::classify_length() {
@@ -1306,55 +1302,67 @@ void TransSearcher::classify_length() {
     }
 
     tmpKOVec.clear();
-    tmpKOProteinMMap.clear();
+    tmpKOProteinUMMap.clear();
     for (auto it : match_ids) {
         auto ko = mOptions->mHomoSearchOptions.db_map.find(it);
-        tmpKOVec.push_back(ko->second);
-        if (mOptions->mHomoSearchOptions.profiling) {
-            tmpKOProteinMMap.insert(std::pair<std::string, std::string> (ko->second, ko->first)); //ko protein;
-        }
-    }
-
-    extraoutput = getMostFreqStrFromVec(tmpKOVec);
-    if (extraoutput.length() > 0) {
-        if (mOptions->mHomoSearchOptions.profiling) {
-            tmpOrgKOAbunMultiMap.clear();
-            if (tmpKOProteinMMap.size() == 1) {
-                auto proteinID = tmpKOProteinMMap.begin()->second;
-                auto org = mOptions->mHomoSearchOptions.org_map.find(proteinID)->second;
-                auto KOAbunPair = std::make_pair(tmpKOProteinMMap.begin()->first, (double) 1);
-                tmpOrgKOAbunMultiMap.insert(std::pair<std::string, std::pair < std::string, double> >(org, KOAbunPair));
-            } else {
-                auto count = tmpKOProteinMMap.count(extraoutput);
-                double doubleNum = (double) 1 / count;
-                auto it = tmpKOProteinMMap.equal_range(extraoutput);
-                for (auto itr = it.first; itr != it.second; ++itr) {
-                    auto org = mOptions->mHomoSearchOptions.org_map.find(itr->second)->second;
-                    auto KOAbunPair = std::make_pair(it.first->first, doubleNum);
-                    tmpOrgKOAbunMultiMap.insert(std::pair<std::string, std::pair < std::string, double > >(org, KOAbunPair));
-                }
+        if (ko != mOptions->mHomoSearchOptions.db_map.end()) {
+            tmpKOVec.push_back(ko->second);
+            if (mOptions->mHomoSearchOptions.profiling) {
+                tmpKOProteinUMMap.insert(std::pair<std::string, std::string> (ko->second, ko->first)); //ko protein;
             }
         }
     }
+    extraoutput = getMostFreqStrFromVec(tmpKOVec);
 }
 
-void TransSearcher::transSearch(Read *item, std::string &KOTag, std::multimap<std::string, std::pair<std::string, double> > & preOrgKOAbunMMap) {
+std::string TransSearcher::transSearch(Read *item) {
     if (mOptions->mHomoSearchOptions.profiling) {
-        tmpOrgKOAbunMultiMap.clear();
-        tmpOrgKOAbunMMap.clear();
+        read_count++;
+        if (read_count > 10000) {
+            flush_output();
+            priOrgKOAbunUMap.clear();
+            for (auto & org : orgSet) {
+                auto it = tmpOrgKOAbunUMMap.equal_range(org);
+                tmpKOFreqMMap.clear();
+                for (auto & itr = it.first; itr != it.second; itr++) {
+                    tmpKOFreqMMap.insert(itr->second); //get the same org's ko freq map;
+                }
+                tmpKOFreqUMap.clear();
+                for (auto itt = tmpKOFreqMMap.begin(), end = tmpKOFreqMMap.end();
+                        itt != end;
+                        itt = tmpKOFreqMMap.upper_bound(itt->first)) {//get the unique ko
+                    auto ko = itt->first; //itt->first is the ko;
+                    auto itk = tmpKOFreqMMap.equal_range(ko); // unique ko range; 
+                    double koFreq = 0;
+                    for (auto & itko = itk.first; itko != itk.second; itko++) {//get each ko's freq;
+                        //tmpKOFreqUMap[itko->first] += itko->second;
+                        koFreq += itko->second;
+                    }
+                    tmpKOFreqUMap[ko] = koFreq;
+                }
+                tmpKOFreqMMap.clear();
+                priOrgKOAbunUMap[org] = tmpKOFreqUMap;
+                tmpKOFreqUMap.clear();
+            }
+            tmpOrgKOAbunUMMap.clear();
+            subOrgKOAbunUMMap.insert(priOrgKOAbunUMap.begin(), priOrgKOAbunUMap.end());
+            priOrgKOAbunUMap.clear();
+            read_count = 0;
+            
+            
+        }
     }
-    //stripChar(item->mSeq.mStr);
     extraoutput = "";
     query_len = static_cast<double> (item->length()) / 3.0;
     if (item->mSeq.length() >= mOptions->transSearch.minAAFragLength * 3) {
         if (mOptions->debug)
             std::cerr << "Getting fragments for read: " << item->mName << "\t" << item->mSeq.mStr << "\n";
-         
-		if(!mOptions->transSearch.allFragments){
-			getLongestFragmentsBits(item->mSeq.mStr);
-		} else {
-			getAllFragmentsBits(item->mSeq.mStr);
-		}
+
+        if (!mOptions->transSearch.allFragments) {
+            getLongestFragmentsBits(item->mSeq.mStr);
+        } else {
+            getAllFragmentsBits(item->mSeq.mStr);
+        }
     }
 
     if (mOptions->debug)
@@ -1369,47 +1377,94 @@ void TransSearcher::transSearch(Read *item, std::string &KOTag, std::multimap<st
     }
 
     if (extraoutput.length() > 0) {
-        KOTag = extraoutput;
-        //std::cout << "\033[1;33m" << extraoutput << "\033[0m\n";
-        tmpReadKOPair = std::make_pair(item->mName, extraoutput);
-        if (mOptions->mHomoSearchOptions.profiling) {            
-            tmpOrgKOAbunMMap.insert(tmpOrgKOAbunMultiMap.begin(), tmpOrgKOAbunMultiMap.end());
-            tmpOrgKOAbunMultiMap.clear();
+        subKoFreqUMap[extraoutput]++;
+        
+        if(mOptions->verbose){
+            koUSet.insert(extraoutput);
         }
-        flush_output(preOrgKOAbunMMap);
+        
+        if (mOptions->mHomoSearchOptions.profiling) {
+            if (tmpKOProteinUMMap.size() == 1) {
+                auto proteinID = tmpKOProteinUMMap.begin()->second;
+                auto org = mOptions->mHomoSearchOptions.org_map.find(proteinID)->second;
+                orgSet.insert(org);
+                auto KOAbunPair = std::make_pair(tmpKOProteinUMMap.begin()->first, (double) 1);
+                tmpOrgKOAbunUMMap.insert(std::pair<std::string, std::pair < std::string, double> >(org, KOAbunPair));
+            } else {
+                auto count = tmpKOProteinUMMap.count(extraoutput);
+                double doubleNum = (double) 1 / count;
+                auto it = tmpKOProteinUMMap.equal_range(extraoutput);
+                for (auto itr = it.first; itr != it.second; ++itr) {
+                    auto org = mOptions->mHomoSearchOptions.org_map.find(itr->second)->second;
+                    orgSet.insert(org);
+                    auto KOAbunPair = std::make_pair(it.first->first, doubleNum);
+                    tmpOrgKOAbunUMMap.insert(std::pair<std::string, std::pair < std::string, double > >(org, KOAbunPair));
+                }
+            }
+        }
     }
     clearFragments();
-    extraoutput.clear();
+    return(extraoutput);
 }
 
-void TransSearcher::transSearch(Read *item1, Read *item2, std::string &KOTag, std::multimap<std::string, std::pair<std::string, double> > & preOrgKOAbunMMap) {
+std::string TransSearcher::transSearch(Read *item1, Read *item2) {
     if (mOptions->mHomoSearchOptions.profiling) {
-        tmpOrgKOAbunMultiMap.clear();
-        tmpOrgKOAbunMMap.clear();
+        read_count++;
+        if (read_count > 10000) {
+            flush_output();
+            priOrgKOAbunUMap.clear();
+            for(auto & org : orgSet){
+                auto it = tmpOrgKOAbunUMMap.equal_range(org);
+                tmpKOFreqMMap.clear();
+                for(auto & itr = it.first; itr != it.second; itr++){
+                    tmpKOFreqMMap.insert(itr->second);//get the same org's ko freq map;
+                }
+                tmpKOFreqUMap.clear();
+                for(auto itt = tmpKOFreqMMap.begin(), end = tmpKOFreqMMap.end(); 
+                        itt != end; 
+                        itt = tmpKOFreqMMap.upper_bound(itt->first)){//get the unique ko
+                    auto ko = itt->first;//itt->first is the ko;
+                    auto itk = tmpKOFreqMMap.equal_range(ko);// unique ko range; 
+                    double koFreq = 0;
+                    for(auto & itko = itk.first; itko != itk.second; itko++){//get each ko's freq;
+                        //tmpKOFreqUMap[itko->first] += itko->second;
+                        koFreq += itko->second;
+                    }
+                    tmpKOFreqUMap[ko] = koFreq;
+                }
+                tmpKOFreqMMap.clear();
+                priOrgKOAbunUMap[org] = tmpKOFreqUMap;
+                tmpKOFreqUMap.clear();
+            }
+            tmpOrgKOAbunUMMap.clear();
+            subOrgKOAbunUMMap.insert(priOrgKOAbunUMap.begin(), priOrgKOAbunUMap.end());
+            priOrgKOAbunUMap.clear();
+            read_count = 0;
+        }
     }
+     
     extraoutput = "";
     query_len = static_cast<double> (item1->length()) / 3.0;
     if (item1->length() >= mOptions->transSearch.minAAFragLength * 3) {
         if (mOptions->debug)
             std::cerr << "Getting fragments for read1: " << item1->mName << "\t" << item1->mSeq.mStr << "\n";
-        if(!mOptions->transSearch.allFragments){
-			getLongestFragmentsBits(item1->mSeq.mStr);
-		} else {
-			getAllFragmentsBits(item1->mSeq.mStr);
-		}
-        
+        if (!mOptions->transSearch.allFragments) {
+            getLongestFragmentsBits(item1->mSeq.mStr);
+        } else {
+            getAllFragmentsBits(item1->mSeq.mStr);
+        }
     }
 
     query_len = static_cast<double> (item2->length()) / 3.0;
     if (item2->length() >= mOptions->transSearch.minAAFragLength * 3) {
         if (mOptions->debug)
             std::cerr << "Getting fragments for read2: " << item2->mName << "\t" << item2->mSeq.mStr << "\n";
-        
-		if(!mOptions->transSearch.allFragments){
-			getLongestFragmentsBits(item2->mSeq.mStr);
-		} else {
-			getAllFragmentsBits(item2->mSeq.mStr);
-		}
+
+        if (!mOptions->transSearch.allFragments) {
+            getLongestFragmentsBits(item2->mSeq.mStr);
+        } else {
+            getAllFragmentsBits(item2->mSeq.mStr);
+        }
     }
 
     if (mOptions->debug)
@@ -1424,19 +1479,34 @@ void TransSearcher::transSearch(Read *item1, Read *item2, std::string &KOTag, st
     }
 
     if (extraoutput.length() > 0) {
-        KOTag = extraoutput;
-        //std::cout << "\033[1;33m" << item1->mName << " " << extraoutput << "\033[0m\n";
-        tmpReadKOPair = std::make_pair(item1->mName, extraoutput);
-        if (mOptions->mHomoSearchOptions.profiling) {   
-            tmpOrgKOAbunMMap.clear();
-            tmpOrgKOAbunMMap.insert(tmpOrgKOAbunMultiMap.begin(), tmpOrgKOAbunMultiMap.end());
-            tmpOrgKOAbunMultiMap.clear();
+        subKoFreqUMap[extraoutput]++;
+        
+        if(mOptions->verbose){
+            koUSet.insert(extraoutput);
         }
-        flush_output(preOrgKOAbunMMap);
+        
+        if (mOptions->mHomoSearchOptions.profiling) {
+            if (tmpKOProteinUMMap.size() == 1) {
+                auto proteinID = tmpKOProteinUMMap.begin()->second;
+                auto org = mOptions->mHomoSearchOptions.org_map.find(proteinID)->second;
+                orgSet.insert(org);
+                auto KOAbunPair = std::make_pair(tmpKOProteinUMMap.begin()->first, (double) 1);
+                tmpOrgKOAbunUMMap.insert(std::pair<std::string, std::pair < std::string, double> >(org, KOAbunPair));
+            } else {
+                auto count = tmpKOProteinUMMap.count(extraoutput);
+                double doubleNum = (double) 1 / count;
+                auto it = tmpKOProteinUMMap.equal_range(extraoutput);
+                for (auto itr = it.first; itr != it.second; ++itr) {
+                    auto org = mOptions->mHomoSearchOptions.org_map.find(itr->second)->second;
+                    orgSet.insert(org);
+                    auto KOAbunPair = std::make_pair(it.first->first, doubleNum);
+                    tmpOrgKOAbunUMMap.insert(std::pair<std::string, std::pair < std::string, double > >(org, KOAbunPair));
+                }
+            }
+        }
     }
-    
-    extraoutput.clear();
     clearFragments();
+    return(extraoutput);
 }
 
 void TransSearcher::ids_from_SI(SI *si) {
@@ -1465,4 +1535,32 @@ void TransSearcher::ids_from_SI_recursive(SI *si) {
         } // end for
         si_it = si_it->samelen;
     } // end while all SI with same length
+}
+
+std::unordered_map<std::string, std::unordered_map<std::string, double> > TransSearcher::getSubOrgKOAbunUMap() {
+    priOrgKOAbunUMap.clear();
+    for (auto & org : orgSet) {
+        auto it = subOrgKOAbunUMMap.equal_range(org);
+        tmpKOFreqMMap.clear();
+        for(auto & itr = it.first; itr != it.second; itr++){
+            tmpKOFreqMMap.insert(itr->second.begin(), itr->second.end());
+        }
+        tmpKOFreqUMap.clear();
+        for(auto itt = tmpKOFreqMMap.begin(), end = tmpKOFreqMMap.end(); 
+                itt != end;
+                itt = tmpKOFreqMMap.upper_bound(itt->first)){
+            auto ko = itt->first;
+            auto itk = tmpKOFreqMMap.equal_range(ko);
+            double koFreq = 0;
+            for(auto & itko = itk.first; itko != itk.second; itko++){
+                koFreq += itko->second;
+            }
+            tmpKOFreqUMap[ko] = koFreq;
+        }
+        tmpKOFreqMMap.clear();
+        priOrgKOAbunUMap[org] = tmpKOFreqUMap;
+        tmpKOFreqUMap.clear();
+    }
+    subOrgKOAbunUMMap.clear();
+    return(priOrgKOAbunUMap);
 }

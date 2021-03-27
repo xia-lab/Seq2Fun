@@ -19,7 +19,7 @@
 #include <map>
 #include <future>
 #include <deque>
-
+#include <time.h>
 
 #include "options.h"
 #include "threadconfig.h"
@@ -35,7 +35,6 @@
 #include "polyx.h"
 #include "read.h"
 #include "common.h"
-#include "transsearcher.hpp"
 #include "bwtfmiDB.h"
 
 
@@ -67,18 +66,19 @@ public:
     bool process();
 
 private:
-    bool processSingleEnd(ReadPack* pack, ThreadConfig* config, TransSearcher * transSearcher);
+    bool processSingleEnd(ReadPack* pack, ThreadConfig* config);
     void initPackRepository();
     void destroyPackRepository();
     void producePack(ReadPack* pack);
-    void consumePack(ThreadConfig* config, TransSearcher * transSearcher);
+    void consumePack(ThreadConfig* config);
     void producerTask();
-    void consumerTask(ThreadConfig* config, TransSearcher * transSearcher);
+    void consumerTask(ThreadConfig* config);
     void initConfig(ThreadConfig* config);
     void initOutput();
     void closeOutput();
     void writeTask(WriterThread* config);
-    void S2FReport();
+    void prepareResults(std::vector< std::unordered_map<std::string, uint32 > > & totalKoFreqVecResults,
+                        std::vector< std::unordered_map<std::string, std::unordered_map<std::string, double> > > & totalOrgKOFreqVecResults);
 
 private:
     Options* mOptions;
@@ -96,15 +96,10 @@ private:
     WriterThread* mLeftWriter;
     WriterThread* mFailedWriter;
     Duplicate* mDuplicate;
-
+    WriterThread* mReadsKOWriter;
     BwtFmiDB *tbwtfmiDB;
     std::string fileoutname;
-
-    std::vector<std::tuple<std::string, int, std::string>> sortedKOFreqTupleVector;
-    std::vector<std::tuple<std::string, double, std::string, int, int> > sortedPathwayFreqTupleVector;
-    std::map<int, int> rarefaction_map;
-    std::vector<std::pair<string, int>> sortedOrgKOFreqVec;
-    std::multimap<std::string, std::string> preOrgKOMMap;
+    
 };
 
 

@@ -33,6 +33,10 @@ void HtmlReporter::outputRow(ofstream& ofs, string key, string v) {
     ofs << "<tr><td class='col1'>" + key + "</td><td class='col2'>" + v + "</td></tr>\n";
 }
 
+void HtmlReporter::outputLongRow(ofstream& ofs, string key, string v) {
+    ofs << "<tr><td class='collarge'>" + key + "</td><td class='collarge'>" + v + "</td></tr>\n";
+}
+
 string HtmlReporter::formatNumber(long number) {
     double num = (double)number;
     string unit[6] = {"", "K", "M", "G", "T", "P"};
@@ -321,24 +325,24 @@ void HtmlReporter::reportDuplication(ofstream& ofs) {
     delete[] gc;
 }
 
-void HtmlReporter::reportRarefaction(ofstream& ofs, std::map<int, int > & rRareVec){
+void HtmlReporter::reportRarefaction(ofstream& ofs){
 
-    int top = rRareVec.size();
+    int top = mOptions->transSearch.rarefactionMap.size();
     std::vector<int> x_vec;
+    x_vec.reserve(top);
     std::vector<double> y_vec;
+    y_vec.reserve(top);
 
-    for (auto & it : rRareVec) {
+    for (auto & it : mOptions->transSearch.rarefactionMap) {
         x_vec.push_back(it.first);
         y_vec.push_back((double)it.second);
     }
     
-    rRareVec.clear();
+    mOptions->transSearch.rarefactionMap.clear();
     
-    ofs << "<div id='ko_hits_figure'>\n";
+    ofs << "<div id='rare_figure'>\n";
     ofs << "<div class='figure' id='plot_rarefaction_curve' style='height:400px;'></div>\n";
     ofs << "</div>\n";
-
-    ofs <<"</div>\n";
     
     ofs << "\n<script type=\"text/javascript\">" << endl;
     string json_str = "var data=[";
@@ -358,94 +362,102 @@ void HtmlReporter::reportRarefaction(ofstream& ofs, std::map<int, int > & rRareV
     ofs << "</script>" << endl;
 
     x_vec.clear();
+    x_vec.shrink_to_fit();
     y_vec.clear();
+    y_vec.shrink_to_fit();
 }
 
-void HtmlReporter::reportKOBarPlot(ofstream& ofs, std::vector<std::tuple<std::string, int, std::string> > & rKOFreqNamVec){
-    int total = rKOFreqNamVec.size();
-    int top = 50;
-    top = min(top, total);
-    
-    rKOFreqNamVec.resize(top);
+void HtmlReporter::reportKOBarPlot(ofstream& ofs){
     std::vector<std::string> x_vec;
     std::vector<double> y_vec;
     std::vector<std::string> y_lable_vec;
+    
+    int total = mOptions->transSearch.sortedKOFreqTupleVector.size();
+    int top = 50;
+    top = min(top, total);
 
-    for(auto & it : rKOFreqNamVec){
+    for (int i = 0; i < total; i++) {
+        auto it = mOptions->transSearch.sortedKOFreqTupleVector.at(i);
         x_vec.push_back(get<0>(it));
-        y_vec.push_back((double)get<1>(it));
+        y_vec.push_back((double) get<1>(it));
         y_lable_vec.push_back(get<2>(it));
     }
-    rKOFreqNamVec.clear();
-    ofs << "<div id='ko_hits_figure'>\n";
-    ofs << "<div class='figure' id='plot_ko_hits' style='height:400px;'></div>\n";
-    ofs << "</div>\n";
-    ofs <<"</div>\n";
     
+    mOptions->transSearch.sortedKOFreqTupleVector.clear();
+    mOptions->transSearch.sortedKOFreqTupleVector.shrink_to_fit();
+
+    ofs << "<div class='subsection_title' onclick=showOrHide('top_ko_figure')><a name='summary'>Top-hit KO bar plot<font color='#88CCFF' > (click to show/hide) </font></a></div>\n";
+    ofs << "<div id='top_ko_figure'>\n";
+    ofs << "<div class='figure' id='plot_ko_hits' style='height:400px;'></div>\n";
+
     ofs << "\n<script type=\"text/javascript\">" << endl;
     string json_str = "var data=[";
 
     json_str += "{";
     json_str += "x:[" + Stats::list2string(x_vec, top) + "],";
     json_str += "y:[" + Stats::list2string(y_vec, top) + "],";
-    json_str += "text: [" + Stats::list2string(y_lable_vec, top) + "],";
-    json_str += "name: 'Number of hitted ko  ',";
+    json_str += "name: 'Number of hitted kos  ',";
     json_str += "type:'bar',";
     json_str += "line:{color:'rgba(128,0,128,1.0)', width:1}\n";
     json_str += "}";
     json_str += "];\n";
-
-    json_str += "var layout={title:'Top " + to_string(top) + " abundant KOs ', xaxis:{title:'KOs', automargin: true}, yaxis:{title:'Number of reads hits', automargin: true}};\n";
-     
+    json_str += "var layout={title:'Top " + to_string(top) + " abundant KOs ', xaxis:{title:'KO', automargin: true}, yaxis:{title:'Number of reads hits', automargin: true}};\n";
     json_str += "Plotly.newPlot('plot_ko_hits', data, layout);\n";
-    
     ofs << json_str;
     ofs << "</script>" << endl;
     
-    ofs << "<div class='section_div'>\n";
-    ofs << "<div class='subsection_title' onclick=showOrHide('top_ko_table')><a name='summary'>Top KOs Table (click to show/hide) </a></div>\n";
-    ofs << "<div id='top_kos_table'>\n";
-    ofs << "</div>\n";
+    ofs << "<div class='subsection_title' onclick=showOrHide('top_ko_table')><a name='summary'>KOs Table (full list)<font color='#88CCFF' > (click to show/hide) </font></a></div>\n";
+    ofs << "<div id='top_ko_table' style='overflow-y:auto; height: 400px;'>\n";
     ofs << "<table class='summary_table'>\n";
     ofs << "<tr><td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "KO ID" << "</td><td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "Number" << "</td><td class='collarge' style='font-size:14px;color:#ffffff;background:#008000'>" << "Name" << "</td></tr>\n";
-    
-    for (int i = 0; i < top; i++) {
+    for (int i = 0; i < total; i++) {
         ofs << "<tr><td class='ko_col'>" << x_vec[i] << "</td><td class='ko_col'>" << y_vec[i] << "</td><td class='collarge'>" << y_lable_vec[i] << "</td></tr>\n";
     }
     
     ofs << "</table>\n";
-
+    ofs << "</div>\n";
+    
     x_vec.clear();
+    x_vec.shrink_to_fit();
     y_vec.clear();
+    y_vec.shrink_to_fit();
+    y_lable_vec.clear();
+    y_lable_vec.shrink_to_fit();
 }
 
-void HtmlReporter::reportPathway(ofstream& ofs, std::vector<std::tuple<std::string, double, std::string, int, int> > & rPathwayKONameVec){
-    int total = rPathwayKONameVec.size();
+void HtmlReporter::reportPathway(ofstream& ofs){
+    
+    int total = mOptions->transSearch.sortedPathwayFreqTupleVector.size();
     int top = 30;
     top = min(top, total);
-    rPathwayKONameVec.resize(top);
     
     std::vector<std::string> x_vec;
+    x_vec.reserve(total);
     std::vector<double> y_vec;
+    y_vec.reserve(total);
     std::vector<std::string> y_lable_vec;
+    y_lable_vec.reserve(total);
+    
     std::vector<int> z_mapped_vec;
+    z_mapped_vec.reserve(total);
     std::vector<int> z_total_vec;
+    z_total_vec.reserve(total);
 
-    for (auto & it : rPathwayKONameVec) {
+    for (int i = 0; i < total; i++) {
+        auto it = mOptions->transSearch.sortedPathwayFreqTupleVector.at(i);
         x_vec.push_back(get<0>(it));
-        y_vec.push_back((double)get<1>(it));
+        y_vec.push_back((double) get<1>(it));
         y_lable_vec.push_back(get<2>(it));
         z_mapped_vec.push_back(get<3>(it));
         z_total_vec.push_back(get<4>(it));
     }
     
-    rPathwayKONameVec.clear();
+    mOptions->transSearch.sortedPathwayFreqTupleVector.clear();
+    mOptions->transSearch.sortedPathwayFreqTupleVector.shrink_to_fit();
     
+    ofs << "<div class='subsection_title' onclick=showOrHide('pathway_hits_figure')><a name='summary'>Top-hit pathway bar plot<font color='#88CCFF' > (click to show/hide) </font></a></div>\n";
     ofs << "<div id='pathway_hits_figure'>\n";
     ofs << "<div class='figure' id='plot_pathway_hits' style='height:600px;'></div>\n";
-    ofs << "</div>\n";
-
-    ofs <<"</div>\n";
     
     ofs << "\n<script type=\"text/javascript\">" << endl;
     string json_str = "var data=[";
@@ -466,111 +478,116 @@ void HtmlReporter::reportPathway(ofstream& ofs, std::vector<std::tuple<std::stri
     ofs << json_str;
     ofs << "</script>" << endl;
     
-    ofs << "<div class='subsection_title' onclick=showOrHide('top_pathway_table')><a name='summary'>Top-hit pathway</a></div>\n";
-    ofs << "<div id='top_kos_table'>\n";
-    ofs << "</div>\n";
+    ofs << "<div class='subsection_title' onclick=showOrHide('top_pathway_table')><a name='summary'>All hit pathway table<font color='#88CCFF' > (click to show/hide) </font></a></div>\n";
+    ofs << "<div id='top_pathway_table' style='overflow-y:auto; height: 400px;'>\n";
     ofs << "<table class='summary_table'>\n";
-    ofs << "<tr><td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "Pathway ID" << "</td><td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "Percentage of mapped KOs in pathway (%)" << "</td><td class='collarge' style='font-size:14px;color:#ffffff;background:#008000'>" << "Name" << "</td></tr>\n";
+    ofs << "<tr><td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "Pathway ID" << "</td><td class='collarge' style='font-size:14px;color:#ffffff;background:#008000'>" << "Mapped KOs in pathway (%)" << "</td><td class='collarge' style='font-size:14px;color:#ffffff;background:#008000'>" << "Name" << "</td></tr>\n";
 
-    for (int i = 0; i < top; i++) {
+    for (int i = 0; i < total; i++) {
         std::stringstream ss;
         ss << y_vec[i] << " (" << z_mapped_vec[i] << "/" << z_total_vec[i] << ")";
         ofs << "<tr><td class='ko_col'>" <<  x_vec[i] << "</td><td class='ko_col'>" << ss.str() << "</td><td class='collarge'>" << y_lable_vec[i] << "</td></tr>\n";
     }
-
+    
     ofs << "</table>\n";
+    ofs << "</div>\n";
     
     x_vec.clear();
+    x_vec.shrink_to_fit();
     y_vec.clear();
+    y_vec.shrink_to_fit();
+    y_lable_vec.clear();
+    y_lable_vec.shrink_to_fit();
     z_mapped_vec.clear();
+    z_mapped_vec.shrink_to_fit();
     z_total_vec.clear();
+    z_total_vec.shrink_to_fit();
 }
 
-void HtmlReporter::reportSpecies(ofstream& ofs, std::vector<std::pair<std::string, int > > & rSpecKOVec){
-    int total = rSpecKOVec.size();
-    int top = 30;
-    top = min(top, total);
-    rSpecKOVec.resize(top);
-    
+void HtmlReporter::reportSpecies(ofstream& ofs){
+
     std::vector<std::string> x_vec;
     std::vector<double> y_vec;
-    for (auto & it : rSpecKOVec) {
-        x_vec.push_back(it.first);
-        y_vec.push_back((double)(round(it.second)));
-    }
-    rSpecKOVec.clear();
     
-    ofs << "<div id='species_hits_figure'>\n";
-    ofs << "<div class='figure' id='plot_species_hits' style='height:600px;'></div>\n";
-    ofs << "</div>\n";
+    int total = mOptions->transSearch.sortedOrgFreqVec.size();
+    int top = 30;
+    top = min(top, total);
 
-    ofs << "<div class='sub_section_tips'>This estimation is based on each assigned reads (KO), "
-            "eg. one read could has multiple species hits, thus final species hits are the sum of each KO, "
-            "which is not identical to the summary from reads_ko table";
-    ofs <<"</div>\n";
-    
+    for (int i = 0; i < total; i++) {
+        auto it = mOptions->transSearch.sortedOrgFreqVec.at(i);
+        x_vec.push_back(it.first);
+        y_vec.push_back((double) it.second);
+    }
+    mOptions->transSearch.sortedOrgFreqVec.clear();
+    mOptions->transSearch.sortedOrgFreqVec.shrink_to_fit();
+
+    ofs << "<div class='subsection_title' onclick=showOrHide('top_ko_figure')><a name='summary'>Top-hit Species bar plot<font color='#88CCFF' > (click to show/hide) </font></a></div>\n";
+    ofs << "<div id='top_species_figure'>\n";
+    ofs << "<div class='figure' id='plot_species_hits' style='height:400px;'></div>\n";
+
     ofs << "\n<script type=\"text/javascript\">" << endl;
     string json_str = "var data=[";
 
     json_str += "{";
     json_str += "x:[" + Stats::list2string(x_vec, top) + "],";
     json_str += "y:[" + Stats::list2string(y_vec, top) + "],";
-    json_str += "name: 'Number of reads hits  ',";
+    json_str += "name: 'Number of hitted kos  ',";
     json_str += "type:'bar',";
     json_str += "line:{color:'rgba(128,0,128,1.0)', width:1}\n";
     json_str += "}";
     json_str += "];\n";
-    json_str += "var layout={title:'Top-hit Species (" + to_string(top) + ")', xaxis:{title:'Species', tickangle: 45}, yaxis:{title:'Number of hit KOs'}, margin: {b: 200}};\n";
-    //json_str += "var layout={title:'Insert size distribution (" + to_string(1000.22) + "% reads are with unknown length)', xaxis:{title:'Insert size'}, yaxis:{title:'Read percent (%)'}};\n";
+    json_str += "var layout={title:'Top " + to_string(top) + " hit species ', xaxis:{title:'Species', automargin: true}, yaxis:{title:'Number of KOs', automargin: true}};\n";
     json_str += "Plotly.newPlot('plot_species_hits', data, layout);\n";
-    //std::cout << "\033[1;34m" << json_str << "\033[0m\n";
     ofs << json_str;
     ofs << "</script>" << endl;
-    ofs << "<div class='subsection_title' onclick=showOrHide('top_ko_table')><a name='summary'>Top-hit species</a></div>\n";
-    ofs << "<div id='species_table'>\n";
-    ofs << "</div>\n";
+    
+    ofs << "<div class='subsection_title' onclick=showOrHide('top_ko_table')><a name='summary'>Hit species Table (full list)<font color='#88CCFF' > (click to show/hide) </font></a></div>\n";
+    ofs << "<div id='top_species_table' style='overflow-y:auto; height: 400px;'>\n";
     ofs << "<table class='summary_table'>\n";
     ofs << "<tr><td class='colmedium' style='font-size:14px;color:#ffffff;background:#008000'>" << "Species" << "</td><td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "Number of KOs" << "</td></tr>\n";
-    for (int i = 0; i < top; i++) {
+    for (int i = 0; i < total; i++) {
         ofs << "<tr><td class='colmedium'>" << x_vec[i] << "</td><td class='ko_col'>" << y_vec[i] << "</td></tr>\n";
     }
+    
     ofs << "</table>\n";
+    ofs << "</div>\n";
+    
     x_vec.clear();
+    x_vec.shrink_to_fit();
     y_vec.clear();
+    y_vec.shrink_to_fit();
 }
 
-void HtmlReporter::printAnnotationResults(ofstream& ofs, S2FReportTuple & mS2FReportTuple) {
-    //getAnnotationResults();
+void HtmlReporter::printAnnotationResults(ofstream& ofs) {
     ofs << "<div class='section_div'>\n";
     ofs << "<div class='section_title' onclick=showOrHide('result')><a name='result'>Functional quantification results: <I>" << "</I><font color='#88CCFF' > (click to show/hide) </font></a></div>\n";
     ofs << "<div id='result'>\n";
 
     ofs << "<div id='detection_result'>\n";
-    ofs << "<table class='summary_table' style='width:800px'>\n";
-    auto rKOFreqNamVec = get<0>(mS2FReportTuple);
-    int nKO = rKOFreqNamVec.size();
-
-    auto rRareVec = get<1>(mS2FReportTuple);
-
-    auto rPathwayKONameVec = get<2>(mS2FReportTuple);
-    auto nPathway = rPathwayKONameVec.size();
-
-    auto rSpecKOVec = get<3>(mS2FReportTuple);
-    auto nSpec = rSpecKOVec.size();
+    ofs << "<table class='summary_table' style='width:1000px'>\n";
     
-    double ratioKO = (nKO * 100) / mOptions->mHomoSearchOptions.totalKOs;
-    std::string rStrResult = to_string(nKO) + " / " +  to_string(mOptions->mHomoSearchOptions.totalKOs) + " (" + to_string(ratioKO) +  "%)";
-    outputRow(ofs, "Number of KOs annotated / total KOs in database", rStrResult);
-    if(mOptions->mHomoSearchOptions.profiling){
-        outputRow(ofs, "Number of top-hit species", to_string(nSpec));
-        outputRow(ofs, "Number of top-hit pathways", to_string(nPathway));
-    }
+    double ratio = (mOptions->transSearch.nTransMappedKOs * 100) / mOptions->transSearch.nKODB;
+    std::string rStrResult = to_string(mOptions->transSearch.nTransMappedKOs) + " / " +  to_string(mOptions->transSearch.nKODB) + " (" + to_string(ratio) +  "%)";
+    outputLongRow(ofs, "Number of KOs annotated / total KOs in database", rStrResult);
+    
+    outputLongRow(ofs, "Number of hit species", to_string(mOptions->transSearch.nMappedOrgs));
 
-    float ratioAR = float (mOptions->transSearch.transSearchMappedReads * 100) / float(mOptions->mHomoSearchOptions.totalOrigReads);
-    rStrResult.clear();
-    rStrResult = to_string(mOptions->transSearch.transSearchMappedReads) + " / " + to_string(mOptions->mHomoSearchOptions.totalOrigReads) + " (" + to_string(ratioAR) + "%)";
-    outputRow(ofs, "Number of annotated reads / total raw reads", rStrResult);
-    rStrResult.clear();
+    outputLongRow(ofs, "Number of hit pathways", to_string(mOptions->transSearch.nMappedPathways));
+    
+    ratio = (mOptions->transSearch.nTransMappedKOReads * 100) / mOptions->mHomoSearchOptions.nTotalReads;
+    rStrResult = to_string(mOptions->transSearch.nTransMappedKOReads) + " / " +  to_string(mOptions->mHomoSearchOptions.nTotalReads) + " (" + to_string(ratio) +  "%)";
+    outputLongRow(ofs, "Number of annotated reads / total raw reads", rStrResult);
+    
+    ratio = (mOptions->mHomoSearchOptions.nCleanReads * 100) / mOptions->mHomoSearchOptions.nTotalReads;
+    rStrResult = to_string(mOptions->mHomoSearchOptions.nCleanReads) + " / " +  to_string(mOptions->mHomoSearchOptions.nTotalReads) + " (" + to_string(ratio) +  "%)";
+    outputLongRow(ofs, "Number of clean reads / total raw reads", rStrResult);
+
+    auto sTime = ctime(& mOptions->transSearch.startTime);
+    auto eTime = ctime(& mOptions->transSearch.endTime);
+    rStrResult = convertSeconds(mOptions->transSearch.timeLapse) + "; " + unkown2Str(sTime);
+    outputLongRow(ofs, "time used", rStrResult);
+    
+    outputLongRow(ofs, "command", mOptions->mHomoSearchOptions.commandStr);
     
     ofs << "</table>\n";
 
@@ -581,46 +598,51 @@ void HtmlReporter::printAnnotationResults(ofstream& ofs, S2FReportTuple & mS2FRe
         ofs << "<div class='section_div'>\n";
         ofs << "<div class='section_title' onclick=showOrHide('rarefaction')><a name='summary'>Rarefaction curve</a></div>\n";
         ofs << "<div id='rarefaction'>\n";
-        reportRarefaction(ofs, rRareVec);
+        reportRarefaction(ofs);
         ofs << "</div>\n";
         ofs << "</div>\n";
-
 
         ofs << "<div class='section_div'>\n";
         ofs << "<div class='section_title' onclick=showOrHide('top_kos')><a name='summary'>Top abundant KOs</a></div>\n";
         ofs << "<div id='top_kos'>\n";
-        reportKOBarPlot(ofs, rKOFreqNamVec);
+        reportKOBarPlot(ofs);
         ofs << "</div>\n";
         ofs << "</div>\n";
-
+        
         ofs << "<div class='section_div'>\n";
         ofs << "<div class='section_title' onclick=showOrHide('top_pathways')><a name='summary'>Top-hit pathways</a></div>\n";
         ofs << "<div id='top_pathways'>\n";
 
-        reportPathway(ofs, rPathwayKONameVec);
+        reportPathway(ofs);
 
         ofs << "</div>\n";
         ofs << "</div>\n";
-
 
         ofs << "<div class='section_div'>\n";
         ofs << "<div class='section_title' onclick=showOrHide('hitted_species')><a name='summary'>Top-hit species</a></div>\n";
         ofs << "<div id='hitted_species'>\n";
 
-        reportSpecies(ofs, rSpecKOVec);
+        reportSpecies(ofs);
 
+        ofs << "</div>\n";
+        ofs << "</div>\n";
+    } else {
+        ofs << "<div class='section_div'>\n";
+        ofs << "<div class='section_title' onclick=showOrHide('top_kos')><a name='summary'>Top abundant KOs</a></div>\n";
+        ofs << "<div id='top_kos'>\n";
+        reportKOBarPlot(ofs);
         ofs << "</div>\n";
         ofs << "</div>\n";
     }
 }
 
-void HtmlReporter::report(S2FReportTuple & mS2FReportTuple, FilterResult* result, Stats* preStats1, Stats* postStats1, Stats* preStats2, Stats* postStats2) {
+void HtmlReporter::report(FilterResult* result, Stats* preStats1, Stats* postStats1, Stats* preStats2, Stats* postStats2) {
     ofstream ofs;
     ofs.open(mOptions->htmlFile, ifstream::out);
 
     printHeader(ofs);
 
-    printAnnotationResults(ofs, mS2FReportTuple);
+    printAnnotationResults(ofs);
     
     printSummary(ofs, result, preStats1, postStats1, preStats2, postStats2);
 

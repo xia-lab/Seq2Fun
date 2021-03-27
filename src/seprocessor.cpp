@@ -10,18 +10,14 @@ SingleEndProcessor::SingleEndProcessor(Options* opt, BwtFmiDB * tbwtfmiDB){
     mUmiProcessor = new UmiProcessor(opt);
     mLeftWriter =  NULL;
     mFailedWriter = NULL;
-
+    mReadsKOWriter = NULL;
+    
     mDuplicate = NULL;
     if(mOptions->duplicate.enabled) {
         mDuplicate = new Duplicate(mOptions);
     }
     this->tbwtfmiDB = tbwtfmiDB;
     fileoutname.clear();
-    sortedKOFreqTupleVector.clear();
-    sortedPathwayFreqTupleVector.clear();
-    rarefaction_map.clear();
-    sortedOrgKOFreqVec.clear();
-    preOrgKOMMap.clear();
 }
 
 SingleEndProcessor::~SingleEndProcessor() {
@@ -42,6 +38,10 @@ void SingleEndProcessor::initOutput() {
     if(mOptions->out1.empty())
         return;
     mLeftWriter = new WriterThread(mOptions, mOptions->out1);
+
+    if (mOptions->outputReadsKOMap && !mOptions->outReadsKOMap.empty()) {
+        mReadsKOWriter = new WriterThread(mOptions, mOptions->outReadsKOMap);
+    }
 }
 
 void SingleEndProcessor::closeOutput() {
@@ -49,9 +49,15 @@ void SingleEndProcessor::closeOutput() {
         delete mLeftWriter;
         mLeftWriter = NULL;
     }
+    
     if(mFailedWriter) {
         delete mFailedWriter;
         mFailedWriter = NULL;
+    }
+
+    if (mReadsKOWriter) {
+        delete mReadsKOWriter;
+        mReadsKOWriter = NULL;
     }
 }
 
@@ -74,23 +80,24 @@ bool SingleEndProcessor::process(){
     //TODO: get the correct cycles
     int cycle = 151;
     ThreadConfig** configs = new ThreadConfig*[mOptions->thread];
-    TransSearcher** transSearchers = new TransSearcher*[mOptions->thread];
     for(int t=0; t<mOptions->thread; t++){
-        configs[t] = new ThreadConfig(mOptions, t, false);
+        configs[t] = new ThreadConfig(mOptions, tbwtfmiDB, t, false);
         initConfig(configs[t]);
-        transSearchers[t] = new TransSearcher(tbwtfmiDB, mOptions);
     }
     std::thread** threads = new thread*[mOptions->thread];
     for(int t=0; t<mOptions->thread; t++){
-        threads[t] = new std::thread(std::bind(&SingleEndProcessor::consumerTask, this, configs[t], transSearchers[t]));
+        threads[t] = new std::thread(std::bind(&SingleEndProcessor::consumerTask, this, configs[t]));
     }
 
     std::thread* leftWriterThread = NULL;
     std::thread* failedWriterThread = NULL;
+    std::thread* readsKOMapWriterThread = NULL;
     if(mLeftWriter)
         leftWriterThread = new std::thread(std::bind(&SingleEndProcessor::writeTask, this, mLeftWriter));
     if(mFailedWriter)
         failedWriterThread = new std::thread(std::bind(&SingleEndProcessor::writeTask, this, mFailedWriter));
+    if (mReadsKOWriter)
+        readsKOMapWriterThread = new std::thread(std::bind(&SingleEndProcessor::writeTask, this, mReadsKOWriter));
 
     producer.join();
     for(int t=0; t<mOptions->thread; t++){
@@ -102,6 +109,8 @@ bool SingleEndProcessor::process(){
             leftWriterThread->join();
         if(failedWriterThread)
             failedWriterThread->join();
+        if (readsKOMapWriterThread)
+            readsKOMapWriterThread->join();
     }
 
     if(mOptions->verbose)
@@ -111,16 +120,24 @@ bool SingleEndProcessor::process(){
     vector<Stats*> preStats;
     vector<Stats*> postStats;
     vector<FilterResult*> filterResults;
+    vector< std::unordered_map<std::string, uint32 > > totalKoFreqVecResults;
+    totalKoFreqVecResults.reserve(mOptions->thread);
+    vector< std::unordered_map<std::string, std::unordered_map<std::string, double> > > totalOrgKOFreqVecResults;
+    totalOrgKOFreqVecResults.reserve(mOptions->thread);
     for(int t=0; t<mOptions->thread; t++){
         preStats.push_back(configs[t]->getPreStats1());
         postStats.push_back(configs[t]->getPostStats1());
         filterResults.push_back(configs[t]->getFilterResult());
+        totalKoFreqVecResults.push_back(configs[t]->getTransSearcher()->getSubKoFreqUMap());
+        totalOrgKOFreqVecResults.push_back(configs[t]->getTransSearcher()->getSubOrgKOAbunUMap());
     }
     Stats* finalPreStats = Stats::merge(preStats);
     Stats* finalPostStats = Stats::merge(postStats);
     FilterResult* finalFilterResult = FilterResult::merge(filterResults);
     
-    mOptions->mHomoSearchOptions.totalOrigReads = finalPreStats->getReads();
+    mOptions->mHomoSearchOptions.nTotalReads = finalPreStats->getReads(); //change to both reads??????
+    mOptions->mHomoSearchOptions.nCleanReads = finalPostStats->getReads();
+    prepareResults(totalKoFreqVecResults, totalOrgKOFreqVecResults);
 
     // read filter results to the first thread's
     for(int t=1; t<mOptions->thread; t++){
@@ -141,13 +158,6 @@ bool SingleEndProcessor::process(){
         cerr << "Duplication rate (may be overestimated since this is SE data): " << dupRate * 100.0 << "%" << endl;
     }
     
-
-    S2FReport();
-    S2FReportTuple mS2FReportTuple = std::make_tuple(sortedKOFreqTupleVector, rarefaction_map, sortedPathwayFreqTupleVector, sortedOrgKOFreqVec);
-    sortedKOFreqTupleVector.clear();
-    rarefaction_map.clear();
-    sortedPathwayFreqTupleVector.clear();
-    sortedOrgKOFreqVec.clear();
     
     // make JSON report
     JsonReporter jr(mOptions);
@@ -157,7 +167,7 @@ bool SingleEndProcessor::process(){
     // make HTML report
     HtmlReporter hr(mOptions);
     hr.setDupHist(dupHist, dupMeanGC, dupRate);
-    hr.report(mS2FReportTuple, finalFilterResult, finalPreStats, finalPostStats);
+    hr.report(finalFilterResult, finalPreStats, finalPostStats);
 
     // clean up
     for(int t=0; t<mOptions->thread; t++){
@@ -165,8 +175,6 @@ bool SingleEndProcessor::process(){
         threads[t] = NULL;
         delete configs[t];
         configs[t] = NULL;
-        delete transSearchers[t];
-        transSearchers[t] = NULL;
     }
 
     delete finalPreStats;
@@ -180,12 +188,13 @@ bool SingleEndProcessor::process(){
 
     delete[] threads;
     delete[] configs;
-    delete[] transSearchers;
 
     if(leftWriterThread)
         delete leftWriterThread;
     if(failedWriterThread)
         delete failedWriterThread;
+    if (readsKOMapWriterThread)
+        delete readsKOMapWriterThread;
 
     if(!mOptions->split.enabled)
         closeOutput();
@@ -193,12 +202,13 @@ bool SingleEndProcessor::process(){
     return true;
 }
 
-bool SingleEndProcessor::processSingleEnd(ReadPack* pack, ThreadConfig* config, TransSearcher * transSearcher){
+bool SingleEndProcessor::processSingleEnd(ReadPack* pack, ThreadConfig* config){
     string outstr;
     string failedOut;
     int readPassed = 0;
-    std::string KOTag = "";
-    std::multimap<std::string, std::pair<std::string, double> >  preOrgKOAbunMMap;
+    std::string outReadsKOMapStr = "";
+    std::string koTag = "";
+    int mappedReads = 0;
     
     for(int p=0;p<pack->count;p++){
 
@@ -260,14 +270,20 @@ bool SingleEndProcessor::processSingleEnd(ReadPack* pack, ThreadConfig* config, 
         config->addFilterResult(result, 1);
 
         if (r1 != NULL && result == PASS_FILTER) {
-            KOTag.clear();
-            transSearcher->transSearch(r1, KOTag, preOrgKOAbunMMap);
-            if (KOTag.length() > 0 && mLeftWriter) {
-                outstr += r1->toStringWithTag(KOTag);
-                KOTag.clear();
-            }
+            koTag = config->getTransSearcher()->transSearch(r1);
 
-            // stats the read after filtering
+            if (koTag.length() > 0) {
+                mappedReads++;
+                if (mLeftWriter) {
+                    outstr += r1->toStringWithTag(koTag);
+                }
+                if (mReadsKOWriter) {
+                    outReadsKOMapStr += trimName(r1->mName) + "\t" + koTag + "\n";
+                }
+                koTag.clear();
+            }
+            
+            // stats the read after filtering 
             config->getPostStats1()->statRead(r1);
             readPassed++;
         } else if (mFailedWriter) {
@@ -280,54 +296,19 @@ bool SingleEndProcessor::processSingleEnd(ReadPack* pack, ThreadConfig* config, 
         if(r1 != or1 && r1 != NULL)
             delete r1;
     }
+    
 
-    if(mOptions->verbose){
+    if (mOptions->verbose) {
         logMtx.lock();
-        auto rCount = mOptions->transSearch.tmpReadKOPairVec.size();
-        auto kCount = mOptions->transSearch.KOSet.size();
+        mOptions->transSearch.nTransMappedKOReads += mappedReads;
+        auto rCount = mOptions->transSearch.nTransMappedKOReads;
+        auto kCount = mOptions->transSearch.koUSet.size();
         logMtx.unlock();
         std::string str = "Mapped " + std::to_string(rCount) + " reads to " + std::to_string(kCount) + " KOs";
         loginfo(str);
     }
-    
-    //for species hit
-    if (mOptions->mHomoSearchOptions.profiling && preOrgKOAbunMMap.size() > 0) {
-        std::vector<std::string> tmpUniqOrgVec;
-        for (auto it = preOrgKOAbunMMap.begin(), end = preOrgKOAbunMMap.end();
-                it != end; it = preOrgKOAbunMMap.upper_bound(it->first)) {
-            tmpUniqOrgVec.push_back(it->first);
-        }//get unique species
 
-        std::multimap<std::string, double> tmpKOAbunMMap;
-        std::multimap<std::string, std::string> tmpOrgKOMMap;
-        
-        double hits_num;
-        for (auto & it : tmpUniqOrgVec) { 
-            auto itr = preOrgKOAbunMMap.equal_range(it);
-            for(auto itt = itr.first; itt != itr.second; ++ itt){
-                tmpKOAbunMMap.insert(std::make_pair(itt->second.first, itt->second.second));
-            }
-            
-            for (auto itr = tmpKOAbunMMap.begin(), end = tmpKOAbunMMap.end();
-                    itr != end; itr = tmpKOAbunMMap.upper_bound(itr->first)) {
-                auto range = tmpKOAbunMMap.equal_range(itr->first);
-                hits_num = std::accumulate(range.first, range.second, 0.000f, [](double a, std::pair<std::string, double>b) {
-                    return a + b.second;
-                });
-                if (hits_num >= 1) {
-                    tmpOrgKOMMap.insert(std::make_pair(it, itr->first));
-                }
-            }// get  kos -> abundance
-            tmpKOAbunMMap.clear();
-        }
-        preOrgKOAbunMMap.clear();
-        tmpUniqOrgVec.clear();
-        
-        mSpecMtx.lock();
-        preOrgKOMMap.insert(tmpOrgKOMMap.begin(), tmpOrgKOMMap.end());
-        mSpecMtx.unlock();
-        tmpOrgKOMMap.clear();
-    }
+    mappedReads = 0;
         
     // if splitting output, then no lock is need since different threads write different files
     if(!mOptions->split.enabled)
@@ -351,6 +332,13 @@ bool SingleEndProcessor::processSingleEnd(ReadPack* pack, ThreadConfig* config, 
         memcpy(fdata, failedOut.c_str(), failedOut.size());
         mFailedWriter->input(fdata, failedOut.size());
     }
+    
+    if (mReadsKOWriter && !outReadsKOMapStr.empty()) {
+        char* tdata = new char[outReadsKOMapStr.size()];
+        memcpy(tdata, outReadsKOMapStr.c_str(), outReadsKOMapStr.size());
+        mReadsKOWriter->input(tdata, outReadsKOMapStr.size());
+    }
+    
     if(!mOptions->split.enabled)
         mOutputMtx.unlock();
 
@@ -396,7 +384,7 @@ void SingleEndProcessor::producePack(ReadPack* pack){
     //lock.unlock();
 }
 
-void SingleEndProcessor::consumePack(ThreadConfig* config, TransSearcher * transSearcher){
+void SingleEndProcessor::consumePack(ThreadConfig* config){
     ReadPack* data;
     //std::unique_lock<std::mutex> lock(mRepo.mtx);
     // buffer is empty, just wait here.
@@ -426,7 +414,7 @@ void SingleEndProcessor::consumePack(ThreadConfig* config, TransSearcher * trans
     //lock.unlock();
     //mRepo.repoNotFull.notify_all();
 
-    processSingleEnd(data, config, transSearcher);
+    processSingleEnd(data, config);
 
 }
 
@@ -524,7 +512,7 @@ void SingleEndProcessor::producerTask()
         delete[] data;
 }
 
-void SingleEndProcessor::consumerTask(ThreadConfig* config, TransSearcher * transSearcher)
+void SingleEndProcessor::consumerTask(ThreadConfig* config)
 {
     while(true) {
         if(config->canBeStopped()){
@@ -551,11 +539,11 @@ void SingleEndProcessor::consumerTask(ThreadConfig* config, TransSearcher * tran
                 string msg = "thread " + to_string(config->getThreadId() + 1) + " is processing the " + to_string(mRepo.readPos) + " / " + to_string(mRepo.writePos) + " pack";
                 loginfo(msg);
             }
-            consumePack(config, transSearcher);
+            consumePack(config);
             //lock.unlock();
         } else {
             //lock.unlock();
-            consumePack(config, transSearcher);
+            consumePack(config);
         }
     }
 
@@ -564,6 +552,8 @@ void SingleEndProcessor::consumerTask(ThreadConfig* config, TransSearcher * tran
             mLeftWriter->setInputCompleted();
         if(mFailedWriter)
             mFailedWriter->setInputCompleted();
+        if (mReadsKOWriter)
+            mReadsKOWriter->setInputCompleted();
     }
 
     if(mOptions->verbose) {
@@ -589,70 +579,101 @@ void SingleEndProcessor::writeTask(WriterThread* config)
     }
 }
 
-void SingleEndProcessor::S2FReport(){
-    //for reads KO map;
-    if(mOptions->mHomoSearchOptions.profiling && mOptions->mHomoSearchOptions.prefix.size() != 0){
-        fileoutname.clear();
-        fileoutname = mOptions->mHomoSearchOptions.prefix + "_read_KO_map.txt";
-        std::ofstream * fout = new std::ofstream();
-        fout->open(fileoutname.c_str(), std::ofstream::out);
-        if (!fout->is_open()) error_exit("Can not open abundance file: " + fileoutname);
-        if (mOptions->verbose) loginfo("Starting to write read KO mapping table");
-        *fout << "Read_id" << "\t" << "KO" << "\n";
-        for(auto & it : mOptions->transSearch.tmpReadKOPairVec){
-            //std::cout << it.first << " " << it.second << "\n";
-            *fout << trimName(it.first) << "\t" << it.second << "\n";
-        }
-        fout->flush();
-        fout->close();
-        if(fout) delete fout;
-        if (mOptions->verbose) loginfo("Finish to write read KO mapping table");
-    }
-    
-    //for KO abundance file;
-    mOptions->transSearch.transSearchMappedReads = 0;
-    mOptions->transSearch.transSearchMappedReads = mOptions->transSearch.tmpReadKOPairVec.size();
-    std::unordered_map<std::string, int> tmpKOFreqUMap;
-    for(auto & it : mOptions->transSearch.tmpReadKOPairVec){
-        tmpKOFreqUMap[it.second]++;
-    }
-    
-    if(mOptions->samples.size() > 0){
-        mOptions->transSearch.sampleKOAbunUMap.insert(tmpKOFreqUMap.begin(), tmpKOFreqUMap.end());
-    }
-    
-    auto tmpSortedKOFreqVec = sortUMapToVector(tmpKOFreqUMap);
-    if (mOptions->mHomoSearchOptions.prefix.size() != 0) {
-        fileoutname.clear();
-        fileoutname = mOptions->mHomoSearchOptions.prefix + "_KO_abundance.txt";
-        
-        sortedKOFreqTupleVector.clear();
-        std::tuple <std::string, int, std::string> tmpKOTuple;
-        
-        std::ofstream * fout = new std::ofstream();
-        fout->open(fileoutname.c_str(), std::ofstream::out);
-        if (!fout->is_open()) error_exit("Can not open abundance file: " + fileoutname);
-        if (mOptions->verbose) loginfo("Starting to write KO abundance table");
-        *fout << "KO_id" << "\t" << "Reads_count" << "\t" << "KO_name" << "\n";
-        for (auto & it : tmpSortedKOFreqVec) {
-            auto KOName = mOptions->mHomoSearchOptions.ko_fullname_map.find(it.first);
-            if(KOName != mOptions->mHomoSearchOptions.ko_fullname_map.end()){
-                tmpKOTuple = make_tuple(it.first, it.second, KOName->second);
-                sortedKOFreqTupleVector.push_back(tmpKOTuple);
-                *fout << it.first << "\t" << it.second << "\t" << KOName->second << "\n";
-            }
-        }
-        fout->flush();
-        fout->close();
-        if (fout) delete fout;
-        if (mOptions->verbose) loginfo("Finish to write KO abundance table");
+void SingleEndProcessor::prepareResults(std::vector< std::unordered_map<std::string, uint32 > > & totalKoFreqVecResults,
+        std::vector< std::unordered_map<std::string, std::unordered_map<std::string, double> > > & totalOrgKOFreqVecResults) {
+
+    if (mOptions->mHomoSearchOptions.prefix.size() == 0) {
+        error_exit("sample prefix is not specific, quit now!");
     }
 
+    //1. merge KO freq map;
+    std::unordered_map<std::string, uint32 > totalKoFreqUMapResults;
+    for (auto & it : totalKoFreqVecResults) {
+        for (auto & itr : it) {
+            totalKoFreqUMapResults[itr.first] += itr.second;
+        }
+    }
+    totalKoFreqVecResults.clear();
+    totalKoFreqVecResults.shrink_to_fit();
+
+    if (mOptions->samples.size() > 0) {
+        int sampleId = mOptions->getWorkingSampleId(mOptions->mHomoSearchOptions.prefix); // get the working sample id;
+        mOptions->samples.at(sampleId).totalKoFreqUMapResults = totalKoFreqUMapResults;
+    }
+
+    mOptions->transSearch.nTransMappedKOs = totalKoFreqUMapResults.size();
+
+    auto tmpSortedKOFreqVec = sortUMapToVector(totalKoFreqUMapResults);
+
+    std::tuple <std::string, uint32, std::string> tmpKOTuple;
+    fileoutname.clear();
+    fileoutname = mOptions->mHomoSearchOptions.prefix + "_KO_abundance.txt";
+    std::ofstream * fout = new std::ofstream();
+    fout->open(fileoutname.c_str(), std::ofstream::out);
+    if (!fout->is_open()) error_exit("Can not open abundance file: " + fileoutname);
+    if (mOptions->verbose) loginfo("Starting to write KO abundance table");
+    *fout << "#KO_id" << "\t" << "Reads_count" << "\t" << "KO_name" << "\n";
+    for (auto & it : tmpSortedKOFreqVec) {
+        auto KOName = mOptions->mHomoSearchOptions.ko_fullname_map.find(it.first);
+        if (KOName != mOptions->mHomoSearchOptions.ko_fullname_map.end()) {
+            tmpKOTuple = make_tuple(it.first, it.second, KOName->second);
+            mOptions->transSearch.sortedKOFreqTupleVector.push_back(tmpKOTuple);
+            *fout << it.first << "\t" << it.second << "\t" << KOName->second << "\n";
+            mOptions->transSearch.nTransMappedKOReads += it.second;
+        }
+    }
+
+    fout->flush();
+    fout->close();
+    if (fout) delete fout;
+    if (mOptions->verbose) loginfo("Finish to write KO abundance table");
     tmpSortedKOFreqVec.clear();
-    mOptions->transSearch.tmpReadKOPairVec.clear();
-    
-     //for pathway KO map;
-    if (mOptions->mHomoSearchOptions.profiling && tmpKOFreqUMap.size() > 0) {
+    tmpSortedKOFreqVec.shrink_to_fit();
+
+    //2. rarefiction curve;
+    if (mOptions->mHomoSearchOptions.profiling) {
+        std::vector<std::string> reshuff_vec;
+        reshuff_vec.reserve(mOptions->transSearch.nTransMappedKOReads);
+        for (auto & it : totalKoFreqUMapResults) {
+            for (int i = 0; i < it.second; i++) {
+                reshuff_vec.push_back(it.first);
+            }
+        }
+        auto future_rarefaction = std::async(std::launch::async,
+                [](std::vector<std::string> reshuff_vec,
+                long total_reads_html_report) {
+                    std::random_shuffle(reshuff_vec.begin(), reshuff_vec.end());
+                    int total = reshuff_vec.size();
+                    double ratio = total_reads_html_report / total;
+                    int step = 50;
+                    int step_size = floor(total / step);
+                    auto first = reshuff_vec.begin();
+                    std::map<long, int> rarefaction_map_tmp;
+                    rarefaction_map_tmp.insert(pair<long, int>(0, 0));
+                    for (int i = 1; i < step; i++) {
+                        auto last = reshuff_vec.begin() + step_size * i;
+                                std::vector<std::string> rarefaction_vec(first, last);
+                                std::sort(rarefaction_vec.begin(), rarefaction_vec.end());
+                                int unic = std::unique(rarefaction_vec.begin(), rarefaction_vec.end()) - rarefaction_vec.begin();
+                                rarefaction_map_tmp[(long) round((step_size * i) * ratio)] = unic;
+                                rarefaction_vec.clear();
+                    }
+                    std::sort(reshuff_vec.begin(), reshuff_vec.end());
+                    int unic = std::unique(reshuff_vec.begin(), reshuff_vec.end()) - reshuff_vec.begin();
+                    rarefaction_map_tmp.insert(pair<long, int>(total_reads_html_report, unic));
+                    reshuff_vec.clear();
+                    return (rarefaction_map_tmp);
+                    rarefaction_map_tmp.clear();
+                }, reshuff_vec, mOptions->mHomoSearchOptions.nTotalReads);
+
+        future_rarefaction.wait();
+        mOptions->transSearch.rarefactionMap = future_rarefaction.get();
+        reshuff_vec.clear();
+        reshuff_vec.shrink_to_fit();
+    }
+
+    //3. pathway
+    if (mOptions->mHomoSearchOptions.profiling) {
         fileoutname.clear();
         fileoutname = mOptions->mHomoSearchOptions.prefix + "_pathway_hits.txt";
         std::ofstream * fout = new std::ofstream();
@@ -660,12 +681,14 @@ void SingleEndProcessor::S2FReport(){
         if (!fout->is_open()) error_exit("Can not open pathway hits file: " + fileoutname);
         if (mOptions->verbose) loginfo("Starting to write pathway hits table");
         *fout << "Pathway_ID" << "\t" << "Pathway_Name" << "\t" << "KO_ID" << "\t" << "KO_count" << "\t" << "KO_Name" << "\n";
+
         std::vector<std::string> tmpPathwayVec; //for report;
+        tmpPathwayVec.reserve(totalKoFreqUMapResults.size());
         std::string pathwayID;
         std::string pathwayName;
         for (auto & it : mOptions->mHomoSearchOptions.pathway_ko_multimap) {
-            auto itr = tmpKOFreqUMap.find(it.second); //get the KO abundance;
-            if (itr != tmpKOFreqUMap.end()) {
+            auto itr = totalKoFreqUMapResults.find(it.second); //get the KO abundance;
+            if (itr != totalKoFreqUMapResults.end()) {
                 tmpPathwayVec.push_back(it.first); //for report;
                 std::string::size_type pos = it.first.find_first_of(":");
                 pathwayID = it.first.substr(0, pos);
@@ -683,104 +706,101 @@ void SingleEndProcessor::S2FReport(){
         if (fout) delete fout;
         if (mOptions->verbose) loginfo("Finish to write pathway hits table");
 
+        totalKoFreqUMapResults.clear();
+
         //get the freq pathway map;
         std::unordered_map<std::string, int> tmpPathwayMap;
         for (auto & it : tmpPathwayVec) {
             tmpPathwayMap[it]++;
         }
-        tmpPathwayVec.clear();
+
+        if (mOptions->samples.size() > 0) {
+            int sampleId = mOptions->getWorkingSampleId(mOptions->mHomoSearchOptions.prefix); // get the working sample id;
+            mOptions->samples.at(sampleId).totalPathwayMap = tmpPathwayMap;
+        }
         
+        mOptions->transSearch.nMappedPathways = tmpPathwayMap.size();
+
+        tmpPathwayVec.clear();
+        tmpPathwayVec.shrink_to_fit();
+
         std::vector<std::tuple<std::string, double, int, int> > tmpPathwayDoubleIntVec;
-        for(auto & it : tmpPathwayMap){
+        for (auto & it : tmpPathwayMap) {
             auto itr = mOptions->mHomoSearchOptions.pathway_ko_stats_umap.find(it.first);
-            if(itr != mOptions->mHomoSearchOptions.pathway_ko_stats_umap.end()){
-                double perc = getPercetageInt(it.second, itr->second);
+            if (itr != mOptions->mHomoSearchOptions.pathway_ko_stats_umap.end()) {
+                double perc = getPercentage(it.second, itr->second);
                 auto itt = std::make_tuple(it.first, perc, it.second, itr->second);
                 tmpPathwayDoubleIntVec.push_back(itt);
             }
         }
         tmpPathwayMap.clear();
-        
+
         //sort the freq pathway map;
         auto tmpPathwayFreqSortedVec = sortTupleVector(tmpPathwayDoubleIntVec);
         tmpPathwayDoubleIntVec.clear();
-        
+        tmpPathwayDoubleIntVec.shrink_to_fit();
+
         std::tuple<std::string, double, std::string, int, int> tmpPathwayTuple;
-        sortedPathwayFreqTupleVector.clear();
+
         for (auto & it : tmpPathwayFreqSortedVec) {
             std::string pathwayIDName = get<0>(it);
             std::string::size_type pos = pathwayIDName.find_first_of(":");
             pathwayID = pathwayIDName.substr(0, pos);
             pathwayName = pathwayIDName.substr(pos + 1);
             tmpPathwayTuple = make_tuple(pathwayID, get<1>(it), pathwayName, get<2>(it), get<3>(it));
-            sortedPathwayFreqTupleVector.push_back(tmpPathwayTuple);
+            mOptions->transSearch.sortedPathwayFreqTupleVector.push_back(tmpPathwayTuple); //for report in html;
             pathwayID.clear();
             pathwayName.clear();
         }
         tmpPathwayFreqSortedVec.clear();
+        tmpPathwayFreqSortedVec.shrink_to_fit();
     }
 
-//rarefaction curve;
+    totalKoFreqUMapResults.clear();
+
+    //4.for species;
     if (mOptions->mHomoSearchOptions.profiling) {
-        std::vector<std::string> reshuff_vec;
-        for (auto & it : tmpKOFreqUMap) {
-            for (int i = 0; i < it.second; i++) {
-                reshuff_vec.push_back(it.first);
-            }
+        std::unordered_map<std::string, int> orgKOUMap;
+        std::multimap<std::string, std::unordered_map<std::string, double> > tmpOrgKOFeqUMap;
+        for (auto & it : totalOrgKOFreqVecResults) {
+            tmpOrgKOFeqUMap.insert(it.begin(), it.end());
         }
-        auto future_rarefaction = std::async(std::launch::async,
-                [](std::vector<std::string> reshuff_vec,
-                long total_reads_html_report) {
-                    std::random_shuffle(reshuff_vec.begin(), reshuff_vec.end());
-                    int total = reshuff_vec.size();
-                    double ratio = total_reads_html_report / total;
-                    int step = 100;
-                    int step_size = floor(total / step);
-                    auto first = reshuff_vec.begin();
-                    std::map<int, int> rarefaction_map_tmp;
-                    rarefaction_map_tmp.insert(pair<int, int>(0, 0));
-                    for (int i = 1; i < step; i++) {
-                        auto last = reshuff_vec.begin() + step_size * i;
-                                std::vector<std::string> rarefaction_vec(first, last);
-                                std::sort(rarefaction_vec.begin(), rarefaction_vec.end());
-                                int unic = std::unique(rarefaction_vec.begin(), rarefaction_vec.end()) - rarefaction_vec.begin();
-                                rarefaction_map_tmp[(int) round((step_size * i) * ratio)] = unic;
-                                rarefaction_vec.clear();
-                    }
-                    std::sort(reshuff_vec.begin(), reshuff_vec.end());
-                    int unic = std::unique(reshuff_vec.begin(), reshuff_vec.end()) - reshuff_vec.begin();
-                    rarefaction_map_tmp.insert(pair<int, int>(total_reads_html_report, unic));
-                    reshuff_vec.clear();
-                    return (rarefaction_map_tmp);
-                    rarefaction_map_tmp.clear();
-                }, reshuff_vec, mOptions->mHomoSearchOptions.totalOrigReads);
-                
-       future_rarefaction.wait();
-       rarefaction_map = future_rarefaction.get();
-       reshuff_vec.clear();
-    }
-    tmpKOFreqUMap.clear();
 
-    //for species hit
-    if (mOptions->mHomoSearchOptions.profiling && preOrgKOMMap.size() > 0) {
-        std::vector<std::string> tmpUniqOrgVec;
-        std::unordered_set<std::string> KOUSet;
-        std::unordered_map<std::string, int> tmpSpecHItMap;
-        for(auto it = preOrgKOMMap.begin(), end = preOrgKOMMap.end();
-                it != end; it = preOrgKOMMap.upper_bound(it->first)){
-            auto itr = preOrgKOMMap.equal_range(it->first);
-            KOUSet.clear();
-            for(auto itt = itr.first; itt != itr.second; ++ itt){
-                KOUSet.insert(itt->second);
+        for (auto it = tmpOrgKOFeqUMap.begin(); it != tmpOrgKOFeqUMap.end(); it = tmpOrgKOFeqUMap.upper_bound(it->first)) {
+            auto org = it->first;
+            auto orgKO = tmpOrgKOFeqUMap.equal_range(org);
+
+            std::multimap<std::string, double> tmpKOFreqMMap;
+            for (auto & itt = orgKO.first; itt != orgKO.second; itt++) {
+                tmpKOFreqMMap.insert(itt->second.begin(), itt->second.end());
             }
-            tmpSpecHItMap.insert(std::make_pair(it->first, KOUSet.size()));
-        }
-        preOrgKOMMap.clear();
-        tmpUniqOrgVec.clear();
-        KOUSet.clear();
 
-        sortedOrgKOFreqVec = sortUMapToVector(tmpSpecHItMap);
-        tmpSpecHItMap.clear();
+            std::unordered_map<std::string, double> tmpKOFreqMap;
+            for (auto itk = tmpKOFreqMMap.begin(); itk != tmpKOFreqMMap.end(); itk = tmpKOFreqMMap.upper_bound(itk->first)) {
+                auto ko = itk->first;
+                auto koFreq = tmpKOFreqMMap.equal_range(ko);
+                for (auto & itko = koFreq.first; itko != koFreq.second; itko++) {
+                    tmpKOFreqMap[itko->first] += itko->second;
+                }
+            }
+            tmpKOFreqMMap.clear();
+            int nKOs = 0;
+            for (auto & ko : tmpKOFreqMap) {
+                if (ko.second > 1) {
+                    nKOs++;
+                }
+            }
+            tmpKOFreqMap.clear();
+            orgKOUMap[org] = nKOs;
+        }
+        tmpOrgKOFeqUMap.clear();
+
+        if (mOptions->samples.size() > 0) {
+            int sampleId = mOptions->getWorkingSampleId(mOptions->mHomoSearchOptions.prefix); // get the working sample id;
+            mOptions->samples.at(sampleId).totalOrgKOUMap = orgKOUMap;
+        }
+        
+        auto sortedOrgKOFreqVec = sortUMapToVector(orgKOUMap);
         fileoutname.clear();
         fileoutname = mOptions->mHomoSearchOptions.prefix + "_species_hits.txt";
         std::ofstream * fout = new std::ofstream();
@@ -795,5 +815,35 @@ void SingleEndProcessor::S2FReport(){
         fout->close();
         if (fout) delete fout;
         if (mOptions->verbose) loginfo("Finish to write species hits table");
+        mOptions->transSearch.sortedOrgFreqVec = sortedOrgKOFreqVec;
+        mOptions->transSearch.nMappedOrgs = sortedOrgKOFreqVec.size();
+        sortedOrgKOFreqVec.clear();
+        sortedOrgKOFreqVec.shrink_to_fit();
+    }
+
+    time_t t_finished = time(NULL);
+    mOptions->transSearch.endTime = t_finished;
+    mOptions->transSearch.timeLapse = difftime(mOptions->transSearch.endTime, mOptions->transSearch.startTime);
+    if (mOptions->samples.size() > 0) {
+        int sampleId = mOptions->getWorkingSampleId(mOptions->mHomoSearchOptions.prefix); // get the working sample id;
+        mOptions->samples.at(sampleId).totalRawReads = mOptions->mHomoSearchOptions.nTotalReads;
+        mOptions->samples.at(sampleId).totalCleanReads = mOptions->mHomoSearchOptions.nCleanReads;
+        mOptions->samples.at(sampleId).cleanReadsRate = double(mOptions->samples.at(sampleId).totalCleanReads * 100) /  double(mOptions->samples.at(sampleId).totalRawReads);
+        
+        mOptions->samples.at(sampleId).nKODb = mOptions->transSearch.nKODB;
+        mOptions->samples.at(sampleId).nKO = mOptions->transSearch.nTransMappedKOs;
+        mOptions->samples.at(sampleId).koRate = double(mOptions->samples.at(sampleId).nKO * 100) / double(mOptions->samples.at(sampleId).nKODb);
+        
+        mOptions->samples.at(sampleId).transSearchMappedKOReads = mOptions->transSearch.nTransMappedKOReads;
+        mOptions->samples.at(sampleId).mappedKOReadsRate = double(mOptions->samples.at(sampleId).transSearchMappedKOReads * 100) / double(mOptions->samples.at(sampleId).totalRawReads);
+        
+        mOptions->samples.at(sampleId).nPathwaysDb = mOptions->transSearch.nPathwaysDB;
+        mOptions->samples.at(sampleId).nMappedPathways = mOptions->transSearch.nMappedPathways;
+        mOptions->samples.at(sampleId).nOrgsDB = mOptions->transSearch.nOrgsDB;
+        mOptions->samples.at(sampleId).nMappedOrgs = mOptions->transSearch.nMappedOrgs;
+        mOptions->samples.at(sampleId).startTime = mOptions->transSearch.startTime;
+        mOptions->samples.at(sampleId).endTime = mOptions->transSearch.endTime;
+        mOptions->samples.at(sampleId).timeLapse = mOptions->transSearch.timeLapse;
+        mOptions->samples.at(sampleId).rarefactionMap = mOptions->transSearch.rarefactionMap;
     }
 }

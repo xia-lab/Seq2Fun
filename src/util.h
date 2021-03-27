@@ -20,6 +20,7 @@
 #include <tuple>
 #include <utility>
 #include <numeric>
+#include<string>  
 
 #ifdef WINDOWS
 #include <direct.h>
@@ -136,8 +137,7 @@ inline int split(const string& str, vector<string>& ret_, string sep = ",")
     return 0;
 }
 
-inline int splitStr(const string& str, vector<string>& ret_, string sep = ",")
-{
+inline int splitStr(const string& str, vector<string>& ret_, string sep = ","){
     if (str.empty())
     {
         return 0;
@@ -385,7 +385,7 @@ inline void loginfo(const string s){
     logmtx.lock();
     time_t tt = time(NULL);
     tm* t= localtime(&tt);
-    cerr<<"["<<t->tm_hour<<":"<<t->tm_min<<":"<<t->tm_sec<<"] "<<s<<endl;
+    cerr<<"["<<t->tm_hour<<":"<<t->tm_min<<":"<<t->tm_sec<<"] " << s <<endl;
     logmtx.unlock();
 }
 
@@ -435,8 +435,7 @@ inline std::string getUniqStrFromVec(std::vector<std::string> & vectorko) {
     return uniq;
 }
 
-inline string removeStr(const string &str, const string &src)
-{
+inline string removeStr(const string &str, const string &src){
     string ret;
     string::size_type pos_begin = 0;
     string::size_type pos = str.find(src);
@@ -453,20 +452,55 @@ inline string removeStr(const string &str, const string &src)
     return ret;
 }
 
-inline double getPercetage(int v1, long v2){
+template<class T1, class T2>
+double getPercentage(T1 v1, T2 v2){
    double ret = double (v1 * 100) / (double) v2;
    return ret;
 }
 
-inline double getPercetageInt(int v1, int v2){
-   double ret = double (v1 * 100) / (double) v2;
-   return ret;
+//inline double getPercetage(int v1, long v2){
+//   double ret = double (v1 * 100) / (double) v2;
+//   return ret;
+//}
+//
+//inline double getPercetageInt(int v1, int v2){
+//   double ret = double (v1 * 100) / (double) v2;
+//   return ret;
+//}
+
+template <class T>
+void colorCout(const T & str, string color = "red") {
+    if (color == "red") {
+        std::cout << "\033[1;31m" << str << "\033[0m\n";
+    } else if (color == "green") {
+        std::cout << "\033[1;32m" << str << "\033[0m\n";
+    } else if (color == "yellow") {
+        std::cout << "\033[1;33m" << str << "\033[0m\n";
+    } else if (color == "blue") {
+        std::cout << "\033[1;34m" << str << "\033[0m\n";
+    } else if (color == "magenta") {
+        std::cout << "\033[1;35m" << str << "\033[0m\n";
+    } else if (color == "cyan") {
+        std::cout << "\033[1;36m" << str << "\033[0m\n";
+    } else if (color == "white") {
+        std::cout << "\033[1;37m" << str << "\033[0m\n";
+    } else {
+        std::cout << "\033[1;30m" << str << "\033[0m\n";
+    }
 }
 
-inline std::vector<std::pair<std::string, int> > sortUMapToVector(std::unordered_map<std::string, int> &unMap)
+template<typename T>
+std::string unkown2Str(const T & t){
+    std::ostringstream os;
+    os << t;
+    return os.str();
+}
+
+template <class T>
+std::vector<std::pair<std::string, T> > sortUMapToVector(std::unordered_map<std::string, T> &unMap)
 {
     int size = unMap.size();
-    std::vector<std::pair<std::string, int>> sortedVec(size);
+    std::vector<std::pair<std::string, T>> sortedVec(size);
     std::partial_sort_copy(unMap.begin(),
                            unMap.end(),
                            sortedVec.begin(),
@@ -514,51 +548,16 @@ inline void stripChar(std::string & s) {
     }
 }
 
-inline void writeSampleKOTable(std::vector< std::pair<std::string, std::unordered_map<std::string, int> > > & sampleKOTableVec, Options & opt){
+template<typename T>
+inline std::string convertSeconds(const T & t){
+    long seconds, minutes, hours;
+    seconds = long(t);
+    minutes = t / 60;
+    hours = minutes / 60;
     
-    std::set<std::string> allKOIdsSet;//unique kos
-    for(auto & it : sampleKOTableVec){
-        auto itr = it.second;
-        for(auto & itt : itr){
-            allKOIdsSet.insert(itt.first);
-        }
-    }
-    
-    std::map<std::string, std::string> KOPairMap;
-    for(auto & it : allKOIdsSet){
-        auto KOPair = opt.mHomoSearchOptions.ko_fullname_map.find(it);
-        if(KOPair != opt.mHomoSearchOptions.ko_fullname_map.end()){
-            KOPairMap.insert(std::make_pair(it, KOPair->second));
-        }
-    }
-    allKOIdsSet.clear();
-    
-    std::string fileoutname = joinpath(opt.samples.front().path, "All_sample_KO_abundance_table.txt");
-    std::ofstream * fout = new std::ofstream();
-    fout->open(fileoutname.c_str(), std::ofstream::out);
-    if(!fout->is_open()) error_exit("Can not open all_all_sample_KO_abundance_table.txt");
-    if (opt.verbose) loginfo("Starting to write all samples KO abundance table");
-
-    *fout << "KO_ID" << "\t";
-    for (auto & it : sampleKOTableVec) {
-        *fout << basename(it.first) << "\t";
-    }
-    *fout << "KO_name\n";
-
-    for (auto & it : KOPairMap) {
-        *fout << it.first << "\t";
-        for (auto & itt : sampleKOTableVec) {
-            auto KOValue = itt.second.find(it.first);
-            if (KOValue != itt.second.end()) {
-                *fout << KOValue->second << "\t";
-            } else {
-                *fout << 0 << "\t";
-            }
-        }
-        *fout << it.second << "\n";
-    }
-    fout->close();
-    if (fout) delete fout;
+    std::stringstream ss;
+    ss << hours << " hours "  << minutes % 60 << " minutes " << seconds % 60 << " seconds";
+    return ss.str();
 }
 
 #endif /* UTIL_H */

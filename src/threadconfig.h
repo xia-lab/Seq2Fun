@@ -9,12 +9,14 @@
 #include "writer.h"
 #include "options.h"
 #include "filterresult.h"
+#include "transsearcher.hpp"
+#include "bwtfmiDB.h"
 
 using namespace std;
 
 class ThreadConfig{
 public:
-    ThreadConfig(Options* opt, int threadId, bool paired = false);
+    ThreadConfig(Options* opt, BwtFmiDB* tbwtfmiDB, int threadId, bool paired = false);
     ~ThreadConfig();
     inline Stats* getPreStats1() {return mPreStats1;}
     inline Stats* getPostStats1() {return mPostStats1;}
@@ -23,6 +25,7 @@ public:
     inline Writer* getWriter1() {return mWriter1;}
     inline Writer* getWriter2() {return mWriter2;}
     inline FilterResult* getFilterResult() {return mFilterResult;}
+    inline TransSearcher* getTransSearcher(){return mTransSearcher;}
 
     void initWriter(string filename1);
     void initWriter(string filename1, string filename2);
@@ -61,6 +64,9 @@ private:
     int mWorkingSplit;
     long mCurrentSplitReads;
     bool mCanBeStopped;
+    
+    TransSearcher* mTransSearcher;
+    BwtFmiDB* mBwtfmiDB;
 };
 
 #endif

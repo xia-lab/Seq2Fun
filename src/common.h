@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#define SEQ2FUNR_VER "1.1.2"
+#define SEQ2FUNR_VER "1.2.0"
 
 #define _DEBUG false
 

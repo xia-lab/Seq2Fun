@@ -792,7 +792,7 @@ void Stats::reportHtmlQuality(ofstream& ofs, string filteringType, string readNa
                 x[total] = (int)pos;
                 total++;
             }
-            // make sure lsat one is contained
+            // make sure last one is contained
             if(x[total-1] != mCycles){
                 x[total] = mCycles;
                 total++;
@@ -809,6 +809,12 @@ void Stats::reportHtmlQuality(ofstream& ofs, string filteringType, string readNa
         json_str += "mode:'lines',";
         json_str += "line:{color:'" + colors[b] + "', width:1}\n";
         json_str += "},";
+        if(b == 4) {
+            if (mOptions->samples.size() > 0) {
+                int sampleId = mOptions->getWorkingSampleId(mOptions->mHomoSearchOptions.prefix); // get the working sample id;
+                mOptions->samples.at(sampleId).totoalReadsQualityVec.push_back(std::make_tuple(list2string(x, total), list2string(mQualityCurves[base], total, x), total));
+            }
+        }
     }
     json_str += "];\n";
     json_str += "var layout={title:'" + title + "', xaxis:{title:'position'";

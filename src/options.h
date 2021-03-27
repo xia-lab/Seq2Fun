@@ -11,7 +11,10 @@
 #include <iostream>
 #include <sstream>
 #include <set>
-//#include "bwtfmiDB.h"
+#include <unordered_set>
+#include <tuple>
+
+#include "common.h"
 
 using namespace std;
 
@@ -328,9 +331,69 @@ enum CodonTable {
     codontable33
 };
 
+class Sample{
+public:
+    Sample(){
+        prefix = "";
+        path = "";
+        in1 = "";
+        in2 = "";
+
+        nKO = 0;
+        nKODb = 0;
+        koRate = 0;
+        
+        transSearchMappedKOReads = 0;
+        mappedKOReadsRate = 0;
+        
+        totalCleanReads = 0;
+        cleanReadsRate = 0;
+        totalRawReads = 0;
+        timeLapse = 0;
+        tMode = tGREEDY;
+        tCodonTable = codontable1;
+        nPathwaysDb = 0;
+        nMappedPathways = 0;
+        nOrgsDB = 0;
+        nMappedOrgs = 0;
+        totalKoFreqUMapResults.clear();
+        rarefactionMap.clear();
+        totalPathwayMap.clear();
+        totalOrgKOUMap.clear();
+        totoalReadsQualityVec.clear();
+    }
+    
+public:
+    string prefix;
+    string path;
+    string in1;
+    string in2;
+    int nKO;
+    int nKODb;
+    double koRate;
+    long transSearchMappedKOReads;
+    double mappedKOReadsRate;
+    long totalCleanReads;
+    double cleanReadsRate;
+    long totalRawReads;
+    int nPathwaysDb;
+    int nMappedPathways;
+    int nOrgsDB;
+    int nMappedOrgs;
+    time_t startTime;
+    time_t endTime;
+    long timeLapse;
+    Mode tMode;
+    CodonTable tCodonTable;
+    std::unordered_map<std::string, uint32 > totalKoFreqUMapResults;
+    std::map<long, int> rarefactionMap;
+    std::unordered_map<std::string, int> totalPathwayMap;
+    std::unordered_map<std::string, int> totalOrgKOUMap;
+    std::vector<std::tuple<string, std::string, int> > totoalReadsQualityVec;
+};
+
 class TransSearchOptions {
 public:
-
     TransSearchOptions() {
         mode = tGREEDY;
         codonTable = codontable1;
@@ -346,13 +409,37 @@ public:
 
         size_t max_matches_SI = 10000;
         size_t max_match_ids = 10000;
-        tmpReadKOPairVec.clear();
-        transSearchMappedReads = (long) 0;
+
         transSearchFinished = false;
         sampleKOAbunUMap.clear();
-        KOSet.clear();
+        koUSet.clear();
+        nTransMappedKOReads = 0;
+        nKODB = 0;
+        nTransMappedKOs = 0;
+        sortedKOFreqTupleVector.clear();
+        rarefactionMap.clear();
+        sortedPathwayFreqTupleVector.clear();
+        nPathwaysDB = 0;
+        sortedOrgFreqVec.clear();
+        nOrgsDB = 0;
+        nMappedOrgs = 0;
+        timeLapse = 0;
     }
 
+    void reset2Default() {
+        transSearchFinished = false;
+        sampleKOAbunUMap.clear();
+        koUSet.clear();
+        nTransMappedKOReads = 0;
+        nTransMappedKOs = 0;
+        sortedKOFreqTupleVector.clear();
+        rarefactionMap.clear();
+        sortedPathwayFreqTupleVector.clear();
+        sortedOrgFreqVec.clear();
+        nMappedOrgs = 0;
+        timeLapse = 0;
+    }
+    
 public:
     string tfmi;
     string tmode;
@@ -370,27 +457,45 @@ public:
     size_t max_matches_SI;
     size_t max_match_ids;
 
+    time_t startTime;
+    time_t endTime;
+    long timeLapse;
     Mode mode;
     CodonTable codonTable;
-    long transSearchMappedReads;
-    std::set<std::string> KOSet;
+    std::unordered_set<std::string> koUSet;
+    long nTransMappedKOReads;
+    unsigned int nKODB;
+    unsigned int nTransMappedKOs;
+    int nMappedPathways;
+    int nPathwaysDB;
+    int nOrgsDB;
+    int nMappedOrgs;
+    std::vector< std::tuple <std::string, uint32, std::string> > sortedKOFreqTupleVector;
+    std::vector<std::tuple<std::string, double, std::string, int, int> > sortedPathwayFreqTupleVector;
+    std::map<long, int> rarefactionMap;
+    std::vector<std::pair<std::string, int> > sortedOrgFreqVec;
     std::unordered_map<std::string, int> sampleKOAbunUMap;
-    std::vector<std::pair<std::string, std::string>> tmpReadKOPairVec; //KO freq;
     bool transSearchFinished;
 };
 
 class HomoSearchOptions {
 public:
-
     HomoSearchOptions() {
         profiling = false;
-        totalOrigReads = (long) 0;
-        totalKOs = 0;
         genemap = "";
         prefix = "";
         sampleTable = "";
         pathway = "";
         genefa = "";
+        nCleanReads = 0;
+        nTotalReads = 0;
+        commandStr = "";
+    }
+
+    void reset2Default() {
+        nCleanReads = 0;
+        nTotalReads = 0;
+        commandStr = "";
     }
 
 public:
@@ -400,8 +505,8 @@ public:
     std::string pathway;
     std::string genefa;
     bool profiling;
-    long totalOrigReads;
-    int totalKOs;
+    long nCleanReads;
+    long nTotalReads;
 
     std::map<std::string, std::string> db_map;
     std::map<std::string, std::string> org_map;
@@ -411,22 +516,7 @@ public:
 
     std::ifstream filein;
     std::string fileName;
-};
-
-class Sample {
-public:
-
-    Sample() {
-        prefix = "";
-        path = "";
-        in1 = "";
-        in2 = "";
-    }
-public:
-    string prefix;
-    string path;
-    string in1;
-    string in2;
+    std::string commandStr;
 };
 
 class Options {
@@ -458,6 +548,8 @@ public:
     string out2;
     // enable output mapped reads
     bool outputMappedCleanReads;
+    bool outputReadsKOMap;
+    string outReadsKOMap;
 
     //seq2fun file dir;
     string seq2funProgPath;
@@ -541,6 +633,7 @@ public:
     HomoSearchOptions mHomoSearchOptions;
     //BwtFmiDB tbwtfmiDB;
     std::vector<Sample> samples;
+    int getWorkingSampleId(string & samplePrefix); 
 };
 
 #endif

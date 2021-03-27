@@ -30,8 +30,11 @@ Options::Options(){
     verbose = false;
     debug = false;
     outputMappedCleanReads = false;
+    outputReadsKOMap = false;
+    outReadsKOMap = "";
     seqLen1 = 151;
     seqLen2 = 151;
+    samples.clear();
 }
 
 void Options::init() {
@@ -298,9 +301,9 @@ bool Options::validate() {
 
     if(thread < 1) {
         thread = 1;
-    } else if(thread > 16) {
+    } else if(thread > 32) {
         cerr << "WARNING: Seq2Fun uses up to 16 threads although you specified " << thread << endl;
-        thread = 16;
+        thread = 32;
     }
 
     if(trim.front1 < 0 || trim.front1 > 30)
@@ -535,20 +538,24 @@ void Options::readDB() {
             std::string msg = "Reading gene KO species map from file " + mHomoSearchOptions.genemap;
             loginfo(msg);
         }
-        std::vector<std::string> KVec;
+        std::unordered_set<std::string> KUSet;
+        std::unordered_set<std::string> orgUSet;
         mHomoSearchOptions.filein.open(mHomoSearchOptions.genemap.c_str());
         if(!mHomoSearchOptions.filein.is_open()) error_exit("Can not open gene KO species map file : " + mHomoSearchOptions.genemap);        
         std::string s1, s2, s3;
         while(mHomoSearchOptions.filein >> s1 >> s2 >> s3){
             mHomoSearchOptions.db_map[s1] = s2;
             mHomoSearchOptions.org_map[s1] = s3;
-            KVec.push_back(s2);
+            KUSet.insert(s2);
+            orgUSet.insert(s3);
         }
         mHomoSearchOptions.filein.close(); 
         mHomoSearchOptions.filein.clear();
-        getUniqVec(KVec);
-        mHomoSearchOptions.totalKOs = KVec.size();
-        KVec.clear();
+        transSearch.nKODB = KUSet.size();
+        transSearch.nOrgsDB = orgUSet.size();
+        KUSet.clear();
+        orgUSet.clear();
+        
     } else {
         error_exit("Gene KO species map file is empty : " + mHomoSearchOptions.genemap);
     }
@@ -583,10 +590,14 @@ void Options::readDB() {
         }
         mHomoSearchOptions.filein.open(mHomoSearchOptions.fileName.c_str());
         if (!mHomoSearchOptions.filein.is_open()) error_exit("Can not open KO pathway map file : " + mHomoSearchOptions.fileName);
+        std::unordered_set<std::string> pathwayUSet;
         std::string s1, s2;
         while (mHomoSearchOptions.filein >> s1 >> s2) {
+            pathwayUSet.insert(s1);
             mHomoSearchOptions.pathway_ko_multimap.insert(std::make_pair(s1, s2));
         }
+        transSearch.nPathwaysDB = pathwayUSet.size();
+        pathwayUSet.clear();
         mHomoSearchOptions.filein.close();
         mHomoSearchOptions.filein.clear();
     } else {
@@ -759,4 +770,14 @@ void Options::mkSelectedPathwayDB(){
     system(comandss.str().c_str());
     comandss.str();
     transSearch.tfmi = f_name + ".fmi";
+}
+
+int Options::getWorkingSampleId(string & samplePrefix){
+    int j = 0;
+    for(int i = 0; i < samples.size(); i++){
+        if(samples.at(i).prefix == samplePrefix){
+            j = i;
+        }
+    }
+    return j;
 }

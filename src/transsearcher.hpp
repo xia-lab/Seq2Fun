@@ -33,6 +33,7 @@
 #include "fragment.h"
 #include "options.h"
 #include "bwtfmiDB.h"
+#include "common.h"
 
 extern "C" {
 #include "bwt/bwt.h"
@@ -66,7 +67,6 @@ protected:
     unsigned int best_match_score = 0;
     std::string extraoutput = "";
     double query_len;
-    std::ostringstream output;
     uint32_t read_count = 0;
 
     void clearFragments();
@@ -78,7 +78,7 @@ protected:
     void eval_match_scores(SI *si, Fragment *);
     void getAllFragmentsBits(const std::string & line);
     void getLongestFragmentsBits(const std::string & line);
-    void flush_output(std::multimap<std::string, std::pair<std::string, double> > & preOrgKOAbunMMap);
+    void flush_output();
 
 protected:
     void classify_length();
@@ -86,20 +86,31 @@ protected:
     void ids_from_SI(SI *);
     void ids_from_SI_recursive(SI *);
     std::set<char *> match_ids;
-
+    
     std::vector<std::string> tmpKOVec;
-    std::pair<std::string, std::string> tmpReadKOPair;
-    std::multimap<std::string, std::string> tmpKOProteinMMap;
-    std::multimap<std::string, std::pair<std::string, double> > tmpOrgKOAbunMultiMap;
-    std::multimap<std::string, std::pair<std::string, double> >  tmpOrgKOAbunMMap;
+    std::set<std::string> orgSet;
+    std::unordered_set<std::string> koUSet;
+//    std::pair<std::string, std::string> tmpReadKOPair;
+    std::unordered_multimap<std::string, std::string> tmpKOProteinUMMap;
+    std::unordered_multimap<std::string, std::pair<std::string, double> > tmpOrgKOAbunUMMap;
+    std::multimap<std::string, double> tmpKOFreqMMap; //for org;
+    std::unordered_map<std::string, double> tmpKOFreqUMap; //for org;
+    std::unordered_map<std::string, uint32 > subKoFreqUMap;
+    std::unordered_multimap<std::string, std::unordered_map<std::string, double> > subOrgKOAbunUMMap;
+    std::unordered_map<std::string, std::unordered_map<std::string, double> > priOrgKOAbunUMap;
+    std::unordered_map<std::string, std::vector<std::string> > subPathwayUMap;
+    //std::multimap<std::string, std::pair<std::string, double> >  tmpOrgKOAbunMMap;
     
     Options * mOptions;   
     BwtFmiDB * tbwtfmiDB;
     
 public:
-    TransSearcher(BwtFmiDB * tbwtfmiDB, Options * opt);
-    void transSearch(Read * item, std::string & KOTag, std::multimap<std::string, std::pair<std::string, double> > & preOrgKOAbunMMap);
-    void transSearch(Read * item1, Read * item2, std::string & KOTag, std::multimap<std::string, std::pair<std::string, double> > & preOrgKOAbunMMap);
+    TransSearcher(Options * opt, BwtFmiDB * tbwtfmiDB);
+    std::string transSearch(Read * item);
+    std::string transSearch(Read * item1, Read * item2);
+    inline std::unordered_map<std::string, uint32 > getSubKoFreqUMap(){return subKoFreqUMap;};
+    std::unordered_map<std::string, std::unordered_map<std::string, double> > getSubOrgKOAbunUMap();
+    std::unordered_map<std::string, std::vector<std::string> > getSubPathwayUMap();
 };
 
 
