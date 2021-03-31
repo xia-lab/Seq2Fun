@@ -457,7 +457,7 @@ We have followed the codon tables from [NCBI](https://www.ncbi.nlm.nih.gov/Taxon
 
 ## Bugs or feature requests
 
-To inform us of any bugs or requests, please open a new issue or send an email to liu.peng2@mail.mcgill.ca or rocpengliu@gmail.com or jeff.xia@mcgill.ca
+To inform us of any bugs or requests, please open a new issue or send an email to rocpengliu@gmail.com or jeff.xia@mcgill.ca
 
 ## Seq2Fun History & Updates
 03-26-2021 - seq2fun_v1.2.0 released  
