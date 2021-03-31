@@ -216,7 +216,7 @@ Use seq2fun or seq2fun --help to show the full usage options
 
   // input/output
 
-  -s, --sampletable,                (recommended) sample table consisting of 2 columns (read sample name (sample01_R1.fq.gz) prefix name (sample01)) for single-reads and 3 columns (forward read sample name (sample01_R1.fq.gz) reverse read sample name (sample01_R2.fq.gz) prefix name (sample01)) for paired-end reads. The columns must be separated by tab 
+  -s, --sampletable,                (recommended) sample table must consist of 3 columns (sample prefix name (sample01), forward reads name (sample01_R1.fq.gz), group info (control) for single-reads or 4 columns (sample prefix name (sample01), forward reads (sample01_R1.fq.gz), reverse reads (sample01_R2.fq.gz), group info (control) for paired-end reads. The columns must be separated by tab 
 
   -i, --in1                         read1 input file name
 
