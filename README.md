@@ -106,22 +106,22 @@ The samples can be download from here
 ### Running Seq2Fun
 #### 1.Preparing sample.txt file
 
-This file consists of 3 columns and separated by '\t'. The first column is the prefix name of each sample, and the second is the forward reads file, the last column is the reverse reads file. If you have a single-end (SE) reads, remove the reverse reads (second) column. It looks like this:
+This file consists of 4 columns and separated by '\t'. The first column is the prefix name of each sample, and the second is the forward reads file, the thrid column is the reverse reads file, and last one is the sample group info. If you have a single-end (SE) reads, remove the reverse reads (third) column. It looks like this:
 ```
-A1.CE2-S1-LT	A1.CE2-S1-LT_R1.fastq.gz	A1.CE2-S1-LT_R2.fastq.gz
-A2.CE2-M4-LT	A2.CE2-M4-LT_R1.fastq.gz	A2.CE2-M4-LT_R2.fastq.gz
-B1.CE2-S2-LT	B1.CE2-S2-LT_R1.fastq.gz	B1.CE2-S2-LT_R2.fastq.gz
-B2.CE2-M5-LT	B2.CE2-M5-LT_R1.fastq.gz	B2.CE2-M5-LT_R2.fastq.gz
-C1.CE2-S3-LT	C1.CE2-S3-LT_R1.fastq.gz	C1.CE2-S3-LT_R2.fastq.gz
-D1.CE2-S4-LT	D1.CE2-S4-LT_R1.fastq.gz	D1.CE2-S4-LT_R2.fastq.gz
-D2.CE2-H2-LT	D2.CE2-H2-LT_R1.fastq.gz	D2.CE2-H2-LT_R2.fastq.gz
-E1.CE2-S5-LT	E1.CE2-S5-LT_R1.fastq.gz	E1.CE2-S5-LT_R2.fastq.gz
-E2.CE2-H3-LT	E2.CE2-H3-LT_R1.fastq.gz	E2.CE2-H3-LT_R2.fastq.gz
-F1.CE2-M1-LT	F1.CE2-M1-LT_R1.fastq.gz	F1.CE2-M1-LT_R2.fastq.gz
-F2.CE2-H4-LT	F2.CE2-H4-LT_R1.fastq.gz	F2.CE2-H4-LT_R2.fastq.gz
-G1.CE2-M2-LT	G1.CE2-M2-LT_R1.fastq.gz	G1.CE2-M2-LT_R2.fastq.gz
-G2.CE2-H5-LT	G2.CE2-H5-LT_R1.fastq.gz	G2.CE2-H5-LT_R2.fastq.gz
-H1.CE2-M3-LT	H1.CE2-M3-LT_R1.fastq.gz	H1.CE2-M3-LT_R2.fastq.gz
+A1.CE2-S1-LT	A1.CE2-S1-LT_R1.fastq.gz	A1.CE2-S1-LT_R2.fastq.gz	control
+A2.CE2-M4-LT	A2.CE2-M4-LT_R1.fastq.gz	A2.CE2-M4-LT_R2.fastq.gz	medium
+B1.CE2-S2-LT	B1.CE2-S2-LT_R1.fastq.gz	B1.CE2-S2-LT_R2.fastq.gz	control
+B2.CE2-M5-LT	B2.CE2-M5-LT_R1.fastq.gz	B2.CE2-M5-LT_R2.fastq.gz	medium
+C1.CE2-S3-LT	C1.CE2-S3-LT_R1.fastq.gz	C1.CE2-S3-LT_R2.fastq.gz	control
+D1.CE2-S4-LT	D1.CE2-S4-LT_R1.fastq.gz	D1.CE2-S4-LT_R2.fastq.gz	control
+D2.CE2-H2-LT	D2.CE2-H2-LT_R1.fastq.gz	D2.CE2-H2-LT_R2.fastq.gz	high
+E1.CE2-S5-LT	E1.CE2-S5-LT_R1.fastq.gz	E1.CE2-S5-LT_R2.fastq.gz	control
+E2.CE2-H3-LT	E2.CE2-H3-LT_R1.fastq.gz	E2.CE2-H3-LT_R2.fastq.gz	high
+F1.CE2-M1-LT	F1.CE2-M1-LT_R1.fastq.gz	F1.CE2-M1-LT_R2.fastq.gz	medium
+F2.CE2-H4-LT	F2.CE2-H4-LT_R1.fastq.gz	F2.CE2-H4-LT_R2.fastq.gz	high
+G1.CE2-M2-LT	G1.CE2-M2-LT_R1.fastq.gz	G1.CE2-M2-LT_R2.fastq.gz	medium
+G2.CE2-H5-LT	G2.CE2-H5-LT_R1.fastq.gz	G2.CE2-H5-LT_R2.fastq.gz	high
+H1.CE2-M3-LT	H1.CE2-M3-LT_R1.fastq.gz	H1.CE2-M3-LT_R2.fastq.gz	medium
 ```
 
 #### 2. Running Seq2Fun to quantify RNA-seq reads.
@@ -139,7 +139,8 @@ S2F_HOME/bin/seq2fun --sampletable sample.txt --tfmi S2F_HOME/database/birds/bir
 
 This table has KO id, sample names and KO name separated by '\t'. (how many reads have assigned to the homology KO), the full name of the assigned KO. It looks like this:
 ```
-KO_ID   A1.CE2-S1-LT    A2.CE2-M4-LT    B1.CE2-S2-LT    B2.CE2-M5-LT    C1.CE2-S3-LT    D1.CE2-S4-LT    D2.CE2-H2-LT    E1.CE2-S5-LT    E2.CE2-H3-LT    F1.CE2-M1-LT    F2.CE2-H4-LT    G1.CE2-M2-LT    G2.CE2-H5-LT    H1.CE2-M3-LT    KO_name
+#Name   A1.CE2-S1-LT    A2.CE2-M4-LT    B1.CE2-S2-LT    B2.CE2-M5-LT    C1.CE2-S3-LT    D1.CE2-S4-LT    D2.CE2-H2-LT    E1.CE2-S5-LT    E2.CE2-H3-LT    F1.CE2-M1-LT    F2.CE2-H4-LT    G1.CE2-M2-LT    G2.CE2-H5-LT    H1.CE2-M3-LT    KO_name
+#Class	control		medium		control		medium		control		control		high		control		high		medium		high		medium		high		medium		class_info	
 K00002	118             96              386             131             147             141             106             129             120             98              148             117             136             121             AKR1A1, adh; alcohol dehydrogenase (NADP+) [EC:1.1.1.2]
 K00006	629             604             235             648             664             506             628             499             670             455             838             615             579             521             GPD1; glycerol-3-phosphate dehydrogenase (NAD+) [EC:1.1.1.8]
 K00008	971             755             715             770             1122            770             1058            1010            1023            829             1055            1351            954             1139            SORD, gutB; L-iditol 2-dehydrogenase [EC:1.1.1.14]
@@ -224,7 +225,7 @@ Use seq2fun or seq2fun --help to show the full usage options
   -X, --prefix                      (not recommended) prefix name for output files, eg: sample01
 
       --outputMappedCleanReads,          enable output mapped clean reads into fastq.gz files, by default is false, using --outputMappedCleanReads to enable it
-
+      --outputReadsKOMap            enable output mapped clean reads-KO map into .gz files, by default is false, using --outputReadsKOMap to enable it
 
   // Homology search;
 
