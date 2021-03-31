@@ -49,9 +49,9 @@ make
 There are four sub folders under seq2fun - src, bin, database and testdata. The bin folder contains the binary code we just complied. The testdata contains a small test data from the Case Study.
 From within the <code><b> testdata </b></code> folder, issue the following commands:
 ```
-../bin/seq2fun --sampletable sample.txt --tfmi birds_cdhit99_proteins.fmi --genemap birds_protein_ko_species_cdhit99.txt -w 8 --profiling -V --outputMappedCleanReads --outputReadsKOMap
+../bin/seq2fun --sampletable sample.txt --tfmi birds_cdhit99_proteins.fmi --genemap birds_protein_ko_species_cdhit99.txt -w 8 --profiling -V --outputMappedCleanReads --outputReadsKOMap -V
 or if you want the trim the first 6 bases
-../bin/seq2fun --sampletable sample.txt --tfmi birds_cdhit99_proteins.fmi --genemap birds_protein_ko_species_cdhit99.txt --trim_front1 6 --trim_front2 6 -w 8 --profiling -V --outputMappedCleanReads --outputReadsKOMap
+../bin/seq2fun --sampletable sample.txt --tfmi birds_cdhit99_proteins.fmi --genemap birds_protein_ko_species_cdhit99.txt --trim_front1 6 --trim_front2 6 -w 8 --profiling -V --outputMappedCleanReads --outputReadsKOMap -V
 ```
 
 
@@ -461,6 +461,7 @@ We have followed the codon tables from [NCBI](https://www.ncbi.nlm.nih.gov/Taxon
 To inform us of any bugs or requests, please open a new issue or send an email to rocpengliu@gmail.com or jeff.xia@mcgill.ca
 
 ## Seq2Fun History & Updates
+03-31-2021 - seq2fun_v1.2.1 released
 03-26-2021 - seq2fun_v1.2.0 released  
 03-22-2021 - seq2fun_v1.1.4 released  
 01-14-2021 - seq2fun_v1.1.2 released  
