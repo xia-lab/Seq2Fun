@@ -574,10 +574,11 @@ void HtmlReporter::printAnnotationResults(ofstream& ofs) {
     std::string rStrResult = to_string(mOptions->transSearch.nTransMappedKOs) + " / " +  to_string(mOptions->transSearch.nKODB) + " (" + to_string(ratio) +  "%)";
     
     outputLongRow(ofs, "Number of KOs annotated / total KOs in database", rStrResult);
-    
-    outputLongRow(ofs, "Number of hit species", to_string(mOptions->transSearch.nMappedOrgs));
 
-    outputLongRow(ofs, "Number of hit pathways", to_string(mOptions->transSearch.nMappedPathways));
+    if (mOptions->mHomoSearchOptions.profiling) {
+        outputLongRow(ofs, "Number of hit species", to_string(mOptions->transSearch.nMappedOrgs));
+        outputLongRow(ofs, "Number of hit pathways", to_string(mOptions->transSearch.nMappedPathways));
+    }
     
     ratio = (mOptions->transSearch.nTransMappedKOReads * 100) / mOptions->mHomoSearchOptions.nTotalReads;
     rStrResult = to_string(mOptions->transSearch.nTransMappedKOReads) + " / " +  to_string(mOptions->mHomoSearchOptions.nTotalReads) + " (" + to_string(ratio) +  "%)";
