@@ -338,6 +338,7 @@ public:
         path = "";
         in1 = "";
         in2 = "";
+        feature = "";
 
         nKO = 0;
         nKODb = 0;
@@ -368,6 +369,7 @@ public:
     string path;
     string in1;
     string in2;
+    string feature;
     int nKO;
     int nKODb;
     double koRate;

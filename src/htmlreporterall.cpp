@@ -93,18 +93,19 @@ void HtmlReporterAll::outputRow(ofstream& ofs, string key, string v) {
 }
 
 void HtmlReporterAll::outputRow(ofstream& ofs, std::vector<Sample> & samplesVec) {
-    
+
     ofs << "<tr>";
     ofs << "<td class='col1'> Id </td>" <<
-           "<td class='col1'> sample </td>" <<
-           "<td class='col1'> n. KOs </td>" <<
-           "<td class='col1'> n. KOs(db) </td>" <<
+            "<td class='col1'> sample </td>" <<
+            "<td class='col1'> class </td>" <<
+            "<td class='col1'> n. KOs </td>" <<
             "<td class='col1'> KO rate(%) </td>" <<
+            "<td class='col1'> n. KOs(db) </td>" <<
             "<td class='col1'> n. reads (KO) </td>" <<
             "<td class='col1'> KO reads rate(%) </td>" <<
             "<td class='col1'> n. clean reads </td>" <<
             "<td class='col1'> clean reads rate(%) </td>" <<
-            "<td class='col1'> n. raw reads </td>" << 
+            "<td class='col1'> n. raw reads </td>" <<
             "<td class='col1'> time used</td>" <<
             "<td class='col1'> date </td>";
     ofs << "</tr>\n";   
@@ -115,9 +116,10 @@ void HtmlReporterAll::outputRow(ofstream& ofs, std::vector<Sample> & samplesVec)
         ofs << "<tr>";
         ofs <<  "<td class='col1'>" + to_string(id) + "</td>" << 
                 "<td class='col1'>" + it.prefix + "</td>" << 
+                 "<td class='col1'>" + it.feature + "</td>" << 
                 "<td class='col1'>" + to_string(it.nKO) + "</td>" <<
-                "<td class='col1'>" + to_string(it.nKODb) + "</td>" <<
                 "<td class='col1'>" + to_string(it.koRate) << "</td>" <<
+                "<td class='col1'>" + to_string(it.nKODb) + "</td>" <<
                 "<td class='col1'>" + to_string(it.transSearchMappedKOReads) << "</td>" <<
                 "<td class='col1'>" + to_string(it.mappedKOReadsRate) << "</td>" <<
                 "<td class='col1'>" + to_string(it.totalCleanReads) << "</td>" <<
@@ -158,6 +160,13 @@ void HtmlReporterAll::reportAllTables() {
         *fOut << it << "\t";
     }
     *fOut << "KO_name\n";
+    
+    *fOut << "#Class\t";
+    for(auto & it : mOptions->samples){
+        *fOut << it.feature  << "\t";
+    }
+    *fOut << "class_info\n";
+    
     koFreqVec.reserve(koSet.size());
     std::vector<std::string> tmpVec;
     tmpVec.reserve(smNmVec.size() + 2);
@@ -787,6 +796,12 @@ void HtmlReporterAll::reportKOBarPlot(ofstream& ofs){
         ofs << "<td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << it << "</td>";
     }
     ofs << "<td class='exlarge' style='font-size:14px;color:#ffffff;background:#008000'>" << "Name" << "</td></tr>\n";
+
+    ofs << "<tr><td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "Class" << "</td>";
+    for (auto & it : mOptions->samples) {
+        ofs << "<td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << it.feature << "</td>";
+    }
+    ofs << "<td class='exlarge' style='font-size:14px;color:#ffffff;background:#008000'>" << "Class_info" << "</td></tr>\n";
     
     for (auto & it : koFreqVec) {
         ofs << "<tr><td class='ko_col'>" << it.at(0) << "</td>";
@@ -812,6 +827,12 @@ void HtmlReporterAll::reportPathwayBarPlot(ofstream& ofs){
         ofs << "<td class='exlarge' style='font-size:14px;color:#ffffff;background:#008000'>" << it << "</td>";
     }
     ofs << "<td class='exlarge' style='font-size:14px;color:#ffffff;background:#008000'>" << "N. of KOs" << "</td></tr>\n";
+
+    ofs << "<tr><td class='exlarge' style='font-size:14px;color:#ffffff;background:#008000'>" << "Class" << "</td>";
+    for (auto & it : mOptions->samples) {
+        ofs << "<td class='exlarge' style='font-size:14px;color:#ffffff;background:#008000'>" << it.feature << "</td>";
+    }
+    ofs << "<td class='exlarge' style='font-size:14px;color:#ffffff;background:#008000'>" << "Class_info" << "</td></tr>\n";
     
     for (auto & it : pathwayFreqVec) {
         ofs << "<tr><td class='exlarge'>" << it.at(0) << "</td>";
@@ -836,6 +857,12 @@ void HtmlReporterAll::reportOrgBarPlot(ofstream& ofs){
     for(auto & it : smNmVec){
         ofs << "<td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << it << "</td>";
     }
+
+    ofs << "<tr><td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "Class" << "</td>";
+    for (auto & it : mOptions->samples) {
+        ofs << "<td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << it.feature << "</td>";
+    }
+   
     for (auto & it : orgFreqVec) {
         ofs << "<tr><td class='ko_col'>" << it.at(0) << "</td>";
         if (it.size() > 2) {

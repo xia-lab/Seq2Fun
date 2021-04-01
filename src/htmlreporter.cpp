@@ -563,8 +563,16 @@ void HtmlReporter::printAnnotationResults(ofstream& ofs) {
     ofs << "<div id='detection_result'>\n";
     ofs << "<table class='summary_table' style='width:1000px'>\n";
     
+    outputLongRow(ofs, "Sample", mOptions->mHomoSearchOptions.prefix);
+
+    if (mOptions->samples.size() > 0) {
+        int sampleId = mOptions->getWorkingSampleId(mOptions->mHomoSearchOptions.prefix); // get the working sample id;
+        outputLongRow(ofs, "Class", mOptions->samples.at(sampleId).feature);
+    }
+    
     double ratio = (mOptions->transSearch.nTransMappedKOs * 100) / mOptions->transSearch.nKODB;
     std::string rStrResult = to_string(mOptions->transSearch.nTransMappedKOs) + " / " +  to_string(mOptions->transSearch.nKODB) + " (" + to_string(ratio) +  "%)";
+    
     outputLongRow(ofs, "Number of KOs annotated / total KOs in database", rStrResult);
     
     outputLongRow(ofs, "Number of hit species", to_string(mOptions->transSearch.nMappedOrgs));

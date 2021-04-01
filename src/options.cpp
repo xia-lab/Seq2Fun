@@ -634,7 +634,7 @@ void Options::parseSampleTable() {
             loginfo(msg);
         }
     } else {
-        error_exit("sample table file should be specified by --sampleTable");
+        error_exit("sample table file should be specified by --sampletable");
     }
     
     ifstream file;
@@ -663,8 +663,15 @@ void Options::parseSampleTable() {
         s.prefix = trimStr(splitted[0]);
         s.path = dirname(s.prefix);
         s.in1 = trimStr(splitted[1]);
-        if(splitted.size()>=3)
+        if (splitted.size() == 3) {
+            s.feature = trimStr(splitted[2]);
+        } else if (splitted.size() == 4) {
             s.in2 = trimStr(splitted[2]);
+            s.feature = trimStr(splitted[3]);
+        } else {
+            error_exit("sample table must be 3 columns with sample name, forward reads and sample feature or "
+                    "4 columns with sample name, forward reads, reverse reads and sample feature");
+        }
 
         this->samples.push_back(s);
     }

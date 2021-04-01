@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
 
     cmdline::parser cmd;
     // input/output
-    cmd.add<string>("sampletable", 's', "sample table consisting of 2 columns (read sample name (sample01_R1.fq.gz) prefix name (sample01)) for single-reads and 3 columns (forward read sample name (sample01_R1.fq.gz) reverse read sample name (sample01_R2.fq.gz) prefix name (sample01)) for paired-end reads. The columns must be separated by tab", false, "");
+    cmd.add<string>("sampletable", 's', "(recommended) sample table must consist of 3 columns (sample prefix name (sample01), forward reads name (sample01_R1.fq.gz), group info (control) for single-reads or 4 columns (sample prefix name (sample01), forward reads (sample01_R1.fq.gz), reverse reads (sample01_R2.fq.gz), group info (control) for paired-end reads. The columns must be separated by tab", false, "");
     cmd.add<string>("in1", 'i', "read1 input file name", false, "");
     cmd.add<string>("in2", 'I', "read2 input file name", false, "");
     cmd.add<string>("prefix", 'X', "prefix name for output files, eg: sample01", false, "");
