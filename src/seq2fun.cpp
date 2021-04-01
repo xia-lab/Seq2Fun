@@ -708,11 +708,11 @@ int main(int argc, char* argv[]) {
 
         HtmlReporterAll hra(&opt);
         hra.report();
-        //writeSampleKOTable(sampleKOTableVec, opt);
-
         time_t t_total = time(NULL);
         auto timeUsed = difftime(t_total, t_begin);
         cerr << endl << "Seq2Fun v" << SEQ2FUNR_VER << ", time used: " << convertSeconds(timeUsed) << ", processed " << opt.samples.size() << " samples" << endl << endl;
+        opt.samples.clear();
+        opt.samples.shrink_to_fit();
     }
     if (tbwtfmiDB) delete tbwtfmiDB;
     return 0;

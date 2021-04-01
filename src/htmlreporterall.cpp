@@ -215,6 +215,13 @@ void HtmlReporterAll::reportAllTables() {
             *fOut << it << "\t";
         }
         *fOut << "n_total_KOs\n";
+
+        *fOut << "#Class\t";
+        for (auto & it : mOptions->samples) {
+            *fOut << it.feature << "\t";
+        }
+        *fOut << "class_info\n";
+        
         pathwayFreqVec.reserve(pathwaySet.size());
         for (auto & it : pathwaySet) {
             int tmpInt = 0;
@@ -270,6 +277,13 @@ void HtmlReporterAll::reportAllTables() {
             *fOut << it << "\t";
         }
         *fOut << "\n";
+
+        *fOut << "#Class\t";
+        for (auto & it : mOptions->samples) {
+            *fOut << it.feature << "\t";
+        }
+        *fOut << "\n";
+        
         orgFreqVec.reserve(orgSet.size());
         for (auto & it : orgSet) {
             tmpVec.clear();
@@ -324,7 +338,7 @@ void HtmlReporterAll::printAnnotationResults(ofstream& ofs) {
     ofs << "</table>\n";
     ofs << "</div>\n";
     ofs << "</div>\n";
-    
+
     if (mOptions->mHomoSearchOptions.profiling) {
         
         ofs << "<div class='section_div'>\n";
@@ -384,8 +398,6 @@ void HtmlReporterAll::printAnnotationResults(ofstream& ofs) {
         ofs << "</div>\n";
         ofs << "</div>\n";
     }
-    
-    
 }
 
 void HtmlReporterAll::reportRarefactionKO(ofstream& ofs) {
@@ -659,8 +671,6 @@ void HtmlReporterAll::reportReadsQualityPlot3D(ofstream& ofs) {
         ofs << json_str;
         ofs << "</script>" << endl;
     }
-    mOptions->samples.clear();
-    mOptions->samples.shrink_to_fit();
 }
 
 //void HtmlReporterAll::reportReadsQualityPlot3D(ofstream& ofs) {
