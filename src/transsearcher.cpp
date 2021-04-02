@@ -1455,7 +1455,7 @@ std::string TransSearcher::transSearch(Read *item1, Read *item2) {
         }
     }
 
-    query_len = static_cast<double> (item2->length()) / 3.0;
+    query_len += static_cast<double> (item2->length()) / 3.0;
     if (item2->length() >= mOptions->transSearch.minAAFragLength * 3) {
         if (mOptions->debug)
             std::cerr << "Getting fragments for read2: " << item2->mName << "\t" << item2->mSeq.mStr << "\n";
