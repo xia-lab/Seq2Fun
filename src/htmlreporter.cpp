@@ -756,19 +756,6 @@ void HtmlReporter::printCSS(ofstream& ofs){
 //    ofs << "</style>" << endl;
 //}
 
-void HtmlReporter::printJS(ofstream& ofs){
-    ofs << "<script src='http://opengene.org/plotly-1.2.0.min.js'></script>" << endl;
-    ofs << "\n<script type=\"text/javascript\">" << endl;
-    ofs << "    function showOrHide(divname) {" << endl;
-    ofs << "        div = document.getElementById(divname);" << endl;
-    ofs << "        if(div.style.display == 'none')" << endl;
-    ofs << "            div.style.display = 'block';" << endl;
-    ofs << "        else" << endl;
-    ofs << "            div.style.display = 'none';" << endl;
-    ofs << "    }" << endl;
-    ofs << "</script>" << endl;
-}
-
 const string HtmlReporter::getCurrentSystemTime(){
   auto tt = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
   struct tm* ptm = localtime(&tt);
@@ -785,4 +772,17 @@ void HtmlReporter::printFooter(ofstream& ofs){
     ofs << "<p>"<<command<<"</p>";
     ofs << "Seq2FunR " << SEQ2FUNR_VER << ", at " << getCurrentSystemTime() << " </div>";
     ofs << "</body></html>";
+}
+
+void HtmlReporter::printJS(ofstream& ofs){
+    ofs << "<script src='http://opengene.org/plotly-1.2.0.min.js'></script>" << endl;
+    ofs << "\n<script type=\"text/javascript\">" << endl;
+    ofs << "    function showOrHide(divname) {" << endl;
+    ofs << "        div = document.getElementById(divname);" << endl;
+    ofs << "        if(div.style.display == 'none')" << endl;
+    ofs << "            div.style.display = 'block';" << endl;
+    ofs << "        else" << endl;
+    ofs << "            div.style.display = 'none';" << endl;
+    ofs << "    }" << endl;
+    ofs << "</script>" << endl;
 }

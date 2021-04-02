@@ -427,7 +427,7 @@ int main(int argc, char* argv[]) {
     opt.transSearch.minScore = cmd.get<int>("minscore");
     if (cmd.get<int>("minlength") == 0) {
         if (opt.transSearch.mode == tGREEDY) {
-            opt.transSearch.minAAFragLength = 25;
+            opt.transSearch.minAAFragLength = 19;
         } else {
             opt.transSearch.minAAFragLength = 13;
         }
