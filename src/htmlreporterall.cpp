@@ -933,7 +933,7 @@ string HtmlReporterAll::list2string2(std::vector<string> & x_vec, int top) {
 }
 
 void HtmlReporterAll::printJS(ofstream& ofs){
-    ofs << "<script src='http://opengene.org/plotly-1.2.0.min.js'></script>" << endl;
+    ofs << "<script src='https://www.seq2fun.ca/resources/javascript/plotly-1.2.0.min.js'></script>" << endl;
     ofs << "\n<script type=\"text/javascript\">" << endl;
     ofs << "    function showOrHide(divname) {" << endl;
     ofs << "        div = document.getElementById(divname);" << endl;
