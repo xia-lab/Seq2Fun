@@ -708,7 +708,7 @@ TransSearcher::TransSearcher(Options * opt, BwtFmiDB * tbwtfmiDB) {
     codon2aa[codon_to_int("GGT")] = 'G';
 
     for (unsigned int i = 0; i <= 5; i++) {
-        translations[i].reserve(500000);
+        translations[i].reserve(5000);
     }
 }
 
