@@ -1348,8 +1348,6 @@ std::string TransSearcher::transSearch(Read *item) {
             subOrgKOAbunUMMap.insert(priOrgKOAbunUMap.begin(), priOrgKOAbunUMap.end());
             priOrgKOAbunUMap.clear();
             read_count = 0;
-            
-            
         }
     }
     extraoutput = "";

@@ -115,6 +115,7 @@
             <incDir>
               <pElem>include</pElem>
               <pElem>include/ncbi-blast+</pElem>
+              <pElem>zlib</pElem>
             </incDir>
             <preprocessorList>
               <Elem>NDEBUG</Elem>
@@ -183,6 +184,7 @@
           <incDir>
             <pElem>include</pElem>
             <pElem>include/ncbi-blast+</pElem>
+            <pElem>zlib</pElem>
             <pElem>.</pElem>
           </incDir>
           <preprocessorList>

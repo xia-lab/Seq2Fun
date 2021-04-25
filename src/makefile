@@ -2,10 +2,10 @@ CC = gcc
 CXX = g++
 CFLAGS = -O3 -DNDEBUG
 CXXFLAGS = -O3 -pthread -std=c++11 -DNDEBUG
-#LDLIBS = -ldl -lpthread -lz
-LDLIBS = -lpthread -lz
-INCLUDES	= -I./include -I./include/ncbi-blast+
-#INCLUDES	= -I./include -I./include/ncbi-blast+ -I./zlib
+LDLIBS = -ldl -lpthread -lz
+#LDLIBS = -lpthread -lz
+#INCLUDES	= -I./include -I./include/ncbi-blast+
+INCLUDES	= -I./include -I./include/ncbi-blast+ -I./zlib
 
 BLASTOBJS = include/ncbi-blast+/algo/blast/core/pattern.o \
 			 include/ncbi-blast+/algo/blast/core/blast_posit.o \
