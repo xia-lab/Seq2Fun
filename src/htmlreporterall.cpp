@@ -102,7 +102,7 @@ void HtmlReporterAll::outputRow(ofstream& ofs, std::vector<Sample> & samplesVec)
         id++;
         ofs << "<tr>";
         ofs <<  "<td class='col1'>" + to_string(id) + "</td>" << 
-                "<td class='col1'>" + it.prefix + "</td>" << 
+                "<td class='col1'>" + basename(it.prefix) + "</td>" << 
                  "<td class='col1'>" + it.feature + "</td>" << 
                 "<td class='col1'>" + to_string(it.nKO) + "</td>" <<
                 "<td class='col1'>" + to_string(it.koRate) << "</td>" <<
