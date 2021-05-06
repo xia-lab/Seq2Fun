@@ -134,7 +134,7 @@ void HtmlReporterAll::reportAllTables() {
         }
     }
     
-    //1. for ko freq;
+    //1. for first ko freq;
     std::string fOutNm = joinpath(mOptions->samples.front().path, "All_sample_KO_abundance_table.txt");
     std::ofstream * fOut = NULL;
     fOut = new std::ofstream();
@@ -142,13 +142,13 @@ void HtmlReporterAll::reportAllTables() {
     if(!fOut->is_open()) error_exit("Can not open all_all_sample_KO_abundance_table.txt");
     if (mOptions->verbose) loginfo("Starting to write all samples KO abundance table");
     
-    *fOut << "#Name\t";
+    *fOut << "#NAME\t";
     for(auto & it : smNmVec){
         *fOut << it << "\t";
     }
     *fOut << "KO_name\n";
     
-    *fOut << "#Class\t";
+    *fOut << "#CLASS\t";
     for(auto & it : mOptions->samples){
         *fOut << it.feature  << "\t";
     }
@@ -186,9 +186,54 @@ void HtmlReporterAll::reportAllTables() {
     fOut->close();
 //    if(fOut) delete fOut;
 //    fOut = NULL;
+    
+    fOutNm = joinpath(mOptions->samples.front().path, "All_sample_KO_abundance_table_submit2networkanalyst.txt");
+    fOut->open(fOutNm.c_str(), std::ofstream::out);
+    if(!fOut->is_open()) error_exit("Can not open All_sample_KO_abundance_table_submit2networkanalyst.txt");
+    if (mOptions->verbose) loginfo("Starting to write all samples KO abundance table");
+    
+    *fOut << "#NAME\t";
+    for(auto & it : smNmVec){
+        if(it != smNmVec.back()){
+            *fOut << it << "\t";
+        } else {
+            *fOut << it << "\n";
+        }
+    }
+    
+    *fOut << "#CLASS:XX\t";
+    for(auto & it : mOptions->samples){
+        if(it.prefix != mOptions->samples.back().prefix){
+            *fOut << it.feature  << "\t";
+        } else {
+            *fOut << it.feature  << "\n";
+        }
+    }
+
+    for(auto & it : koSet){
+        *fOut << it << "\t";
+        for (Sample & sample : mOptions->samples) {
+            auto itkf = sample.totalKoFreqUMapResults.find(it);
+            if (itkf == sample.totalKoFreqUMapResults.end()) {
+                if (sample.prefix != mOptions->samples.back().prefix) {
+                    *fOut << 0 << "\t";
+                } else {
+                    *fOut << 0 << "\n";
+                }
+            } else {
+                if (sample.prefix != mOptions->samples.back().prefix) {
+                    *fOut << itkf->second << "\t";
+                } else {
+                    *fOut << itkf->second << "\n";
+                }
+            }
+        }
+    }
+    fOut->flush();
+    fOut->close();
+    
     if (mOptions->verbose) loginfo("Finish to write KO abundance table for all samples");
     
-
     if (mOptions->mHomoSearchOptions.profiling) {
         //2. for pathway
         std::string fOutNm = joinpath(mOptions->samples.front().path, "All_sample_pathway_table.txt");
