@@ -698,9 +698,9 @@ int main(int argc, char* argv[]) {
                     ", mapping " << opt.transSearch.nTransMappedKOReads << " reads out of " <<
                     opt.mHomoSearchOptions.nTotalReads << " (" <<
                     getPercentage(opt.transSearch.nTransMappedKOReads, opt.mHomoSearchOptions.nTotalReads) << " %); " <<
-                    "mapped " << opt.transSearch.nTransMappedKOReads << " KOs out of " <<
+                    "mapped " << opt.transSearch.nTransMappedKOs << " KOs out of " <<
                     opt.transSearch.nKODB << " KOs (" <<
-                    getPercentage(opt.transSearch.nTransMappedKOReads, opt.transSearch.nKODB) <<
+                    getPercentage(opt.transSearch.nTransMappedKOs, opt.transSearch.nKODB) <<
                     " %)" << endl << endl;
             opt.transSearch.reset2Default();
             opt.mHomoSearchOptions.reset2Default();

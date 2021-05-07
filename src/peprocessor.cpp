@@ -860,7 +860,7 @@ void PairEndProcessor::prepareResults(std::vector< std::unordered_map<std::strin
             tmpKOTuple = make_tuple(it.first, it.second, KOName->second);
             mOptions->transSearch.sortedKOFreqTupleVector.push_back(tmpKOTuple);
             *fout << it.first << "\t" << it.second << "\t" << KOName->second << "\n";
-            mOptions->transSearch.nTransMappedKOReads += it.second;
+            //mOptions->transSearch.nTransMappedKOReads += it.second;
         }
     }
 
