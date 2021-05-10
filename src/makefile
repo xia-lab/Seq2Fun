@@ -67,7 +67,7 @@ seq2fun: makefile bwt/mkbwt seq2fun.o transsearcher.o fragment.o bwtfmiDB.o \
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c -o $@ $<
 
 clean:
-	rm -f -v bwt/mkbwt bwt/mkfmi  seq2fun ../bin/*
+	rm -f -v bwt/mkbwt bwt/mkfmi  seq2fun ../bin/* ../testdata/All* ../testdata/*.html ../testdata/*_mapped* ../testdata/D*.txt ../testdata/*.json ../testdata/*.txt.gz
 	find . -name "*.o" -delete
 	$(MAKE) -C bwt/ clean
 
