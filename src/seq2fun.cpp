@@ -484,8 +484,8 @@ int main(int argc, char* argv[]) {
         opt.htmlFile = opt.mHomoSearchOptions.prefix + "_report.html";
         opt.jsonFile = opt.mHomoSearchOptions.prefix + "_report.json";
         if (opt.outputMappedCleanReads) {
-            opt.out1 = opt.mHomoSearchOptions.prefix + "_mapped_R1.fasta.gz";
-            if (opt.isPaired()) opt.out2 = opt.mHomoSearchOptions.prefix + "_mapped_R2.fasta.gz";
+            opt.out1 = opt.mHomoSearchOptions.prefix + "_mapped_R1.fastq.gz";
+            if (opt.isPaired()) opt.out2 = opt.mHomoSearchOptions.prefix + "_mapped_R2.fastq.gz";
         }
 
         if (opt.outputReadsKOMap) {
@@ -604,8 +604,8 @@ int main(int argc, char* argv[]) {
             opt.jsonFile = it.prefix + "_report.json";
 
             if (opt.outputMappedCleanReads) {
-                opt.out1 = it.prefix + "_mapped_R1.fasta.gz";
-                if (opt.isPaired()) opt.out2 = it.prefix + "_mapped_R2.fasta.gz";
+                opt.out1 = it.prefix + "_mapped_R1.fastq.gz";
+                if (opt.isPaired()) opt.out2 = it.prefix + "_mapped_R2.fastq.gz";
             }
 
             if (opt.outputReadsKOMap) {
