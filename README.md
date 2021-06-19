@@ -453,8 +453,8 @@ We have followed the codon tables from [NCBI](https://www.ncbi.nlm.nih.gov/Taxon
 To inform us of any bugs or requests, please open a new issue or send an email to rocpengliu@gmail.com or jeff.xia@mcgill.ca
 
 ## Seq2Fun History & Updates
-06-05-2021 - seq2fun_v1.2.2 released 
-03-31-2021 - seq2fun_v1.2.1 released 
+06-05-2021 - seq2fun_v1.2.2 released  
+03-31-2021 - seq2fun_v1.2.1 released  
 03-26-2021 - seq2fun_v1.2.0 released  
 03-22-2021 - seq2fun_v1.1.4 released  
 01-14-2021 - seq2fun_v1.1.2 released  
