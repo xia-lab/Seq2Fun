@@ -1085,9 +1085,7 @@ void TransSearcher::flush_output(){
     static std::mutex m;
     {
         std::lock_guard<std::mutex> out_lock(m);
-        if (mOptions->verbose) {
-            mOptions->transSearch.koUSet.insert(koUSet.begin(), koUSet.end());
-        }
+        mOptions->transSearch.koUSet.insert(koUSet.begin(), koUSet.end());
     }
     koUSet.clear();
 }
@@ -1316,40 +1314,45 @@ void TransSearcher::classify_length() {
 }
 
 std::string TransSearcher::transSearch(Read *item) {
-    if (mOptions->mHomoSearchOptions.profiling) {
+     if (mOptions->mHomoSearchOptions.profiling || mOptions->verbose) {
         read_count++;
         if (read_count > 10000) {
-            flush_output();
-            priOrgKOAbunUMap.clear();
-            for (auto & org : orgSet) {
-                auto it = tmpOrgKOAbunUMMap.equal_range(org);
-                tmpKOFreqMMap.clear();
-                for (auto & itr = it.first; itr != it.second; itr++) {
-                    tmpKOFreqMMap.insert(itr->second); //get the same org's ko freq map;
-                }
-                tmpKOFreqUMap.clear();
-                for (auto itt = tmpKOFreqMMap.begin(), end = tmpKOFreqMMap.end();
-                        itt != end;
-                        itt = tmpKOFreqMMap.upper_bound(itt->first)) {//get the unique ko
-                    auto ko = itt->first; //itt->first is the ko;
-                    auto itk = tmpKOFreqMMap.equal_range(ko); // unique ko range; 
-                    double koFreq = 0;
-                    for (auto & itko = itk.first; itko != itk.second; itko++) {//get each ko's freq;
-                        //tmpKOFreqUMap[itko->first] += itko->second;
-                        koFreq += itko->second;
-                    }
-                    tmpKOFreqUMap[ko] = koFreq;
-                }
-                tmpKOFreqMMap.clear();
-                priOrgKOAbunUMap[org] = tmpKOFreqUMap;
-                tmpKOFreqUMap.clear();
+            if(mOptions->verbose){
+               flush_output(); 
             }
-            tmpOrgKOAbunUMMap.clear();
-            subOrgKOAbunUMMap.insert(priOrgKOAbunUMap.begin(), priOrgKOAbunUMap.end());
-            priOrgKOAbunUMap.clear();
+            if (mOptions->mHomoSearchOptions.profiling) {
+                priOrgKOAbunUMap.clear();
+                for (auto & org : orgSet) {
+                    auto it = tmpOrgKOAbunUMMap.equal_range(org);
+                    tmpKOFreqMMap.clear();
+                    for (auto & itr = it.first; itr != it.second; itr++) {
+                        tmpKOFreqMMap.insert(itr->second); //get the same org's ko freq map;
+                    }
+                    tmpKOFreqUMap.clear();
+                    for (auto itt = tmpKOFreqMMap.begin(), end = tmpKOFreqMMap.end();
+                            itt != end;
+                            itt = tmpKOFreqMMap.upper_bound(itt->first)) {//get the unique ko
+                        auto ko = itt->first; //itt->first is the ko;
+                        auto itk = tmpKOFreqMMap.equal_range(ko); // unique ko range; 
+                        double koFreq = 0;
+                        for (auto & itko = itk.first; itko != itk.second; itko++) {//get each ko's freq;
+                            //tmpKOFreqUMap[itko->first] += itko->second;
+                            koFreq += itko->second;
+                        }
+                        tmpKOFreqUMap[ko] = koFreq;
+                    }
+                    tmpKOFreqMMap.clear();
+                    priOrgKOAbunUMap[org] = tmpKOFreqUMap;
+                    tmpKOFreqUMap.clear();
+                }
+                tmpOrgKOAbunUMMap.clear();
+                subOrgKOAbunUMMap.insert(priOrgKOAbunUMap.begin(), priOrgKOAbunUMap.end());
+                priOrgKOAbunUMap.clear();
+            }
             read_count = 0;
         }
     }
+     
     extraoutput = "";
     query_len = static_cast<double> (item->length()) / 3.0;
     if (item->mSeq.length() >= mOptions->transSearch.minAAFragLength * 3) {
@@ -1406,37 +1409,41 @@ std::string TransSearcher::transSearch(Read *item) {
 }
 
 std::string TransSearcher::transSearch(Read *item1, Read *item2) {
-    if (mOptions->mHomoSearchOptions.profiling) {
+    if (mOptions->mHomoSearchOptions.profiling || mOptions->verbose) {
         read_count++;
         if (read_count > 10000) {
-            flush_output();
-            priOrgKOAbunUMap.clear();
-            for(auto & org : orgSet){
-                auto it = tmpOrgKOAbunUMMap.equal_range(org);
-                tmpKOFreqMMap.clear();
-                for(auto & itr = it.first; itr != it.second; itr++){
-                    tmpKOFreqMMap.insert(itr->second);//get the same org's ko freq map;
-                }
-                tmpKOFreqUMap.clear();
-                for(auto itt = tmpKOFreqMMap.begin(), end = tmpKOFreqMMap.end(); 
-                        itt != end; 
-                        itt = tmpKOFreqMMap.upper_bound(itt->first)){//get the unique ko
-                    auto ko = itt->first;//itt->first is the ko;
-                    auto itk = tmpKOFreqMMap.equal_range(ko);// unique ko range; 
-                    double koFreq = 0;
-                    for(auto & itko = itk.first; itko != itk.second; itko++){//get each ko's freq;
-                        //tmpKOFreqUMap[itko->first] += itko->second;
-                        koFreq += itko->second;
-                    }
-                    tmpKOFreqUMap[ko] = koFreq;
-                }
-                tmpKOFreqMMap.clear();
-                priOrgKOAbunUMap[org] = tmpKOFreqUMap;
-                tmpKOFreqUMap.clear();
+            if (mOptions->verbose) {
+                flush_output();
             }
-            tmpOrgKOAbunUMMap.clear();
-            subOrgKOAbunUMMap.insert(priOrgKOAbunUMap.begin(), priOrgKOAbunUMap.end());
-            priOrgKOAbunUMap.clear();
+            if (mOptions->mHomoSearchOptions.profiling) {
+                priOrgKOAbunUMap.clear();
+                for (auto & org : orgSet) {
+                    auto it = tmpOrgKOAbunUMMap.equal_range(org);
+                    tmpKOFreqMMap.clear();
+                    for (auto & itr = it.first; itr != it.second; itr++) {
+                        tmpKOFreqMMap.insert(itr->second); //get the same org's ko freq map;
+                    }
+                    tmpKOFreqUMap.clear();
+                    for (auto itt = tmpKOFreqMMap.begin(), end = tmpKOFreqMMap.end();
+                            itt != end;
+                            itt = tmpKOFreqMMap.upper_bound(itt->first)) {//get the unique ko
+                        auto ko = itt->first; //itt->first is the ko;
+                        auto itk = tmpKOFreqMMap.equal_range(ko); // unique ko range; 
+                        double koFreq = 0;
+                        for (auto & itko = itk.first; itko != itk.second; itko++) {//get each ko's freq;
+                            //tmpKOFreqUMap[itko->first] += itko->second;
+                            koFreq += itko->second;
+                        }
+                        tmpKOFreqUMap[ko] = koFreq;
+                    }
+                    tmpKOFreqMMap.clear();
+                    priOrgKOAbunUMap[org] = tmpKOFreqUMap;
+                    tmpKOFreqUMap.clear();
+                }
+                tmpOrgKOAbunUMMap.clear();
+                subOrgKOAbunUMMap.insert(priOrgKOAbunUMap.begin(), priOrgKOAbunUMap.end());
+                priOrgKOAbunUMap.clear();
+            }
             read_count = 0;
         }
     }

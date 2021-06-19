@@ -588,9 +588,11 @@ void SingleEndProcessor::prepareResults(std::vector< std::unordered_map<std::str
 
     //1. merge KO freq map;
     std::unordered_map<std::string, uint32 > totalKoFreqUMapResults;
+    mOptions->transSearch.nTransMappedKOReads = 0;
     for (auto & it : totalKoFreqVecResults) {
         for (auto & itr : it) {
             totalKoFreqUMapResults[itr.first] += itr.second;
+            mOptions->transSearch.nTransMappedKOReads += itr.second;
         }
     }
     totalKoFreqVecResults.clear();
