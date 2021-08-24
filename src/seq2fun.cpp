@@ -61,7 +61,8 @@ int main(int argc, char* argv[]) {
     cmd.add<int>("maxtranslength", 'm', "maximum cutoff of translated peptides, it must be no less than minlength, with default 60", false, 60);
     cmd.add("allFragments", 0, "enable this function will force Seq2Fun to use all the translated AA fragments with length > minlength. This will slightly help to classify reads contain the true stop codon and start codon; This could have limited impact on the accuracy for comparative study and enable this function will slow down the Seq2Fun. by default is false, using --allFragments to enable it");
     cmd.add<string>("codontable", 0, "select the codon table (same as blastx in NCBI), we provide 20 codon tables from 'https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi#SG31'. By default is the codontable1 (Standard Code)", false, "codontable1");
-
+    cmd.add<string>("dbDir", 0, "dir for internal database such as ko_fullname.txt", false, "");
+    
     //selected pathways
     cmd.add<string>("pathway", 'Z', "list of selected pathways for target pathways analysis", false, "");
     cmd.add<string>("genefa", 'z', "the gene/protein sequences fasta file for retrieving proteins in selected pathways to construct database", false, "");
@@ -169,6 +170,8 @@ int main(int argc, char* argv[]) {
 
     opt.seq2funProgPath = string(argv[0]);
     opt.seq2funDir = removeStr(opt.seq2funProgPath, "bin/seq2fun");
+    opt.internalDBDir = cmd.get<string>("dbDir") == "" ? opt.seq2funDir + "database" : cmd.get<string>("dbDir");
+    opt.internalDBDir = checkDirEnd(opt.internalDBDir);
 
     // threading
     opt.thread = cmd.get<int>("thread");

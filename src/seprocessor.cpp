@@ -290,7 +290,6 @@ bool SingleEndProcessor::processSingleEnd(ReadPack* pack, ThreadConfig* config){
             failedOut += or1->toStringWithTag(FAILED_TYPES[result]);
         }
         
-
         delete or1;
         // if no trimming applied, r1 should be identical to or1
         if(r1 != or1 && r1 != NULL)
@@ -359,7 +358,6 @@ void SingleEndProcessor::initPackRepository() {
     mRepo.writePos = 0;
     mRepo.readPos = 0;
     //mRepo.readCounter = 0;
-    
 }
 
 void SingleEndProcessor::destroyPackRepository() {

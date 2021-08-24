@@ -557,6 +557,9 @@ public:
     string seq2funProgPath;
     //seq2fun dir;
     string seq2funDir;
+    
+    string internalDBDir;
+    //for internal database
 
     bool screenout;
 

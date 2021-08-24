@@ -242,6 +242,10 @@ inline string joinpath(const string& dirname, const string& basename){
     }
 }
 
+inline string checkDirEnd(const string & dirname){
+    return (dirname[dirname.length() - 1] == '/' ? dirname : dirname + '/');
+}
+
 //Check if a string is a file or directory
 inline bool file_exists(const  string& s)
 {
