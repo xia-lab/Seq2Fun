@@ -874,7 +874,7 @@ void PairEndProcessor::prepareResults(std::vector< std::unordered_map<std::strin
     tmpSortedKOFreqVec.shrink_to_fit();
 
     //2. rarefiction curve;
-    if (mOptions->mHomoSearchOptions.profiling) {
+    if (mOptions->mHomoSearchOptions.profiling && mOptions->transSearch.nTransMappedKOReads > 0) {
         std::vector<std::string> reshuff_vec;
         reshuff_vec.reserve(mOptions->transSearch.nTransMappedKOReads);
         for (auto & it : totalKoFreqUMapResults) {
@@ -916,7 +916,7 @@ void PairEndProcessor::prepareResults(std::vector< std::unordered_map<std::strin
     }
 
     //3. pathway
-    if (mOptions->mHomoSearchOptions.profiling) {
+    if (mOptions->mHomoSearchOptions.profiling && mOptions->transSearch.nTransMappedKOReads > 0) {
         fileoutname.clear();
         fileoutname = mOptions->mHomoSearchOptions.prefix + "_pathway_hits.txt";
         std::ofstream * fout = new std::ofstream();
@@ -1002,7 +1002,7 @@ void PairEndProcessor::prepareResults(std::vector< std::unordered_map<std::strin
     totalKoFreqUMapResults.clear();
 
     //4.for species;
-    if (mOptions->mHomoSearchOptions.profiling) {
+    if (mOptions->mHomoSearchOptions.profiling && mOptions->transSearch.nTransMappedKOReads > 0) {
         std::unordered_map<std::string, int> orgKOUMap;
         std::multimap<std::string, std::unordered_map<std::string, double> > tmpOrgKOFeqUMap;
         for (auto & it : totalOrgKOFreqVecResults) {
