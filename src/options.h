@@ -402,7 +402,7 @@ public:
         SEG = true;
         useEvalue = false;
         minEvalue = 0.01;
-        minAAFragLength = 19;
+        minAAFragLength = 0;
 
         misMatches = 2;
         minScore = 80;

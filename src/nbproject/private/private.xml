@@ -7,11 +7,13 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/peng/NetBeansProjects/github/Seq2Fun/src/util.h</file>
+            <file>file:/home/peng/NetBeansProjects/github/Seq2Fun/src/options.h</file>
+            <file>file:/home/peng/NetBeansProjects/github/Seq2Fun/src/seprocessor.cpp</file>
             <file>file:/home/peng/NetBeansProjects/github/Seq2Fun/src/common.h</file>
+            <file>file:/home/peng/NetBeansProjects/github/Seq2Fun/src/util.h</file>
+            <file>file:/home/peng/NetBeansProjects/github/Seq2Fun/src/peprocessor.cpp</file>
             <file>file:/home/peng/NetBeansProjects/github/Seq2Fun/src/seq2fun.cpp</file>
             <file>file:/home/peng/NetBeansProjects/github/Seq2Fun/src/options.cpp</file>
-            <file>file:/home/peng/NetBeansProjects/github/Seq2Fun/src/options.h</file>
         </group>
     </open-files>
 </project-private>

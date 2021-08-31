@@ -57,7 +57,7 @@ int main(int argc, char* argv[]) {
     cmd.add<string>("mode", 'K', "searching mode either tGREEDY or tMEM (maximum exactly match). By default greedy", false, "tGREEDY");
     cmd.add<int>("mismatch", 'E', "number of mismatched amino acid in sequence comparison with protein database with default value 2", false, 2);
     cmd.add<int>("minscore", 'j', "minimum matching score of amino acid sequence in comparison with protein database with default value 80", false, 80);
-    cmd.add<int>("minlength", 'J', "minimum matching length of amino acid sequence in comparison with protein database with default value 19, for GREEDY and MEM model", false, 19);
+    cmd.add<int>("minlength", 'J', "minimum matching length of amino acid sequence in comparison with protein database with default value 19 for GREEDY and 13 for MEM model", false, 0);
     cmd.add<int>("maxtranslength", 'm', "maximum cutoff of translated peptides, it must be no less than minlength, with default 60", false, 60);
     cmd.add("allFragments", 0, "enable this function will force Seq2Fun to use all the translated AA fragments with length > minlength. This will slightly help to classify reads contain the true stop codon and start codon; This could have limited impact on the accuracy for comparative study and enable this function will slow down the Seq2Fun. by default is false, using --allFragments to enable it");
     cmd.add<string>("codontable", 0, "select the codon table (same as blastx in NCBI), we provide 20 codon tables from 'https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi#SG31'. By default is the codontable1 (Standard Code)", false, "codontable1");
@@ -306,6 +306,15 @@ int main(int argc, char* argv[]) {
     // length filtering
     opt.lengthFilter.enabled = !cmd.exist("disable_length_filtering");
     opt.lengthFilter.requiredLength = cmd.get<int>("length_required");
+    if (cmd.get<int>("minlength") == 0) {
+        if (opt.transSearch.mode == tGREEDY) {
+            opt.transSearch.minAAFragLength = 19;
+        } else {
+            opt.transSearch.minAAFragLength = 13;
+        }
+    } else {
+        opt.transSearch.minAAFragLength = cmd.get<int>("minlength");
+    }
     opt.lengthFilter.requiredLength = max(opt.lengthFilter.requiredLength, static_cast<int> (opt.transSearch.minAAFragLength) * 3);
     opt.lengthFilter.maxLength = cmd.get<int>("length_limit");
 
@@ -428,16 +437,6 @@ int main(int argc, char* argv[]) {
 
     opt.transSearch.misMatches = cmd.get<int>("mismatch");
     opt.transSearch.minScore = cmd.get<int>("minscore");
-    if (cmd.get<int>("minlength") == 0) {
-        if (opt.transSearch.mode == tGREEDY) {
-            opt.transSearch.minAAFragLength = 19;
-        } else {
-            opt.transSearch.minAAFragLength = 13;
-        }
-    } else {
-        opt.transSearch.minAAFragLength = cmd.get<int>("minlength");
-    }
-
     opt.transSearch.maxTransLength = cmd.get<int>("maxtranslength");
     opt.transSearch.maxTransLength = max(opt.transSearch.maxTransLength, opt.transSearch.minAAFragLength);
     opt.transSearch.maxTransLength = min((unsigned) 60, opt.transSearch.maxTransLength);
