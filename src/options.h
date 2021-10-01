@@ -429,6 +429,7 @@ public:
         nTransMappedKOReads = 0;
         nTransMappedGOReads = 0;
         nKODB = 0;
+        nGODB = 0;
         nTransMappedKOs = 0;
         nTransMappedGOs = 0;
         sortedKOFreqTupleVector.clear();
@@ -485,6 +486,7 @@ public:
     atomic_long nTransMappedKOReads;
     long nTransMappedGOReads;
     unsigned int nKODB;
+    unsigned int nGODB;
     unsigned int nTransMappedKOs;
     unsigned int nTransMappedGOs;
     int nMappedPathways;

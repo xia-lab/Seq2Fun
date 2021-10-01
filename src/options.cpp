@@ -542,6 +542,7 @@ void Options::readDB() {
         }
         std::unordered_set<std::string> KUSet;
         std::unordered_set<std::string> orgUSet;
+        std::unordered_set<std::string> GOUSet;
         mHomoSearchOptions.filein.open(mHomoSearchOptions.genemap.c_str());
         if(!mHomoSearchOptions.filein.is_open()) error_exit("Can not open gene KO GO species map file : " + mHomoSearchOptions.genemap);        
         const int maxLine = 10000;
@@ -567,36 +568,27 @@ void Options::readDB() {
                 if (splVec.size() == 4) {
                     auto ko = splVec[1];
                     gkg.ko = ko;
-                    gkg.go = splVec[2];
-                    gkg.spec = splVec[3];
                     if (ko != "UNASSIGNED") {
                         KUSet.insert(ko);
                     }
+                    auto go = splVec[2];
+                    gkg.go = go;
+                    if(go != "UNASSIGNED"){
+                        GOUSet.insert(go);
+                    }
+                    gkg.spec = splVec[3];
                     orgUSet.insert(splVec[3]);
                     mHomoSearchOptions.fullDbMap[splVec[0]] = gkg;
                 }
             }
         }
-        
-//        std::string s1, s2, s3, s4;
-//        geneKoGoComb gkg;
-//        while(mHomoSearchOptions.filein >> s1 >> s2 >> s3 >> s4){
-//            gkg.ko = s2;
-//            gkg.go = s3;
-//            gkg.spec = s4;
-//            mHomoSearchOptions.fullDbMap[s1] = gkg;
-////            mHomoSearchOptions.db_map[s1] = s2;
-////            mHomoSearchOptions.org_map[s1] = s3;
-//            if(s2 != "UNASSIGNED"){
-//                KUSet.insert(s2);
-//            }
-//            orgUSet.insert(s4);
-//        }
         mHomoSearchOptions.filein.close(); 
         mHomoSearchOptions.filein.clear();
         transSearch.nKODB = KUSet.size();
+        transSearch.nGODB = GOUSet.size();
         transSearch.nOrgsDB = orgUSet.size();
         KUSet.clear();
+        GOUSet.clear();
         orgUSet.clear();
     } else {
         error_exit("Gene KO GO species map file is empty : " + mHomoSearchOptions.genemap);

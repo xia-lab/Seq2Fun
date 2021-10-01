@@ -713,6 +713,10 @@ int main(int argc, char* argv[]) {
                     "mapped " << opt.transSearch.nTransMappedKOs << " KOs out of " <<
                     opt.transSearch.nKODB << " KOs (" <<
                     getPercentage(opt.transSearch.nTransMappedKOs, opt.transSearch.nKODB) <<
+                    " %); " << 
+                    "mapped " << opt.transSearch.nTransMappedGOs << " GO sets out of " <<
+                    opt.transSearch.nGODB << " GO sets (" <<
+                    getPercentage(opt.transSearch.nTransMappedGOs, opt.transSearch.nGODB) <<
                     " %)" << endl << endl;
             opt.transSearch.reset2Default();
             opt.mHomoSearchOptions.reset2Default();

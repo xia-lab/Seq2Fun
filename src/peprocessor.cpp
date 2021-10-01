@@ -480,7 +480,7 @@ bool PairEndProcessor::processPairEnd(ReadPairPack* pack, ThreadConfig* config) 
         auto gCount = mOptions->transSearch.goUSet.size();
         logMtx.unlock();
         std::string str = "Mapped \033[1;31m" + std::to_string(rCount) + "\033[0m reads to \033[1;32m" + 
-                std::to_string(kCount) + "\033[0m KOs and \033[1;36m" + std::to_string(gCount) + "\033[0m GOs!";
+                std::to_string(kCount) + "\033[0m KOs and \033[1;36m" + std::to_string(gCount) + "\033[0m GO sets!";
         loginfo(str, false);
     }
 
