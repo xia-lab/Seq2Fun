@@ -1,30 +1,25 @@
 ## Description 
 
-**Seq2Fun** is an ultra-fast, all-in-one functional profiling tool for RNA-seq data analysis for organisms without reference genomes.
-
-Users are strongly encouraged to visit and follow the instructions on the Seq2Fun websit **www.seq2fun.ca** for more details.
+**Seq2Fun** is an ultra-fast, all-in-one functional profiling tool directly from RNA-seq raw reads for organisms without reference genomes. For more detailed descriptions of the concept and algorithm, and instructions, please visit the Seq2Fun website **www.seq2fun.ca** .
 
 
 ## Key features of Seq2Fun
-```
-Ultra-fast: Seq2Fun is > 120 times faster (~ 2 million reads / minute) than the conventional RNA-seq workflow.
 
-Extremely low memory cost: Seq2Fun consumes as little as 2.27 GB memory and can run on a standard PC with 8 threads and 16 GB memory.
+* **Ultra-fast**: Seq2Fun is > 120 times faster (~ 2 million reads / minute) than the conventional RNA-seq workflow.
 
-Highly efficient: Seq2Fun can finish a typical RNA-seq dataset within several hours on a standard PC in stead of several days or even weeks by conventional RNA-seq workflow on a high-performance server.
+* **Extremely low memory cost**: Seq2Fun consumes as little as 2.27 GB memory and can run on a standard PC with 8 threads and 16 GB memory.
 
-Reference-free: Seq2Fun does not require the genome or transcriptome reference of the organism; it is also transcriptome de novo assembly-free.
+* **Reference-free**: Seq2Fun does not require the genome or transcriptome reference of the organism; it is also transcriptome de novo assembly-free.
 
-Highly accurate: Seq2Fun generates KO abundance with R2 value as high as 0.93 comparing with the ground truth.
+* **Highly accurate**: Seq2Fun generates KO abundance with R2 value as high as 0.93 comparing with the ground truth.
 
-All-in-one: Seq2Fun directly takes raw RNA-seq reads as input and output gene abundance table without any intermediate file writing and loading, making I/O very efficient.
+* **All-in-one**: Seq2Fun directly takes raw RNA-seq reads as input and output gene abundance table without any intermediate file writing and loading, making I/O very efficient.
 
-Multifunctional: Seq2Fun generates 6 levels of output files, including KO abundance table, hit pathway table, hit species table, reads KO table, a html report summarizing these tables and reads quality check, as well as output mapped clean reads for further analysis such as gene assembly.
+* **Multifunctional**: Seq2Fun generates 6 levels of output files, including KO abundance table, hit pathway table, hit species table, reads KO table, a html report summarizing these tables and reads quality check, as well as output mapped clean reads for further analysis such as gene assembly.
 
-Highly flexible: Seq2Fun supports RNA-seq analysis on particular genes or groups of organisms using customized database.
+* **Flexible**: Seq2Fun supports RNA-seq analysis on particular genes or groups of organisms using customized database.
 
-Easy to use: Seq2Fun requires minimal programing skills.
-```
+* **Easy to use**: Seq2Fun requires minimal programing skills.
 
 ## Getting started
 ### Step 1. Install the package
