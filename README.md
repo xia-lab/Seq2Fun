@@ -15,7 +15,7 @@
 
 * **All-in-one**: Seq2Fun directly takes raw RNA-seq reads as input and output gene abundance table without any intermediate file writing and loading, making I/O very efficient.
 
-* **Multifunctional**: Seq2Fun generates 6 levels of output files, including KO abundance table, hit pathway table, hit species table, reads KO table, a html report summarizing these tables and reads quality check, as well as output mapped clean reads for further analysis such as gene assembly.
+* **Multifunctional**: Seq2Fun generates 6 levels of output files, including KO and GO abundance tables, hit pathway table, hit species table, reads KO table, a html report summarizing these tables and reads quality check, as well as output mapped clean reads for further analysis such as gene assembly.
 
 * **Flexible**: Seq2Fun supports RNA-seq analysis on particular genes or groups of organisms using customized database.
 
