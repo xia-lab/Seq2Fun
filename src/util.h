@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <string>
+#include <cstring>
 #include <iostream>
 #include <vector>
 #include <sys/stat.h>
@@ -20,7 +21,11 @@
 #include <tuple>
 #include <utility>
 #include <numeric>
-#include<string>  
+#include <string>  
+#include <sstream>
+#include <fstream>
+#include <deque>
+#include <regex>
 
 #ifdef WINDOWS
 #include <direct.h>
@@ -45,6 +50,27 @@
 
 using namespace std;
 
+template <class T>
+void colorCout(const T & str, string color = "red") {
+    if (color == "red") {
+        std::cout << "\033[1;31m" << str << "\033[0m\n";
+    } else if (color == "green") {
+        std::cout << "\033[1;32m" << str << "\033[0m\n";
+    } else if (color == "yellow") {
+        std::cout << "\033[1;33m" << str << "\033[0m\n";
+    } else if (color == "blue") {
+        std::cout << "\033[1;34m" << str << "\033[0m\n";
+    } else if (color == "magenta") {
+        std::cout << "\033[1;35m" << str << "\033[0m\n";
+    } else if (color == "cyan") {
+        std::cout << "\033[1;36m" << str << "\033[0m\n";
+    } else if (color == "white") {
+        std::cout << "\033[1;37m" << str << "\033[0m\n";
+    } else {
+        std::cout << "\033[1;30m" << str << "\033[0m\n";
+    }
+}
+
 inline char complement(char base) {
     switch(base){
         case 'A':
@@ -64,71 +90,53 @@ inline char complement(char base) {
     }
 }
 
-inline bool starts_with( string const & value,  string const & starting)
-{
+inline bool starts_with( string const & value,  string const & starting){
     if (starting.size() > value.size()) return false;
     return  equal(starting.begin(), starting.end(), value.begin());
 }
 
-inline bool ends_with( string const & value,  string const & ending)
-{
+inline bool ends_with( string const & value,  string const & ending){
 	if (ending.size() > value.size()) return false;
 	return  equal(ending.rbegin(), ending.rend(), value.rbegin());
 }
 
-inline string trim(const string& str)
-{
+inline string trim(const string& str){
     string::size_type pos = str.find_first_not_of(' ');
-    if (pos == string::npos)
-    {
+    if (pos == string::npos){
         return string("");
     }
     string::size_type pos2 = str.find_last_not_of(' ');
-    if (pos2 != string::npos)
-    {
+    if (pos2 != string::npos){
         return str.substr(pos, pos2 - pos + 1);
     }
     return str.substr(pos);
 }
 
-inline string trimStr(const string& str)
-{
+inline string trimStr(const string& str){
     string::size_type pos = str.find_first_not_of(' ');
-    if (pos == string::npos)
-    {
+    if (pos == string::npos){
         return string("");
     }
     string::size_type pos2 = str.find_last_not_of(' ');
-    if (pos2 != string::npos)
-    {
+    if (pos2 != string::npos){
         return str.substr(pos, pos2 - pos + 1);
     }
     return str.substr(pos);
 }
 
-//inline int split(const string& str, vector<string>& ret_, string sep = ","){
-//    if (str.empty()){
-//        return 0;
-//    }
-//
-//    string tmp;
-//    string::size_type pos_begin = str.find_first_not_of(sep);
-//    string::size_type comma_pos = 0;
-//
-//    while (pos_begin != string::npos){
-//        comma_pos = str.find(sep, pos_begin);
-//        if (comma_pos != string::npos){
-//            tmp = str.substr(pos_begin, comma_pos - pos_begin);
-//            pos_begin = comma_pos + sep.length();
-//        } else {
-//            tmp = str.substr(pos_begin);
-//            pos_begin = comma_pos;
-//        }
-//        ret_.push_back(tmp);
-//        tmp.clear();
-//    }
-//    return 0;
-//}
+inline string trimEnd(char line[]){
+    int readed = strlen(line);
+    if(readed >= 2){
+        if(line[readed - 1] == '\n' || line[readed - 1] == '\r'){
+            line[readed - 1] = '\0';
+            if(line[readed - 2] == '\r'){
+                line[readed -2] = '\0';
+            }
+        }
+    }
+    string str(line);
+    return str;
+}
 
 inline int splitStr(const string& str, vector<string>& ret_, string sep = "\t"){
     if (str.empty()){
@@ -149,11 +157,21 @@ inline int splitStr(const string& str, vector<string>& ret_, string sep = "\t"){
         ret_.push_back(tmp);
         tmp.clear();
     }
+    ret_.shrink_to_fit();
     return 0;
 }
 
-inline string replace(const string& str, const string& src, const string& dest)
-{
+inline std::vector<std::string> split2(const std::string & s, const char delim){
+    std::vector<std::string> tokens;
+    std::string token;
+    std::istringstream tokenStream(s);
+    while(std::getline(tokenStream, token, delim)){
+        tokens.push_back(token);
+    }
+    return tokens;
+}
+
+inline string replace(const string& str, const string& src, const string& dest){
     string ret;
 
     string::size_type pos_begin = 0;
@@ -242,10 +260,6 @@ inline string joinpath(const string& dirname, const string& basename){
     }
 }
 
-inline string checkDirEnd(const string & dirname){
-    return (dirname[dirname.length() - 1] == '/' ? dirname : dirname + '/');
-}
-
 //Check if a string is a file or directory
 inline bool file_exists(const  string& s)
 {
@@ -288,6 +302,10 @@ inline void check_file_valid(const  string& s) {
         cerr << "ERROR: '" << s << "' is a folder, not a file, quit now" << endl;
         exit(-1);
     }
+}
+
+inline bool check_filename_valid(const string& s){
+    return 0 < trim(s).length() && trim(s).length() <= 255 && regex_match(s, regex("^[A-Za-z0-9_\\.\\-]+$"));
 }
 
 inline void check_file_writable(const  string& s) {
@@ -370,11 +388,15 @@ inline void error_exit(const string& msg) {
 }
 
 extern mutex logmtx;
-inline void loginfo(const string s){
+inline void loginfo(const string & s, bool next = true){
     logmtx.lock();
     time_t tt = time(NULL);
     tm* t= localtime(&tt);
-    cerr<<"["<<t->tm_hour<<":"<<t->tm_min<<":"<<t->tm_sec<<"] " << s <<endl;
+    if(next){
+        fprintf(stderr, "[\033[1;35m%02d:%02d:%02d\033[0m] %s\n", t->tm_hour, t->tm_min, t->tm_sec, s.c_str());
+    } else {
+        fprintf(stderr, "[\033[1;35m%02d:%02d:%02d\033[0m] %s\r", t->tm_hour, t->tm_min, t->tm_sec, s.c_str());
+    }
     logmtx.unlock();
 }
 
@@ -457,27 +479,6 @@ double getPercentage(T1 v1, T2 v2){
 //   return ret;
 //}
 
-template <class T>
-void colorCout(const T & str, string color = "red") {
-    if (color == "red") {
-        std::cout << "\033[1;31m" << str << "\033[0m\n";
-    } else if (color == "green") {
-        std::cout << "\033[1;32m" << str << "\033[0m\n";
-    } else if (color == "yellow") {
-        std::cout << "\033[1;33m" << str << "\033[0m\n";
-    } else if (color == "blue") {
-        std::cout << "\033[1;34m" << str << "\033[0m\n";
-    } else if (color == "magenta") {
-        std::cout << "\033[1;35m" << str << "\033[0m\n";
-    } else if (color == "cyan") {
-        std::cout << "\033[1;36m" << str << "\033[0m\n";
-    } else if (color == "white") {
-        std::cout << "\033[1;37m" << str << "\033[0m\n";
-    } else {
-        std::cout << "\033[1;30m" << str << "\033[0m\n";
-    }
-}
-
 template<typename T>
 std::string unkown2Str(const T & t){
     std::ostringstream os;
@@ -547,6 +548,21 @@ inline std::string convertSeconds(const T & t){
     std::stringstream ss;
     ss << hours << " hours "  << minutes % 60 << " minutes " << seconds % 60 << " seconds";
     return ss.str();
+}
+
+template<typename T>
+vector<T> sliceVec(vector<T> vec, int x, int y){
+    auto start = vec.begin() + x;
+    auto end = vec.begin() + y;
+    vector<T> res(y - x);
+    copy(start, end, res.begin());
+    return res;
+}
+
+template<typename T>
+int getVecIndex(vector<T> & v, T i){
+    auto it = std::find(v.begin(), v.end(), i);
+    return (it != v.end() ? it - v.begin() : -1);
 }
 
 #endif /* UTIL_H */

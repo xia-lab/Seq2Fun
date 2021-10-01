@@ -36,28 +36,49 @@ else
 LD_LIBS_STATIC = -Wl,--whole-archive -lpthread -lz -Wl,--no-whole-archive
 endif
 
-all: makefile  seq2fun bwt/mkbwt
+all: makefile  seq2fun2 seqtract bwt/mkbwt 
 	mkdir -p ../bin
-	cp seq2fun ../bin/
+	cp seq2fun2 ../bin/
 	cp bwt/mkbwt ../bin/mkbwt
 	cp bwt/mkfmi ../bin/mkfmi
+	cp seqtract ../bin/
+	$(MAKE) -C assembler/
+#	cd assembler && make $@
+#	cd ../
+	cp assembler/SOAPdenovo-Trans-31mer ../bin/transembler
+	#cp assembler/SOAPdenovo-Trans-31mer ../bin/SOAPdenovo-Trans-31mer
+
+#SOAPdenovo: makefile assembler/SOAPdenovo-Trans-31mer
+#	cp assembler/SOAPdenovo-Trans-31mer ../bin/SOAPdenovo-Trans-31mer
 
 # use bwt/mkbwt as target for compiling everything in the bwt folder first
 bwt/mkbwt:
 	$(MAKE) -C bwt/ $(MAKECMDGOALS)
+	
+assembler/SOAPdenovo-Trans-31kmer:
+	$(MAKE) -C assembler/ $(MAKECMDGOALS)
 
-seq2fun: makefile bwt/mkbwt seq2fun.o transsearcher.o fragment.o bwtfmiDB.o \
-	adaptertrimmer.o basecorrector.o \
+seq2fun2: makefile bwt/mkbwt seq2fun2.o transsearcher.o fragment.o bwtfmiDB.o adaptertrimmer.o basecorrector.o \
 	duplicate.o evaluator.o fastareader.o fastqreader.o filter.o filterresult.o htmlreporter.o htmlreporterall.o \
 	jsonreporter.o  nucleotidetree.o options.o overlapanalysis.o peprocessor.o \
 	polyx.o processor.o read.o seprocessor.o sequence.o stats.o threadconfig.o umiprocessor.o \
 	unittest.o writer.o writerthread.o $(BLASTOBJS)
-	$(CXX) $(LDFLAGS) -o seq2fun seq2fun.o transsearcher.o fragment.o bwtfmiDB.o \
-	adaptertrimmer.o basecorrector.o \
+	$(CXX) $(LDFLAGS) -o seq2fun2 seq2fun2.o transsearcher.o fragment.o bwtfmiDB.o adaptertrimmer.o basecorrector.o \
 	duplicate.o evaluator.o fastareader.o fastqreader.o filter.o filterresult.o htmlreporter.o htmlreporterall.o \
 	jsonreporter.o  nucleotidetree.o options.o overlapanalysis.o peprocessor.o \
 	polyx.o processor.o read.o seprocessor.o sequence.o stats.o threadconfig.o umiprocessor.o \
 	unittest.o writer.o writerthread.o $(BWTOBJS) $(BLASTOBJS) $(LDLIBS)
+	
+seqtract: makefile seqtract.o transsearcher.o fragment.o bwtfmiDB.o adaptertrimmer.o basecorrector.o \
+	duplicate.o evaluator.o fastareader.o fastqreader.o filter.o filterresult.o htmlreporter.o htmlreporterall.o \
+	jsonreporter.o  nucleotidetree.o options.o overlapanalysis.o peprocessor.o polyx.o processor.o read.o seprocessor.o \
+	sequence.o stats.o threadconfig.o umiprocessor.o unittest.o writer.o writerthread.o \
+	seqtractpeprocessor.o threadsconfig2.o $(BLASTOBJS)
+	$(CXX) $(LDFLAGS) -o seqtract seqtract.o transsearcher.o fragment.o bwtfmiDB.o adaptertrimmer.o basecorrector.o \
+	duplicate.o evaluator.o fastareader.o fastqreader.o filter.o filterresult.o htmlreporter.o htmlreporterall.o \
+	jsonreporter.o  nucleotidetree.o options.o overlapanalysis.o peprocessor.o polyx.o processor.o read.o seprocessor.o \
+	sequence.o stats.o threadconfig.o umiprocessor.o unittest.o writer.o writerthread.o \
+	seqtractpeprocessor.o threadsconfig2.o $(BWTOBJS) $(BLASTOBJS) $(LDLIBS)
 
 #%.o : %.c makefile
 %.o : %.c
@@ -67,9 +88,10 @@ seq2fun: makefile bwt/mkbwt seq2fun.o transsearcher.o fragment.o bwtfmiDB.o \
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c -o $@ $<
 
 clean:
-	rm -f -v bwt/mkbwt bwt/mkfmi  seq2fun ../bin/* ../testdata/All* ../testdata/*.html ../testdata/*_mapped* ../testdata/D*.txt ../testdata/*.json ../testdata/*.txt.gz
+	rm -f -v bwt/mkbwt bwt/mkfmi assembler/transembler seq2fun2 seqtract ../bin/* ../testdata/All* ../testdata/*.html ../testdata/*_mapped* ../testdata/D*.txt ../testdata/*.json ../testdata/*.txt.gz
 	find . -name "*.o" -delete
 	$(MAKE) -C bwt/ clean
+	$(MAKE) -C assembler/ clean
 
 static: LDFLAGS = -static
 static: LDLIBS = $(LD_LIBS_STATIC)

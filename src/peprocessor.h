@@ -82,7 +82,8 @@ private:
     int getPeakInsertSize();
     void writeTask(WriterThread* config);
     void prepareResults(std::vector< std::unordered_map<std::string, uint32 > > & totalKoFreqVecResults,
-                        std::vector< std::unordered_map<std::string, std::unordered_map<std::string, double> > > & totalOrgKOFreqVecResults);
+                        std::vector< std::unordered_map<std::string, std::unordered_map<std::string, double> > > & totalOrgKOFreqVecResults,
+                        std::vector< std::unordered_map<std::string, uint32 > > & totalGoFreqVecResults);
 
 private:
     ReadPairRepository mRepo;
@@ -90,7 +91,6 @@ private:
     atomic_int mFinishedThreads;
     std::mutex mOutputMtx;
     std::mutex mInputMtx;
-    std::mutex mSpecMtx;
     std::mutex logMtx;
     Options* mOptions;
     Filter* mFilter;
@@ -99,7 +99,7 @@ private:
     ofstream* mOutStream1;
     ofstream* mOutStream2;
     UmiProcessor* mUmiProcessor;
-    long* mInsertSizeHist;
+    atomic_long* mInsertSizeHist;
     WriterThread* mLeftWriter;
     WriterThread* mRightWriter;
     WriterThread* mUnpairedLeftWriter;

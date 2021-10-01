@@ -9,6 +9,11 @@ TransSearcher::TransSearcher(Options * opt, BwtFmiDB * tbwtfmiDB) {
     subOrgKOAbunUMMap.clear();
     orgSet.clear();
     koUSet.clear();
+    subGoFreqUMap.clear();
+    goUSet.clear();
+    tmpGoVec.clear();
+    tmpGoVec.reserve(100);
+    
     blosum_subst = {
         {'A',
             {'S', 'V', 'T', 'G', 'C', 'P', 'M', 'K', 'L', 'I', 'E', 'Q', 'R', 'Y', 'F', 'H', 'D', 'N', 'W'}},
@@ -1086,8 +1091,10 @@ void TransSearcher::flush_output(){
     {
         std::lock_guard<std::mutex> out_lock(m);
         mOptions->transSearch.koUSet.insert(koUSet.begin(), koUSet.end());
+        mOptions->transSearch.goUSet.insert(goUSet.begin(), goUSet.end());
     }
     koUSet.clear();
+    goUSet.clear();
 }
 
 void TransSearcher::clearFragments() {
@@ -1109,7 +1116,6 @@ inline uint8_t TransSearcher::revcomp_codon_to_int(const char *codon) {
 }
 
 void TransSearcher::classify_greedyblosum() {
-
     best_matches_SI.clear();
     best_matches.clear();
     best_match_score = 0;
@@ -1215,19 +1221,7 @@ void TransSearcher::classify_greedyblosum() {
         //recursive_free_SI(itm);
         free(itm);
     }
-
-    tmpKOVec.clear();
-    tmpKOProteinUMMap.clear();
-    for (auto it : match_ids) {
-        auto ko = mOptions->mHomoSearchOptions.db_map.find(it);
-        if (ko != mOptions->mHomoSearchOptions.db_map.end()) {
-            tmpKOVec.push_back(ko->second);
-            if (mOptions->mHomoSearchOptions.profiling) {
-                tmpKOProteinUMMap.insert(std::pair<std::string, std::string> (ko->second, ko->first)); //ko protein;
-            }
-        }
-    }
-    extraoutput = getMostFreqStrFromVec(tmpKOVec);
+    doProcess();
 }
 
 void TransSearcher::classify_length() {
@@ -1298,22 +1292,11 @@ void TransSearcher::classify_length() {
     for (auto itm : longest_matches_SI) {
         recursive_free_SI(itm);
     }
-
-    tmpKOVec.clear();
-    tmpKOProteinUMMap.clear();
-    for (auto it : match_ids) {
-        auto ko = mOptions->mHomoSearchOptions.db_map.find(it);
-        if (ko != mOptions->mHomoSearchOptions.db_map.end()) {
-            tmpKOVec.push_back(ko->second);
-            if (mOptions->mHomoSearchOptions.profiling) {
-                tmpKOProteinUMMap.insert(std::pair<std::string, std::string> (ko->second, ko->first)); //ko protein;
-            }
-        }
-    }
-    extraoutput = getMostFreqStrFromVec(tmpKOVec);
+    
+    doProcess();
 }
 
-std::string TransSearcher::transSearch(Read *item) {
+void TransSearcher::preProcess(){
      if (mOptions->mHomoSearchOptions.profiling || mOptions->verbose) {
         read_count++;
         if (read_count > 10000) {
@@ -1322,7 +1305,7 @@ std::string TransSearcher::transSearch(Read *item) {
             }
             if (mOptions->mHomoSearchOptions.profiling) {
                 priOrgKOAbunUMap.clear();
-                for (auto & org : orgSet) {
+                for (const auto & org : orgSet) {
                     auto it = tmpOrgKOAbunUMMap.equal_range(org);
                     tmpKOFreqMMap.clear();
                     for (auto & itr = it.first; itr != it.second; itr++) {
@@ -1352,8 +1335,94 @@ std::string TransSearcher::transSearch(Read *item) {
             read_count = 0;
         }
     }
-     
+}
+
+void TransSearcher::doProcess(){
+    tmpKOVec.clear();
+    tmpKOVec.reserve(match_ids.size());
+    tmpKOProteinUMMap.clear();
+    tmpGOVec.clear();//could use the sampe tmpKOVec;
+    tmpGOVec.reserve(match_ids.size());
+    for (const auto it : match_ids) {
+        auto gokoit = mOptions->mHomoSearchOptions.fullDbMap.find(it);
+        if (gokoit != mOptions->mHomoSearchOptions.fullDbMap.end()) {
+            tmpGKG = gokoit->second;
+            if (tmpGKG.ko != "UNASSIGNED") {
+                tmpKOVec.push_back(tmpGKG.ko);
+                if (mOptions->mHomoSearchOptions.profiling) {
+                    tmpKOProteinUMMap.insert(std::pair<std::string, std::string> (tmpGKG.ko, gokoit->first)); //ko protein;
+                }
+            }
+            if(tmpGKG.go != "UNASSIGNED"){
+                tmpGOVec.push_back(tmpGKG.go);
+            }
+        }
+        
+//        auto ko = mOptions->mHomoSearchOptions.db_map.find(it);
+//        if (ko != mOptions->mHomoSearchOptions.db_map.end()) {
+//            tmpKOVec.push_back(ko->second);
+//            if (mOptions->mHomoSearchOptions.profiling) {
+//                tmpKOProteinUMMap.insert(std::pair<std::string, std::string> (ko->second, ko->first)); //ko protein;
+//            }
+//        }
+//        
+//        auto go = mOptions->mHomoSearchOptions.geneGoMap.find(it);
+//        if(go != mOptions->mHomoSearchOptions.geneGoMap.end()){
+//            tmpGOVec.push_back(go->second);
+//        }
+    }
+    extraoutput = tmpKOVec.size() > 0 ? getMostFreqStrFromVec(tmpKOVec) : "";
+    extraoutputGO = tmpGOVec.size() > 0 ? getMostFreqStrFromVec(tmpGOVec) : "";
+    tmpKOVec.shrink_to_fit();
+    tmpGOVec.shrink_to_fit();
+}
+
+void TransSearcher::postProcess() {
+    if (extraoutput.length() > 0) {
+        outputStr = extraoutput;
+        subKoFreqUMap[extraoutput]++;
+        if (mOptions->verbose) {
+            koUSet.insert(extraoutput);
+        }
+        if (mOptions->mHomoSearchOptions.profiling) {
+            if (tmpKOProteinUMMap.size() == 1) {
+                auto proteinID = tmpKOProteinUMMap.begin()->second;
+                //auto org = mOptions->mHomoSearchOptions.org_map.find(proteinID)->second;
+                auto org = mOptions->mHomoSearchOptions.fullDbMap.find(proteinID)->second.spec;
+                orgSet.insert(org);
+                auto KOAbunPair = std::make_pair(tmpKOProteinUMMap.begin()->first, (double) 1);
+                tmpOrgKOAbunUMMap.insert(std::pair<std::string, std::pair < std::string, double> >(org, KOAbunPair));
+            } else {
+                auto count = tmpKOProteinUMMap.count(extraoutput);
+                double doubleNum = (double) 1 / count;
+                auto it = tmpKOProteinUMMap.equal_range(extraoutput);
+                for (auto itr = it.first; itr != it.second; ++itr) {
+                    auto org = mOptions->mHomoSearchOptions.fullDbMap.find(itr->second)->second.spec;
+                    //auto org = mOptions->mHomoSearchOptions.org_map.find(itr->second)->second;
+                    orgSet.insert(org);
+                    auto KOAbunPair = std::make_pair(it.first->first, doubleNum);
+                    tmpOrgKOAbunUMMap.insert(std::pair<std::string, std::pair < std::string, double > >(org, KOAbunPair));
+                }
+            }
+        }
+    }
+
+    if (extraoutputGO.length() > 0) {
+        outputStr += "\t" + extraoutputGO;
+        subGoFreqUMap[extraoutputGO]++;
+        if (mOptions->verbose) {
+            tmpGoVec.clear();
+            splitStr(extraoutputGO, tmpGoVec, ";");
+            goUSet.insert(tmpGoVec.begin(), tmpGoVec.end());
+        }
+    }
+}
+
+std::string TransSearcher::transSearch(Read *item) {
+    preProcess();
+    outputStr = "";
     extraoutput = "";
+    extraoutputGO = "";
     query_len = static_cast<double> (item->length()) / 3.0;
     if (item->mSeq.length() >= mOptions->transSearch.minAAFragLength * 3) {
         if (mOptions->debug)
@@ -1377,78 +1446,16 @@ std::string TransSearcher::transSearch(Read *item) {
         assert(false);
     }
 
-    if (extraoutput.length() > 0) {
-        subKoFreqUMap[extraoutput]++;
-        
-        if(mOptions->verbose){
-            koUSet.insert(extraoutput);
-        }
-        
-        if (mOptions->mHomoSearchOptions.profiling) {
-            if (tmpKOProteinUMMap.size() == 1) {
-                auto proteinID = tmpKOProteinUMMap.begin()->second;
-                auto org = mOptions->mHomoSearchOptions.org_map.find(proteinID)->second;
-                orgSet.insert(org);
-                auto KOAbunPair = std::make_pair(tmpKOProteinUMMap.begin()->first, (double) 1);
-                tmpOrgKOAbunUMMap.insert(std::pair<std::string, std::pair < std::string, double> >(org, KOAbunPair));
-            } else {
-                auto count = tmpKOProteinUMMap.count(extraoutput);
-                double doubleNum = (double) 1 / count;
-                auto it = tmpKOProteinUMMap.equal_range(extraoutput);
-                for (auto itr = it.first; itr != it.second; ++itr) {
-                    auto org = mOptions->mHomoSearchOptions.org_map.find(itr->second)->second;
-                    orgSet.insert(org);
-                    auto KOAbunPair = std::make_pair(it.first->first, doubleNum);
-                    tmpOrgKOAbunUMMap.insert(std::pair<std::string, std::pair < std::string, double > >(org, KOAbunPair));
-                }
-            }
-        }
-    }
     clearFragments();
-    return(extraoutput);
+    postProcess();
+    return outputStr;
 }
 
 std::string TransSearcher::transSearch(Read *item1, Read *item2) {
-    if (mOptions->mHomoSearchOptions.profiling || mOptions->verbose) {
-        read_count++;
-        if (read_count > 10000) {
-            if (mOptions->verbose) {
-                flush_output();
-            }
-            if (mOptions->mHomoSearchOptions.profiling) {
-                priOrgKOAbunUMap.clear();
-                for (auto & org : orgSet) {
-                    auto it = tmpOrgKOAbunUMMap.equal_range(org);
-                    tmpKOFreqMMap.clear();
-                    for (auto & itr = it.first; itr != it.second; itr++) {
-                        tmpKOFreqMMap.insert(itr->second); //get the same org's ko freq map;
-                    }
-                    tmpKOFreqUMap.clear();
-                    for (auto itt = tmpKOFreqMMap.begin(), end = tmpKOFreqMMap.end();
-                            itt != end;
-                            itt = tmpKOFreqMMap.upper_bound(itt->first)) {//get the unique ko
-                        auto ko = itt->first; //itt->first is the ko;
-                        auto itk = tmpKOFreqMMap.equal_range(ko); // unique ko range; 
-                        double koFreq = 0;
-                        for (auto & itko = itk.first; itko != itk.second; itko++) {//get each ko's freq;
-                            //tmpKOFreqUMap[itko->first] += itko->second;
-                            koFreq += itko->second;
-                        }
-                        tmpKOFreqUMap[ko] = koFreq;
-                    }
-                    tmpKOFreqMMap.clear();
-                    priOrgKOAbunUMap[org] = tmpKOFreqUMap;
-                    tmpKOFreqUMap.clear();
-                }
-                tmpOrgKOAbunUMMap.clear();
-                subOrgKOAbunUMMap.insert(priOrgKOAbunUMap.begin(), priOrgKOAbunUMap.end());
-                priOrgKOAbunUMap.clear();
-            }
-            read_count = 0;
-        }
-    }
-     
+    preProcess();
+    outputStr = "";
     extraoutput = "";
+    extraoutputGO = "";
     query_len = static_cast<double> (item1->length()) / 3.0;
     if (item1->length() >= mOptions->transSearch.minAAFragLength * 3) {
         if (mOptions->debug)
@@ -1482,36 +1489,9 @@ std::string TransSearcher::transSearch(Read *item1, Read *item2) {
     } else { // this should not happen
         assert(false);
     }
-
-    if (extraoutput.length() > 0) {
-        subKoFreqUMap[extraoutput]++;
-        
-        if(mOptions->verbose){
-            koUSet.insert(extraoutput);
-        }
-        
-        if (mOptions->mHomoSearchOptions.profiling) {
-            if (tmpKOProteinUMMap.size() == 1) {
-                auto proteinID = tmpKOProteinUMMap.begin()->second;
-                auto org = mOptions->mHomoSearchOptions.org_map.find(proteinID)->second;
-                orgSet.insert(org);
-                auto KOAbunPair = std::make_pair(tmpKOProteinUMMap.begin()->first, (double) 1);
-                tmpOrgKOAbunUMMap.insert(std::pair<std::string, std::pair < std::string, double> >(org, KOAbunPair));
-            } else {
-                auto count = tmpKOProteinUMMap.count(extraoutput);
-                double doubleNum = (double) 1 / count;
-                auto it = tmpKOProteinUMMap.equal_range(extraoutput);
-                for (auto itr = it.first; itr != it.second; ++itr) {
-                    auto org = mOptions->mHomoSearchOptions.org_map.find(itr->second)->second;
-                    orgSet.insert(org);
-                    auto KOAbunPair = std::make_pair(it.first->first, doubleNum);
-                    tmpOrgKOAbunUMMap.insert(std::pair<std::string, std::pair < std::string, double > >(org, KOAbunPair));
-                }
-            }
-        }
-    }
     clearFragments();
-    return(extraoutput);
+    postProcess();
+    return outputStr;
 }
 
 void TransSearcher::ids_from_SI(SI *si) {

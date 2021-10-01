@@ -141,7 +141,18 @@ string Read::toFastaR2() {
 }
 
 string Read::toStringWithTag(string tag) {
-	return mName + " " + tag + "\n" + mSeq.mStr + "\n" + mStrand + "\n" + mQuality + "\n";
+	return mName + "\t" + tag + "\n" + mSeq.mStr + "\n" + mStrand + "\n" + mQuality + "\n";
+}
+
+bool Read::fixMGI() {
+	int len = mName.length();
+	if(mName[len-1]=='1' || mName[len-1]=='2') {
+		if(mName[len-2] == '/') {
+			mName = mName.substr(0, len-2) + " " + mName.substr(len-2, 2);
+			return true;
+		}
+	}
+	return false;
 }
 
 bool Read::test(){
@@ -299,7 +310,7 @@ ReadItem::ReadItem(const std::string & n, const std::string & s1, const std::str
 //}
 //
 std::string ReadItem::toStringWithTagR1(std::string & tag){
-    return ">" + name1 + " " + tag + "\n" + sequence1 + "\n";
+    return ">" + name1 + "\t" + tag + "\n" + sequence1 + "\n";
 }
 //
 //std::string ReadItem::toStringR2(){
@@ -307,7 +318,7 @@ std::string ReadItem::toStringWithTagR1(std::string & tag){
 //}
 //
 std::string ReadItem::toStringWithTagR2(std::string & tag){
-    return ">" + name1 + " " + tag + "\n" + sequence2 + "\n";
+    return ">" + name1 + "\t" + tag + "\n" + sequence2 + "\n";
 }
 
 //std::string ReadItem::toStringRQ1(){

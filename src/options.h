@@ -13,6 +13,7 @@
 #include <set>
 #include <unordered_set>
 #include <tuple>
+#include <atomic>
 
 #include "common.h"
 
@@ -344,8 +345,12 @@ public:
         nKODb = 0;
         koRate = 0;
         
+        nGO = 0;
+        
+        transSearchMappedKOReads = 0;
         transSearchMappedKOReads = 0;
         mappedKOReadsRate = 0;
+        mappedGOReadsRate = 0;
         
         totalCleanReads = 0;
         cleanReadsRate = 0;
@@ -358,6 +363,7 @@ public:
         nOrgsDB = 0;
         nMappedOrgs = 0;
         totalKoFreqUMapResults.clear();
+        totalGoFreqUMapResults.clear();
         rarefactionMap.clear();
         totalPathwayMap.clear();
         totalOrgKOUMap.clear();
@@ -373,8 +379,11 @@ public:
     int nKO;
     int nKODb;
     double koRate;
+    int nGO;
     long transSearchMappedKOReads;
+    long transSearchMappedGOReads;
     double mappedKOReadsRate;
+    double mappedGOReadsRate;
     long totalCleanReads;
     double cleanReadsRate;
     long totalRawReads;
@@ -388,6 +397,7 @@ public:
     Mode tMode;
     CodonTable tCodonTable;
     std::unordered_map<std::string, uint32 > totalKoFreqUMapResults;
+    std::unordered_map<std::string, uint32 > totalGoFreqUMapResults;
     std::map<long, int> rarefactionMap;
     std::unordered_map<std::string, int> totalPathwayMap;
     std::unordered_map<std::string, int> totalOrgKOUMap;
@@ -402,7 +412,7 @@ public:
         SEG = true;
         useEvalue = false;
         minEvalue = 0.01;
-        minAAFragLength = 0;
+        minAAFragLength = 19;
 
         misMatches = 2;
         minScore = 80;
@@ -415,9 +425,12 @@ public:
         transSearchFinished = false;
         sampleKOAbunUMap.clear();
         koUSet.clear();
+        goUSet.clear();
         nTransMappedKOReads = 0;
+        nTransMappedGOReads = 0;
         nKODB = 0;
         nTransMappedKOs = 0;
+        nTransMappedGOs = 0;
         sortedKOFreqTupleVector.clear();
         rarefactionMap.clear();
         sortedPathwayFreqTupleVector.clear();
@@ -432,8 +445,11 @@ public:
         transSearchFinished = false;
         sampleKOAbunUMap.clear();
         koUSet.clear();
+        goUSet.clear();
         nTransMappedKOReads = 0;
+        nTransMappedGOReads = 0;
         nTransMappedKOs = 0;
+        nTransMappedGOs = 0;
         sortedKOFreqTupleVector.clear();
         rarefactionMap.clear();
         sortedPathwayFreqTupleVector.clear();
@@ -465,9 +481,12 @@ public:
     Mode mode;
     CodonTable codonTable;
     std::unordered_set<std::string> koUSet;
-    long nTransMappedKOReads;
+    std::unordered_set<std::string> goUSet;
+    atomic_long nTransMappedKOReads;
+    long nTransMappedGOReads;
     unsigned int nKODB;
     unsigned int nTransMappedKOs;
+    unsigned int nTransMappedGOs;
     int nMappedPathways;
     int nPathwaysDB;
     int nOrgsDB;
@@ -478,6 +497,23 @@ public:
     std::vector<std::pair<std::string, int> > sortedOrgFreqVec;
     std::unordered_map<std::string, int> sampleKOAbunUMap;
     bool transSearchFinished;
+};
+
+class geneKoGoComb{
+public:
+    std::string ko;
+    std::string go;
+    std::string spec;
+    std::string getKo(){ return ko;};
+    std::string getGo(){ return go;};
+    std::string getSpec(){ return spec;};
+    
+public:
+    geneKoGoComb(){
+        ko = "UNASSIGNED";
+        go = "UNASSIGNED";
+        spec = "UNASSIGNED";
+    }
 };
 
 class HomoSearchOptions {
@@ -510,15 +546,58 @@ public:
     long nCleanReads;
     long nTotalReads;
 
-    std::map<std::string, std::string> db_map;
-    std::map<std::string, std::string> org_map;
+    std::map<std::string, geneKoGoComb> fullDbMap;
+    //std::map<std::string, std::string> db_map;
+    //std::map<std::string, std::string> org_map;
     std::multimap<std::string, std::string> pathway_ko_multimap;
     std::unordered_map<std::string, int> pathway_ko_stats_umap;
     std::map<std::string, std::string> ko_fullname_map;
+    std::map<std::string, std::string> geneGoMap;
 
     std::ifstream filein;
     std::string fileName;
     std::string commandStr;
+};
+
+class SeqExtractions{
+public:
+    std::string sampleMappedTableStr;
+    std::string targetGeneTableStr;
+    std::string outputDir;
+    int compression;
+    std::string undeterminedFileName;
+    std::string undeterminedFileNameIn;
+    std::string undeterminedFileNameOut;
+    
+    std::vector<std::string> targetGenesVec;
+    std::vector<std::string> targetGenesSubVec;
+    std::vector<std::string> samplesVecF;
+    std::vector<std::string> samplesVecR;
+    std::vector<std::string> samplesVec;
+    
+    bool paired;
+    std::string suffix;
+    long numTotalReads;
+    int numFeatures;
+    
+public:
+    SeqExtractions(){
+        sampleMappedTableStr = "";
+        targetGeneTableStr = "";
+        outputDir = "";
+        compression = 6;
+        targetGenesVec.clear();
+        samplesVecF.clear();
+        samplesVecR.clear();
+        samplesVec.clear();
+        undeterminedFileName = "";
+        undeterminedFileNameIn = "";
+        undeterminedFileNameOut = "";
+        paired = false;
+        suffix = "";
+        numTotalReads = 0;
+        numFeatures = 0;
+    }
 };
 
 class Options {
@@ -538,6 +617,7 @@ public:
     void readDB();
     void parseSampleTable();
     void mkSelectedPathwayDB();
+    void readSampleExtraction();
 
 public:
     // file name of read1 input
@@ -557,9 +637,6 @@ public:
     string seq2funProgPath;
     //seq2fun dir;
     string seq2funDir;
-    
-    string internalDBDir;
-    //for internal database
 
     bool screenout;
 
@@ -589,8 +666,12 @@ public:
     bool interleavedInput;
     // only process first N reads
     int readsToProcess;
+    // fix the MGI ID tailing issue
+    bool fixMGI;
     // worker thread number
     int thread;
+    // fastq reads buffer size
+    size_t fastqBufferSize;
     // trimming options
     TrimmingOptions trim;
     // quality filtering options
@@ -639,6 +720,7 @@ public:
     //BwtFmiDB tbwtfmiDB;
     std::vector<Sample> samples;
     int getWorkingSampleId(string & samplePrefix); 
+    SeqExtractions mSeqExtractions;
 };
 
 #endif

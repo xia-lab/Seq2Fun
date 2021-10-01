@@ -22,7 +22,7 @@ bool Evaluator::isTwoColorSystem() {
         return false;
 
     // NEXTSEQ500, NEXTSEQ 550, NOVASEQ
-    if(starts_with(r->mName, "@NS") || starts_with(r->mName, "@NB") || starts_with(r->mName, "@A0")) {
+    if(starts_with(r->mName, "@NS") || starts_with(r->mName, "@NB") || starts_with(r->mName, "@NDX") || starts_with(r->mName, "@A0")) {
         delete r;
         return true;
     }

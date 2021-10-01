@@ -15,7 +15,7 @@ void JsonReporter::setDupHist(int* dupHist, double* dupMeanGC, double dupRate) {
     mDupRate = dupRate;
 }
 
-void JsonReporter::setInsertHist(long* insertHist, int insertSizePeak) {
+void JsonReporter::setInsertHist(atomic_long* insertHist, int insertSizePeak) {
     mInsertHist = insertHist;
     mInsertSizePeak = insertSizePeak;
 }
@@ -26,6 +26,14 @@ void JsonReporter::report(FilterResult* result, Stats* preStats1, Stats* postSta
     ofs.open(mOptions->jsonFile, ifstream::out);
     ofs << "{" << endl;
 
+     // sequencing info
+    string sequencingInfo  = mOptions->isPaired()?"paired end":"single end";
+    if(mOptions->isPaired()) {
+        sequencingInfo += " (" + to_string(preStats1->getCycles()) + " cycles + " + to_string(preStats2->getCycles()) + " cycles)";
+    } else {
+        sequencingInfo += " (" + to_string(preStats1->getCycles()) + " cycles)";
+    }
+    
     long pre_total_reads = preStats1->getReads();  
     if(preStats2)
         pre_total_reads += preStats2->getReads();

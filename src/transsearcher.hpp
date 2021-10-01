@@ -65,7 +65,10 @@ protected:
     std::vector<std::string> longest_fragments;
     
     unsigned int best_match_score = 0;
+    
+    std::string outputStr = "";
     std::string extraoutput = "";
+    std::string extraoutputGO = "";
     double query_len;
     uint32_t read_count = 0;
 
@@ -79,6 +82,9 @@ protected:
     void getAllFragmentsBits(const std::string & line);
     void getLongestFragmentsBits(const std::string & line);
     void flush_output();
+    void preProcess();
+    void doProcess();
+    void postProcess();
 
 protected:
     void classify_length();
@@ -87,6 +93,7 @@ protected:
     void ids_from_SI_recursive(SI *);
     std::set<char *> match_ids;
     
+    geneKoGoComb tmpGKG;
     std::vector<std::string> tmpKOVec;
     std::set<std::string> orgSet;
     std::unordered_set<std::string> koUSet;
@@ -101,6 +108,11 @@ protected:
     std::unordered_map<std::string, std::vector<std::string> > subPathwayUMap;
     //std::multimap<std::string, std::pair<std::string, double> >  tmpOrgKOAbunMMap;
     
+    std::vector<std::string> tmpGOVec;
+    std::unordered_map<std::string, uint32 > subGoFreqUMap;
+    std::unordered_set<std::string> goUSet;
+    std::vector<std::string> tmpGoVec;
+    
     Options * mOptions;   
     BwtFmiDB * tbwtfmiDB;
     
@@ -109,6 +121,7 @@ public:
     std::string transSearch(Read * item);
     std::string transSearch(Read * item1, Read * item2);
     inline std::unordered_map<std::string, uint32 > getSubKoFreqUMap(){return subKoFreqUMap;};
+    inline std::unordered_map<std::string, uint32 > getSubGoFreqUMap(){return subGoFreqUMap;};
     std::unordered_map<std::string, std::unordered_map<std::string, double> > getSubOrgKOAbunUMap();
     std::unordered_map<std::string, std::vector<std::string> > getSubPathwayUMap();
 };

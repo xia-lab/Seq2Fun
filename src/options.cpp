@@ -34,6 +34,8 @@ Options::Options(){
     outReadsKOMap = "";
     seqLen1 = 151;
     seqLen2 = 151;
+    fixMGI = false;
+    fastqBufferSize = 1<<20;
     samples.clear();
 }
 
@@ -535,19 +537,26 @@ void Options::readDB() {
     //read gene ko species map;
     if(!mHomoSearchOptions.genemap.empty()) {
         if (verbose) {
-            std::string msg = "Reading gene KO species map from file " + mHomoSearchOptions.genemap;
+            std::string msg = "Reading gene GO KO species map from file " + mHomoSearchOptions.genemap;
             loginfo(msg);
         }
         std::unordered_set<std::string> KUSet;
         std::unordered_set<std::string> orgUSet;
         mHomoSearchOptions.filein.open(mHomoSearchOptions.genemap.c_str());
-        if(!mHomoSearchOptions.filein.is_open()) error_exit("Can not open gene KO species map file : " + mHomoSearchOptions.genemap);        
-        std::string s1, s2, s3;
-        while(mHomoSearchOptions.filein >> s1 >> s2 >> s3){
-            mHomoSearchOptions.db_map[s1] = s2;
-            mHomoSearchOptions.org_map[s1] = s3;
-            KUSet.insert(s2);
-            orgUSet.insert(s3);
+        if(!mHomoSearchOptions.filein.is_open()) error_exit("Can not open gene KO GO species map file : " + mHomoSearchOptions.genemap);        
+        std::string s1, s2, s3, s4;
+        geneKoGoComb gkg;
+        while(mHomoSearchOptions.filein >> s1 >> s2 >> s3 >> s4){
+            gkg.ko = s2;
+            gkg.go = s3;
+            gkg.spec = s4;
+            mHomoSearchOptions.fullDbMap[s1] = gkg;
+//            mHomoSearchOptions.db_map[s1] = s2;
+//            mHomoSearchOptions.org_map[s1] = s3;
+            if(s2 != "UNASSIGNED"){
+                KUSet.insert(s2);
+            }
+            orgUSet.insert(s4);
         }
         mHomoSearchOptions.filein.close(); 
         mHomoSearchOptions.filein.clear();
@@ -555,14 +564,13 @@ void Options::readDB() {
         transSearch.nOrgsDB = orgUSet.size();
         KUSet.clear();
         orgUSet.clear();
-        
     } else {
-        error_exit("Gene KO species map file is empty : " + mHomoSearchOptions.genemap);
+        error_exit("Gene KO GO species map file is empty : " + mHomoSearchOptions.genemap);
     }
     
     //read ko full name file;
     mHomoSearchOptions.fileName.clear();
-    mHomoSearchOptions.fileName = internalDBDir + "ko_fullname.txt";
+    mHomoSearchOptions.fileName = seq2funDir + "database/ko_fullname.txt";
     if(!mHomoSearchOptions.fileName.empty()) {
         if (verbose) {
             std::string msg = "Reading KO full name from file: " + mHomoSearchOptions.fileName;
@@ -582,7 +590,7 @@ void Options::readDB() {
     
     //read pathway ko map;
     mHomoSearchOptions.fileName.clear();
-    mHomoSearchOptions.fileName = internalDBDir + "pathway_ko.txt";
+    mHomoSearchOptions.fileName = seq2funDir + "database/pathway_ko.txt";
     if (!mHomoSearchOptions.fileName.empty()) {
         if (verbose) {
             std::string msg = "Reading KO pathway map from file: " + mHomoSearchOptions.fileName;
@@ -605,7 +613,7 @@ void Options::readDB() {
     }
     
     mHomoSearchOptions.fileName.clear();
-    mHomoSearchOptions.fileName = internalDBDir + "pathway_ko_stats.txt";
+    mHomoSearchOptions.fileName = seq2funDir + "database/pathway_ko_stats.txt";
     if (!mHomoSearchOptions.fileName.empty()) {
         if (verbose) {
             std::string msg = "Reading KO pathway stats map from file: " + mHomoSearchOptions.fileName;
@@ -623,7 +631,26 @@ void Options::readDB() {
     } else {
         error_exit("KO pathway map stats file is empty: " + mHomoSearchOptions.fileName);
     }
-       
+    
+//    mHomoSearchOptions.fileName.clear();
+//    mHomoSearchOptions.fileName = seq2funDir + "database/goslim.txt";
+//    if(mHomoSearchOptions.fileName.empty()){
+//        error_exit("GO file is empty: " + mHomoSearchOptions.fileName);
+//    } else {
+//        if(verbose){
+//            std::string msg = "Reading GO map from file: " + mHomoSearchOptions.fileName;
+//            loginfo(msg);
+//        }
+//        mHomoSearchOptions.filein.open(mHomoSearchOptions.fileName.c_str());
+//        if (!mHomoSearchOptions.filein.is_open()) error_exit("Can not open GO file : " + mHomoSearchOptions.fileName);
+//        std::string s1, s2;
+//        mHomoSearchOptions.geneGoMap.clear();
+//        while(mHomoSearchOptions.filein >> s1 >> s2){
+//            mHomoSearchOptions.geneGoMap.insert(std::make_pair(s1, s2));
+//        }
+//        mHomoSearchOptions.filein.close();
+//        mHomoSearchOptions.filein.clear();
+//    }
 }
 
 void Options::parseSampleTable() {
@@ -678,105 +705,105 @@ void Options::parseSampleTable() {
 }
 
 void Options::mkSelectedPathwayDB(){
-    mHomoSearchOptions.filein.open(mHomoSearchOptions.pathway.c_str());
-    if(!mHomoSearchOptions.filein.is_open()) error_exit("Can not open file: " + mHomoSearchOptions.pathway);
-    std::vector<std::string> pathwayVec;
-    std::string pathwayId;
-    while(mHomoSearchOptions.filein >> pathwayId){
-        pathwayVec.push_back(pathwayId);
-    }
-    mHomoSearchOptions.filein.close();
-    mHomoSearchOptions.filein.clear();
-    
-    if(verbose){
-        std::string msg = to_string(pathwayVec.size()) + " pathways have been provided";
-        loginfo(msg);
-    }
-    
-    //extract pathways and kos;
-    std::multimap<std::string, std::string> selected_pathway_ko_multimap;
-    std::set<std::string> uniqKOSet;
-    for(auto & it : pathwayVec){
-        auto pathwayKO = mHomoSearchOptions.pathway_ko_multimap.equal_range(it); 
-        for(auto itt = pathwayKO.first; itt != pathwayKO.second; ++ itt){
-            uniqKOSet.insert(itt->second);
-            selected_pathway_ko_multimap.insert(std::make_pair(itt->first, itt->second));
-        }
-    }
-    
-    pathwayVec.clear();
-    mHomoSearchOptions.pathway_ko_multimap.clear();
-    mHomoSearchOptions.pathway_ko_multimap.insert(selected_pathway_ko_multimap.begin(), selected_pathway_ko_multimap.end());
-    selected_pathway_ko_multimap.clear();
-    
-    if(verbose){
-        std::string msg = "pathway KO map size is " + to_string(mHomoSearchOptions.pathway_ko_multimap.size());
-        loginfo(msg);
-    }
-    
-    //extract protein IDs;
-    //swap key values
-    std::multimap<std::string, std::string> KOProteinMMap;
-    for(auto & it : mHomoSearchOptions.db_map){
-        KOProteinMMap.insert(std::make_pair(it.second, it.first));
-    }
-    mHomoSearchOptions.db_map.clear();
-    
-    //update new protein ko map;
-    std::vector<std::string> selectedProteinIDVec;
-    for(auto & it : uniqKOSet){
-        auto KOProtein = KOProteinMMap.equal_range(it);
-        for(auto & itr = KOProtein.first; itr != KOProtein.second; ++ itr){
-            selectedProteinIDVec.push_back(itr->second);
-            mHomoSearchOptions.db_map.insert(std::make_pair(itr->second, itr->first));
-        }
-    }
-    
-    KOProteinMMap.clear();
-
-    if (verbose) {
-        std::string msg = "Protein KO map size is " + to_string(mHomoSearchOptions.db_map.size());
-        loginfo(msg);
-    }
-    
-    //read protein.fasta file;
-    FastaReader pathwayProteinFasta(mHomoSearchOptions.genefa);
-    pathwayProteinFasta.readAll();
-    
-    auto proteinSeqMap = pathwayProteinFasta.contigs();
-
-    if (mkdir("selected_pathway_database", 0777) == -1) error_exit("Can not create directory selected_pathway_database or you must remove it first");
-    std::string foutProtein = "selected_pathway_database/selected_pathway_protein_aas.pep.fasta";
-    
-    std::ofstream * fout = new std::ofstream();
-    fout->open(foutProtein.c_str(), std::ofstream::out);
-    if(!fout->is_open()) error_exit("Can not open file: " + foutProtein);
-    for(auto & it : selectedProteinIDVec){
-        auto itr = proteinSeqMap.find(it);
-        if(itr != proteinSeqMap.end()){
-            *fout << ">" << itr->first << "\n" << itr->second << "\n";
-        }
-    }
-    fout->close();
-    if(fout) delete fout;
-    selectedProteinIDVec.clear();
-
-    std::string bwtfm_cmd = seq2funDir + "/bin/mkbwt";
-    std::string fmi_cmd = seq2funDir + "/bin/mkfmi";
-    std::string p_name = "selected_pathway_database/selected_pathway_protein_aas.pep.fasta";
-    std::string f_name = "selected_pathway_database/proteins";
-
-    std::stringstream comandss;
-    comandss << bwtfm_cmd << " -n " << thread << " -a ACDEFGHIKLMNPQRSTVWY " << "-o " << f_name << " " << p_name << "\n";
-    std::cout << comandss.str() << std::endl;
-    system(comandss.str().c_str());
-
-    comandss.str();
-
-    comandss << fmi_cmd << " " << f_name << "\n";
-    system(comandss.str().c_str());
-    comandss.str();
-    transSearch.tfmi = f_name + ".fmi";
+//    mHomoSearchOptions.filein.open(mHomoSearchOptions.pathway.c_str());
+//    if(!mHomoSearchOptions.filein.is_open()) error_exit("Can not open file: " + mHomoSearchOptions.pathway);
+//    std::vector<std::string> pathwayVec;
+//    std::string pathwayId;
+//    while(mHomoSearchOptions.filein >> pathwayId){
+//        pathwayVec.push_back(pathwayId);
+//    }
+//    mHomoSearchOptions.filein.close();
+//    mHomoSearchOptions.filein.clear();
+//    
+//    if(verbose){
+//        std::string msg = to_string(pathwayVec.size()) + " pathways have been provided";
+//        loginfo(msg);
+//    }
+//    
+//    //extract pathways and kos;
+//    std::multimap<std::string, std::string> selected_pathway_ko_multimap;
+//    std::set<std::string> uniqKOSet;
+//    for(auto & it : pathwayVec){
+//        auto pathwayKO = mHomoSearchOptions.pathway_ko_multimap.equal_range(it); 
+//        for(auto itt = pathwayKO.first; itt != pathwayKO.second; ++ itt){
+//            uniqKOSet.insert(itt->second);
+//            selected_pathway_ko_multimap.insert(std::make_pair(itt->first, itt->second));
+//        }
+//    }
+//    
+//    pathwayVec.clear();
+//    mHomoSearchOptions.pathway_ko_multimap.clear();
+//    mHomoSearchOptions.pathway_ko_multimap.insert(selected_pathway_ko_multimap.begin(), selected_pathway_ko_multimap.end());
+//    selected_pathway_ko_multimap.clear();
+//    
+//    if(verbose){
+//        std::string msg = "pathway KO map size is " + to_string(mHomoSearchOptions.pathway_ko_multimap.size());
+//        loginfo(msg);
+//    }
+//    
+//    //extract protein IDs;
+//    //swap key values
+//    std::multimap<std::string, std::string> KOProteinMMap;
+//    for(auto & it : mHomoSearchOptions.db_map){
+//        KOProteinMMap.insert(std::make_pair(it.second, it.first));
+//    }
+//    mHomoSearchOptions.db_map.clear();
+//    
+//    //update new protein ko map;
+//    std::vector<std::string> selectedProteinIDVec;
+//    for(auto & it : uniqKOSet){
+//        auto KOProtein = KOProteinMMap.equal_range(it);
+//        for(auto & itr = KOProtein.first; itr != KOProtein.second; ++ itr){
+//            selectedProteinIDVec.push_back(itr->second);
+//            mHomoSearchOptions.db_map.insert(std::make_pair(itr->second, itr->first));
+//        }
+//    }
+//    
+//    KOProteinMMap.clear();
+//
+//    if (verbose) {
+//        std::string msg = "Protein KO map size is " + to_string(mHomoSearchOptions.db_map.size());
+//        loginfo(msg);
+//    }
+//    
+//    //read protein.fasta file;
+//    FastaReader pathwayProteinFasta(mHomoSearchOptions.genefa);
+//    pathwayProteinFasta.readAll();
+//    
+//    auto proteinSeqMap = pathwayProteinFasta.contigs();
+//
+//    if (mkdir("selected_pathway_database", 0777) == -1) error_exit("Can not create directory selected_pathway_database or you must remove it first");
+//    std::string foutProtein = "selected_pathway_database/selected_pathway_protein_aas.pep.fasta";
+//    
+//    std::ofstream * fout = new std::ofstream();
+//    fout->open(foutProtein.c_str(), std::ofstream::out);
+//    if(!fout->is_open()) error_exit("Can not open file: " + foutProtein);
+//    for(auto & it : selectedProteinIDVec){
+//        auto itr = proteinSeqMap.find(it);
+//        if(itr != proteinSeqMap.end()){
+//            *fout << ">" << itr->first << "\n" << itr->second << "\n";
+//        }
+//    }
+//    fout->close();
+//    if(fout) delete fout;
+//    selectedProteinIDVec.clear();
+//
+//    std::string bwtfm_cmd = seq2funDir + "/bin/mkbwt";
+//    std::string fmi_cmd = seq2funDir + "/bin/mkfmi";
+//    std::string p_name = "selected_pathway_database/selected_pathway_protein_aas.pep.fasta";
+//    std::string f_name = "selected_pathway_database/proteins";
+//
+//    std::stringstream comandss;
+//    comandss << bwtfm_cmd << " -n " << thread << " -a ACDEFGHIKLMNPQRSTVWY " << "-o " << f_name << " " << p_name << "\n";
+//    std::cout << comandss.str() << std::endl;
+//    system(comandss.str().c_str());
+//
+//    comandss.str();
+//
+//    comandss << fmi_cmd << " " << f_name << "\n";
+//    system(comandss.str().c_str());
+//    comandss.str();
+//    transSearch.tfmi = f_name + ".fmi";
 }
 
 int Options::getWorkingSampleId(string & samplePrefix){
@@ -787,4 +814,127 @@ int Options::getWorkingSampleId(string & samplePrefix){
         }
     }
     return j;
+}
+
+void Options::readSampleExtraction(){
+    if(mSeqExtractions.sampleMappedTableStr.empty()){
+        error_exit("sampleMappedTable file should be specified by --sampleMappedTable");
+    } else {
+        check_file_valid(mSeqExtractions.sampleMappedTableStr);
+        if (verbose) {
+            std::string msg = "Reading sampleMappedTable for seq extraction from file " + mSeqExtractions.sampleMappedTableStr;
+            loginfo(msg);
+        }
+    }
+    
+    ifstream file;
+    file.open(mSeqExtractions.sampleMappedTableStr.c_str(), ifstream::in);
+    if(!file.is_open()) error_exit("can not open sampleMappedTable, please check it!");
+    const int maxLine = 1000;
+    char line[maxLine];
+    
+    mSeqExtractions.samplesVecF.clear();
+    mSeqExtractions.samplesVecR.clear();
+    std::set<std::string> samUset;
+    std::vector<std::string> tmpVec;
+    std::string strF, strR;
+    while(file.getline(line, maxLine)){
+        string lineStr = trimEnd(line);
+        tmpVec.clear();
+        tmpVec = split2(lineStr, '\t');
+        strF = "";
+        strR = "";
+        if(tmpVec.size() == 1){
+            strF = tmpVec.front();
+            if(strF.length() > 0){
+                if(samUset.size() > 0 && samUset.find(strF) != samUset.end()){
+                    error_exit("You have duplicated values in sample file, please remove the duplicated value: " + strF);
+                }
+                samUset.insert(strF);
+                mSeqExtractions.samplesVecF.emplace_back(strF);
+                mSeqExtractions.paired = false;
+            } else {
+                error_exit("You have incorrect sample names!");
+            }
+        } else if(tmpVec.size() == 2){
+            strF = tmpVec.front();
+            if (strF.length() > 0) {
+                if (samUset.size() > 0 && samUset.find(strF) != samUset.end()) {
+                    error_exit("You have duplicated values in sample file, please remove the duplicated value: " + strF);
+                }
+                samUset.insert(strF);
+                mSeqExtractions.samplesVecF.emplace_back(strF);
+            } else {
+                error_exit("You have incorrect sample names!");
+            }
+            
+            strR = tmpVec.back();
+            if (strR.length() > 0) {
+                if (samUset.size() > 0 && samUset.find(strR) != samUset.end()) {
+                    error_exit("You have duplicated values in sample file, please remove the duplicated value: " + strR);
+                }
+                samUset.insert(strR);
+                mSeqExtractions.samplesVecR.emplace_back(strR);
+                mSeqExtractions.paired = true;
+            } else {
+                error_exit("You have incorrect sample names!");
+            }
+        } else {
+            error_exit("Your sample table is not correct: " + mSeqExtractions.sampleMappedTableStr);
+        }
+    }
+    file.close();
+    
+    if(mSeqExtractions.samplesVecF.empty()){
+        error_exit("Your sample table is not correct: " + mSeqExtractions.sampleMappedTableStr);
+    }
+    
+    if(mSeqExtractions.paired && mSeqExtractions.samplesVecR.empty()){
+        error_exit("Your sample table is not correct: " + mSeqExtractions.sampleMappedTableStr);
+    }
+    
+    if(mSeqExtractions.targetGeneTableStr.empty()){
+        error_exit("targetGeneTable file must be specified by --targetGeneTable");
+    } else {
+        check_file_valid(mSeqExtractions.targetGeneTableStr);
+        if(verbose){
+            std::string msg = "Reading targetGeneTable for seq extraction from file " + mSeqExtractions.targetGeneTableStr;
+            loginfo(msg); 
+        }
+    }
+    
+    
+    {ifstream file;
+    file.open(mSeqExtractions.targetGeneTableStr.c_str(), ifstream::in);
+    if(!file.is_open()) error_exit("can not open targetGeneTable, please check it!");
+    if (verbose) {
+        std::string msg = "Reading gene table for seq extraction from file " + mSeqExtractions.targetGeneTableStr;
+        loginfo(msg);
+    }
+    mSeqExtractions.targetGenesVec.clear();
+    std::set<std::string> geneSet;
+    int i = 0;
+    while(file.getline(line, maxLine)){
+        string lineStr = trimEnd(line);
+        if(lineStr.length() > 0){
+            if(!geneSet.empty() && geneSet.find(lineStr) == geneSet.end()){
+                error_exit("You have duplicated values gene table, please remove the duplicated value: " + lineStr);
+            }
+            mSeqExtractions.targetGenesVec.emplace_back(lineStr);
+        }
+    }
+    file.close();
+    }
+    
+    if (!file_exists(mSeqExtractions.outputDir)) {
+        mkdir(mSeqExtractions.outputDir.c_str(), 0777);
+    }
+
+    if (file_exists(mSeqExtractions.outputDir) && !is_directory(mSeqExtractions.outputDir)) {
+        error_exit(mSeqExtractions.outputDir + " is a file, not a directory");
+    }
+
+    if (!file_exists(mSeqExtractions.outputDir) || !is_directory(mSeqExtractions.outputDir)) {
+        error_exit(mSeqExtractions.outputDir + " is not a directory, or cannot be created");
+    }
 }

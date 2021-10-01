@@ -5,10 +5,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include <atomic>
+#include <fstream>
 #include "options.h"
 #include "stats.h"
 #include "filterresult.h"
-#include <fstream>
+#include "common.h"
+#include "util.h"
 
 using namespace std;
 
@@ -18,7 +21,7 @@ public:
     ~JsonReporter();
 
     void setDupHist(int* dupHist, double* dupMeanGC, double dupRate);
-    void setInsertHist(long* insertHist, int insertSizePeak);
+    void setInsertHist(atomic_long* insertHist, int insertSizePeak);
     void report(FilterResult* result, Stats* preStats1, Stats* postStats1, Stats* preStats2 = NULL, Stats* postStats2 = NULL);
 
 private:
@@ -26,7 +29,7 @@ private:
     int* mDupHist;
     double* mDupMeanGC;
     double mDupRate;
-    long* mInsertHist;
+    atomic_long* mInsertHist;
     int mInsertSizePeak;
 };
 

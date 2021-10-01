@@ -57,12 +57,11 @@ int main(int argc, char* argv[]) {
     cmd.add<string>("mode", 'K', "searching mode either tGREEDY or tMEM (maximum exactly match). By default greedy", false, "tGREEDY");
     cmd.add<int>("mismatch", 'E', "number of mismatched amino acid in sequence comparison with protein database with default value 2", false, 2);
     cmd.add<int>("minscore", 'j', "minimum matching score of amino acid sequence in comparison with protein database with default value 80", false, 80);
-    cmd.add<int>("minlength", 'J', "minimum matching length of amino acid sequence in comparison with protein database with default value 19 for GREEDY and 13 for MEM model", false, 0);
+    cmd.add<int>("minlength", 'J', "minimum matching length of amino acid sequence in comparison with protein database with default value 19, for GREEDY and MEM model", false, 19);
     cmd.add<int>("maxtranslength", 'm', "maximum cutoff of translated peptides, it must be no less than minlength, with default 60", false, 60);
     cmd.add("allFragments", 0, "enable this function will force Seq2Fun to use all the translated AA fragments with length > minlength. This will slightly help to classify reads contain the true stop codon and start codon; This could have limited impact on the accuracy for comparative study and enable this function will slow down the Seq2Fun. by default is false, using --allFragments to enable it");
     cmd.add<string>("codontable", 0, "select the codon table (same as blastx in NCBI), we provide 20 codon tables from 'https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi#SG31'. By default is the codontable1 (Standard Code)", false, "codontable1");
-    cmd.add<string>("dbDir", 0, "dir for internal database such as ko_fullname.txt", false, "");
-    
+
     //selected pathways
     cmd.add<string>("pathway", 'Z', "list of selected pathways for target pathways analysis", false, "");
     cmd.add<string>("genefa", 'z', "the gene/protein sequences fasta file for retrieving proteins in selected pathways to construct database", false, "");
@@ -71,6 +70,9 @@ int main(int argc, char* argv[]) {
     cmd.add<int>("thread", 'w', "worker thread number, default is 2", false, 2);
     cmd.add("verbose", 'V', "enable verbose");
     cmd.add("debug", 0, "enable debug");
+    
+    cmd.add<int>("reads_buffer", 0, "specify reads buffer size (MB) for each file.", false, 1);
+    cmd.add("fix_mgi_id", 0, "the MGI FASTQ ID format is not compatible with many BAM operation tools, enable this option to fix it.");
 
     cmd.add("phred64", '6', "indicate the input is using phred64 scoring (it'll be converted to phred33, so the output will still be phred33)");
     cmd.add<int>("reads_to_process", 0, "specify how many reads/pairs to be processed. Default 0 means process all reads.", false, 0);
@@ -116,7 +118,7 @@ int main(int argc, char* argv[]) {
 
     // quality filtering
     cmd.add("disable_quality_filtering", 'Q', "quality filtering is enabled by default. If this option is specified, quality filtering is disabled");
-    cmd.add<int>("qualified_quality_phred", 'q', "the quality value that a base is qualified. Default 15 means phred quality >=Q15 is qualified.", false, 15);
+    cmd.add<int>("qualified_quality_phred", 'q', "the quality value that a base is qualified. Default 20 means phred quality >=Q15 is qualified.", false, 20);
     cmd.add<int>("unqualified_percent_limit", 'u', "how many percents of bases are allowed to be unqualified (0~100). Default 40 means 40%", false, 40);
     cmd.add<int>("n_base_limit", 'n', "if one read's number of N base is >n_base_limit, then this read/pair is discarded. Default is 5", false, 5);
     cmd.add<int>("average_qual", 'e', "if one read's average quality score <avg_qual, then this read/pair is discarded. Default 0 means no requirement", false, 0);
@@ -169,9 +171,7 @@ int main(int argc, char* argv[]) {
     Options opt;
 
     opt.seq2funProgPath = string(argv[0]);
-    opt.seq2funDir = removeStr(opt.seq2funProgPath, "bin/seq2fun");
-    opt.internalDBDir = cmd.get<string>("dbDir") == "" ? opt.seq2funDir + "database" : cmd.get<string>("dbDir");
-    opt.internalDBDir = checkDirEnd(opt.internalDBDir);
+    opt.seq2funDir = removeStr(opt.seq2funProgPath, "bin/seq2fun2");
 
     // threading
     opt.thread = cmd.get<int>("thread");
@@ -180,9 +180,13 @@ int main(int argc, char* argv[]) {
 
     opt.compression = 4;
     opt.readsToProcess = cmd.get<int>("reads_to_process");
+    if(cmd.get<int>("reads_buffer") < 1) {
+        error_exit("reads_buffer should be greater or equal to 1MB.");
+    }
     opt.phred64 = cmd.exist("phred64");
     opt.verbose = cmd.exist("verbose");
     opt.debug = cmd.exist("debug");
+    opt.fixMGI = cmd.exist("fix_mgi_id");
 
     // adapter cutting
     opt.adapter.enabled = !cmd.exist("disable_adapter_trimming");
@@ -306,15 +310,6 @@ int main(int argc, char* argv[]) {
     // length filtering
     opt.lengthFilter.enabled = !cmd.exist("disable_length_filtering");
     opt.lengthFilter.requiredLength = cmd.get<int>("length_required");
-    if (cmd.get<int>("minlength") == 0) {
-        if (opt.transSearch.mode == tGREEDY) {
-            opt.transSearch.minAAFragLength = 19;
-        } else {
-            opt.transSearch.minAAFragLength = 13;
-        }
-    } else {
-        opt.transSearch.minAAFragLength = cmd.get<int>("minlength");
-    }
     opt.lengthFilter.requiredLength = max(opt.lengthFilter.requiredLength, static_cast<int> (opt.transSearch.minAAFragLength) * 3);
     opt.lengthFilter.maxLength = cmd.get<int>("length_limit");
 
@@ -437,6 +432,16 @@ int main(int argc, char* argv[]) {
 
     opt.transSearch.misMatches = cmd.get<int>("mismatch");
     opt.transSearch.minScore = cmd.get<int>("minscore");
+    if (cmd.get<int>("minlength") == 0) {
+        if (opt.transSearch.mode == tGREEDY) {
+            opt.transSearch.minAAFragLength = 19;
+        } else {
+            opt.transSearch.minAAFragLength = 13;
+        }
+    } else {
+        opt.transSearch.minAAFragLength = cmd.get<int>("minlength");
+    }
+
     opt.transSearch.maxTransLength = cmd.get<int>("maxtranslength");
     opt.transSearch.maxTransLength = max(opt.transSearch.maxTransLength, opt.transSearch.minAAFragLength);
     opt.transSearch.maxTransLength = min((unsigned) 60, opt.transSearch.maxTransLength);
@@ -580,7 +585,7 @@ int main(int argc, char* argv[]) {
         cerr << endl << "Seq2Fun v" << SEQ2FUNR_VER << ", time used: " << convertSeconds(opt.transSearch.timeLapse) << ", mapping " <<
                 opt.transSearch.nTransMappedKOReads << " reads out of " <<
                 opt.mHomoSearchOptions.nTotalReads << " (" <<
-                getPercentage(opt.transSearch.nTransMappedKOReads, opt.mHomoSearchOptions.nTotalReads) << " %); " <<
+                getPercentage(long(opt.transSearch.nTransMappedKOReads), opt.mHomoSearchOptions.nTotalReads) << " %); " <<
                 "mapped " << opt.transSearch.nTransMappedKOs << " KOs out of " <<
                 opt.transSearch.nKODB << " KOs (" <<
                 getPercentage(opt.transSearch.nTransMappedKOs, opt.transSearch.nKODB) <<
@@ -699,7 +704,7 @@ int main(int argc, char* argv[]) {
             cerr << endl << "Seq2Fun v" << SEQ2FUNR_VER << ", time used: " << convertSeconds(opt.transSearch.timeLapse) <<
                     ", mapping " << opt.transSearch.nTransMappedKOReads << " reads out of " <<
                     opt.mHomoSearchOptions.nTotalReads << " (" <<
-                    getPercentage(opt.transSearch.nTransMappedKOReads, opt.mHomoSearchOptions.nTotalReads) << " %); " <<
+                    getPercentage(long(opt.transSearch.nTransMappedKOReads), opt.mHomoSearchOptions.nTotalReads) << " %); " <<
                     "mapped " << opt.transSearch.nTransMappedKOs << " KOs out of " <<
                     opt.transSearch.nKODB << " KOs (" <<
                     getPercentage(opt.transSearch.nTransMappedKOs, opt.transSearch.nKODB) <<

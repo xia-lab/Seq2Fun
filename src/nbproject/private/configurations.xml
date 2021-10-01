@@ -2,6 +2,54 @@
 <configurationDescriptor version="100">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <df root="." name="0">
+      <df name="assembler">
+        <in>ReadTrace.c</in>
+        <in>arc.c</in>
+        <in>attachPEinfo.c</in>
+        <in>bubble.c</in>
+        <in>check.c</in>
+        <in>compactEdge.c</in>
+        <in>concatenateEdge.c</in>
+        <in>connect.c</in>
+        <in>contig.c</in>
+        <in>cutTipPreGraph.c</in>
+        <in>cutTip_graph.c</in>
+        <in>darray.c</in>
+        <in>dfib.c</in>
+        <in>dfibHeap.c</in>
+        <in>fib.c</in>
+        <in>fibHeap.c</in>
+        <in>hashFunction.c</in>
+        <in>kmer.c</in>
+        <in>lib.c</in>
+        <in>loadGraph.c</in>
+        <in>loadPath.c</in>
+        <in>loadPreGraph.c</in>
+        <in>localAsm.c</in>
+        <in>main.c</in>
+        <in>map.c</in>
+        <in>mem_manager.c</in>
+        <in>newhash.c</in>
+        <in>node2edge.c</in>
+        <in>orderContig.c</in>
+        <in>output_contig.c</in>
+        <in>output_pregraph.c</in>
+        <in>output_scaffold.c</in>
+        <in>pregraph.c</in>
+        <in>prlHashCtg.c</in>
+        <in>prlHashReads.c</in>
+        <in>prlRead2Ctg.c</in>
+        <in>prlRead2path.c</in>
+        <in>prlReadFillGap.c</in>
+        <in>read2scaf.c</in>
+        <in>readInterval.c</in>
+        <in>readseq1by1.c</in>
+        <in>scaffold.c</in>
+        <in>searchPath.c</in>
+        <in>seq.c</in>
+        <in>splitReps.c</in>
+        <in>stack.c</in>
+      </df>
       <df name="bwt">
         <in>bwt.c</in>
         <in>bwt.h</in>
@@ -176,13 +224,18 @@
       <in>read.h</in>
       <in>seprocessor.cpp</in>
       <in>seprocessor.h</in>
-      <in>seq2fun.cpp</in>
+      <in>seq2fun2.cpp</in>
+      <in>seqtract.cpp</in>
+      <in>seqtractpeprocessor.cpp</in>
+      <in>seqtractpeprocessor.h</in>
       <in>sequence.cpp</in>
       <in>sequence.h</in>
       <in>stats.cpp</in>
       <in>stats.h</in>
       <in>threadconfig.cpp</in>
       <in>threadconfig.h</in>
+      <in>threadsconfig2.cpp</in>
+      <in>threadsconfig2.h</in>
       <in>transsearcher.cpp</in>
       <in>transsearcher.hpp</in>
       <in>umiprocessor.cpp</in>

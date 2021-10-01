@@ -39,24 +39,21 @@ int Filter::passFilter(Read* r) {
                 nBaseNum++;
         }
     }
-    
+
     if(mOptions->qualfilter.enabled) {
-        if(lowQualNum > (mOptions->qualfilter.unqualifiedPercentLimit * rlen / 100.0) ){
+        if(lowQualNum > (mOptions->qualfilter.unqualifiedPercentLimit * rlen / 100.0) )
             return FAIL_QUALITY;
-        } else if(mOptions->qualfilter.avgQualReq > 0 && (totalQual / rlen)<mOptions->qualfilter.avgQualReq){
+        else if(mOptions->qualfilter.avgQualReq > 0 && (totalQual / rlen)<mOptions->qualfilter.avgQualReq)
             return FAIL_QUALITY;
-        } else if(nBaseNum > mOptions->qualfilter.nBaseLimit ){
+        else if(nBaseNum > mOptions->qualfilter.nBaseLimit )
             return FAIL_N_BASE;
-        }
     }
 
     if(mOptions->lengthFilter.enabled) {
-        if(rlen < mOptions->lengthFilter.requiredLength){
+        if(rlen < mOptions->lengthFilter.requiredLength)
             return FAIL_LENGTH;
-        }
-        if(mOptions->lengthFilter.maxLength > 0 && rlen > mOptions->lengthFilter.maxLength){
+        if(mOptions->lengthFilter.maxLength > 0 && rlen > mOptions->lengthFilter.maxLength)
             return FAIL_TOO_LONG;
-        }
     }
 
     if(mOptions->complexityFilter.enabled) {

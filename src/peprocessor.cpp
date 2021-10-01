@@ -13,8 +13,8 @@ PairEndProcessor::PairEndProcessor(Options* opt, BwtFmiDB * tbwtfmiDB) {
     mUmiProcessor = new UmiProcessor(opt);
 
     int isizeBufLen = mOptions->insertSizeMax + 1;
-    mInsertSizeHist = new long[isizeBufLen];
-    memset(mInsertSizeHist, 0, sizeof (long)*isizeBufLen);
+    mInsertSizeHist = new atomic_long[isizeBufLen];
+    memset(mInsertSizeHist, 0, sizeof (atomic_long)*isizeBufLen);
     mLeftWriter = NULL;
     mRightWriter = NULL;
     mUnpairedLeftWriter = NULL;
@@ -27,12 +27,12 @@ PairEndProcessor::PairEndProcessor(Options* opt, BwtFmiDB * tbwtfmiDB) {
     if (mOptions->duplicate.enabled) {
         mDuplicate = new Duplicate(mOptions);
     }
-    this->tbwtfmiDB = tbwtfmiDB;
     fileoutname.clear();
 }
 
 PairEndProcessor::~PairEndProcessor() {
-    delete mInsertSizeHist;
+    if (mFilter) delete mFilter; mFilter = NULL;
+    if (mInsertSizeHist) delete mInsertSizeHist; mInsertSizeHist = NULL;
     if (mDuplicate) {
         delete mDuplicate;
         mDuplicate = NULL;
@@ -41,6 +41,7 @@ PairEndProcessor::~PairEndProcessor() {
         delete mUmiProcessor;
         mUmiProcessor = NULL;
     }
+    destroyPackRepository();
 }
 
 void PairEndProcessor::initOutput() {
@@ -119,13 +120,10 @@ bool PairEndProcessor::process() {
     //TODO: get the correct cycles
     int cycle = 151;
     ThreadConfig** configs = new ThreadConfig*[mOptions->thread];
+    std::thread** threads = new thread*[mOptions->thread];
     for (int t = 0; t < mOptions->thread; t++) {
         configs[t] = new ThreadConfig(mOptions, tbwtfmiDB, t, true);
         initConfig(configs[t]);
-    }
-
-    std::thread** threads = new thread*[mOptions->thread];
-    for (int t = 0; t < mOptions->thread; t++) {
         threads[t] = new std::thread(std::bind(&PairEndProcessor::consumerTask, this, configs[t]));
     }
 
@@ -186,6 +184,8 @@ bool PairEndProcessor::process() {
     totalKoFreqVecResults.reserve(mOptions->thread);
     vector< std::unordered_map<std::string, std::unordered_map<std::string, double> > > totalOrgKOFreqVecResults;
     totalOrgKOFreqVecResults.reserve(mOptions->thread);
+    vector<std::unordered_map<std::string, uint32> > totalGoFreqVecResults;
+    totalGoFreqVecResults.reserve(mOptions->thread);
     for (int t = 0; t < mOptions->thread; t++) {
         preStats1.push_back(configs[t]->getPreStats1());
         postStats1.push_back(configs[t]->getPostStats1());
@@ -194,6 +194,7 @@ bool PairEndProcessor::process() {
         filterResults.push_back(configs[t]->getFilterResult());
         totalKoFreqVecResults.push_back(configs[t]->getTransSearcher()->getSubKoFreqUMap());
         totalOrgKOFreqVecResults.push_back(configs[t]->getTransSearcher()->getSubOrgKOAbunUMap());
+        totalGoFreqVecResults.push_back(configs[t]->getTransSearcher()->getSubGoFreqUMap());
     }
     Stats* finalPreStats1 = Stats::merge(preStats1);
     Stats* finalPostStats1 = Stats::merge(postStats1);
@@ -203,7 +204,7 @@ bool PairEndProcessor::process() {
     mOptions->mHomoSearchOptions.nTotalReads = finalPreStats1->getReads(); //change to both reads??????
     mOptions->mHomoSearchOptions.nCleanReads = finalPostStats1->getReads();
 
-    prepareResults(totalKoFreqVecResults, totalOrgKOFreqVecResults);
+    prepareResults(totalKoFreqVecResults, totalOrgKOFreqVecResults, totalGoFreqVecResults);
 
     int* dupHist = NULL;
     double* dupMeanTlen = NULL;
@@ -339,7 +340,12 @@ bool PairEndProcessor::processPairEnd(ReadPairPack* pack, ThreadConfig* config) 
             delete pair;
             continue;
         }
-
+        
+        if(mOptions->fixMGI) {
+            or1->fixMGI();
+            or2->fixMGI();
+        }
+        
         // umi processing
         if (mOptions->umi.enabled)
             mUmiProcessor->process(or1, or2);
@@ -437,7 +443,7 @@ bool PairEndProcessor::processPairEnd(ReadPairPack* pack, ThreadConfig* config) 
                     }
                 }
 
-                if (koTag.length() > 0) {
+                if (koTag.length() > 1) {
                     mappedReads++;
                     if (mLeftWriter && mRightWriter) {
                         outstr1 += r1->toStringWithTag(koTag);
@@ -467,13 +473,15 @@ bool PairEndProcessor::processPairEnd(ReadPairPack* pack, ThreadConfig* config) 
     }
     
     if (mOptions->verbose) {
-        logMtx.lock();
         mOptions->transSearch.nTransMappedKOReads += mappedReads;
-        auto rCount = mOptions->transSearch.nTransMappedKOReads;
+        logMtx.lock();
+        auto rCount = long(mOptions->transSearch.nTransMappedKOReads);
         auto kCount = mOptions->transSearch.koUSet.size();
+        auto gCount = mOptions->transSearch.goUSet.size();
         logMtx.unlock();
-        std::string str = "Mapped " + std::to_string(rCount) + " reads to " + std::to_string(kCount) + " KOs";
-        loginfo(str);
+        std::string str = "Mapped \033[1;31m" + std::to_string(rCount) + "\033[0m reads to \033[1;32m" + 
+                std::to_string(kCount) + "\033[0m KOs and \033[1;36m" + std::to_string(gCount) + "\033[0m GOs!";
+        loginfo(str, false);
     }
 
     mappedReads = 0;
@@ -599,8 +607,7 @@ void PairEndProcessor::initPackRepository() {
 }
 
 void PairEndProcessor::destroyPackRepository() {
-    delete mRepo.packBuffer;
-    mRepo.packBuffer = NULL;
+    if(mRepo.packBuffer) delete mRepo.packBuffer; mRepo.packBuffer = NULL;
 }
 
 void PairEndProcessor::producePack(ReadPairPack* pack) {
@@ -664,7 +671,7 @@ void PairEndProcessor::producerTask() {
     bool splitSizeReEvaluated = false;
     ReadPair** data = new ReadPair*[PACK_SIZE];
     memset(data, 0, sizeof (ReadPair*) * PACK_SIZE);
-    FastqReaderPair reader(mOptions->in1, mOptions->in2, true, mOptions->phred64, mOptions->interleavedInput);
+    FastqReaderPair reader(mOptions->in1, mOptions->in2, true, mOptions->phred64, mOptions->interleavedInput, mOptions->fastqBufferSize);
     int count = 0;
     bool needToBreak = false;
     while (true) {
@@ -691,7 +698,7 @@ void PairEndProcessor::producerTask() {
         }
         if (mOptions->verbose && count + readNum >= lastReported + 1000000) {
             lastReported = count + readNum;
-            string msg = "loaded " + to_string((lastReported / 1000000)) + "M read pairs";
+            string msg = "\nloaded " + to_string((lastReported / 1000000)) + "M read pairs";
             loginfo(msg);
         }
         // a full pack
@@ -763,7 +770,7 @@ void PairEndProcessor::consumerTask(ThreadConfig* config) {
             mFinishedThreads++;
             if (mOptions->verbose) {
                 string msg = "thread " + to_string(config->getThreadId() + 1) + " data processing completed";
-                loginfo(msg);
+                loginfo(msg, false);
             }
             //lock.unlock();
             break;
@@ -771,7 +778,7 @@ void PairEndProcessor::consumerTask(ThreadConfig* config) {
         if (mProduceFinished) {
             if (mOptions->verbose) {
                 string msg = "thread " + to_string(config->getThreadId() + 1) + " is processing the " + to_string(mRepo.readPos) + " / " + to_string(mRepo.writePos) + " pack";
-                loginfo(msg);
+                loginfo(msg, false);
             }
             consumePack(config);
             //lock.unlock();
@@ -821,7 +828,8 @@ void PairEndProcessor::writeTask(WriterThread* config) {
 }
 
 void PairEndProcessor::prepareResults(std::vector< std::unordered_map<std::string, uint32 > > & totalKoFreqVecResults,
-        std::vector< std::unordered_map<std::string, std::unordered_map<std::string, double> > > & totalOrgKOFreqVecResults) {
+        std::vector< std::unordered_map<std::string, std::unordered_map<std::string, double> > > & totalOrgKOFreqVecResults,
+        std::vector< std::unordered_map<std::string, uint32 > > & totalGoFreqVecResults) {
 
     if (mOptions->mHomoSearchOptions.prefix.size() == 0) {
         error_exit("sample prefix is not specific, quit now!");
@@ -851,6 +859,7 @@ void PairEndProcessor::prepareResults(std::vector< std::unordered_map<std::strin
     std::tuple <std::string, uint32, std::string> tmpKOTuple;
     fileoutname.clear();
     fileoutname = mOptions->mHomoSearchOptions.prefix + "_KO_abundance.txt";
+
     std::ofstream * fout = new std::ofstream();
     fout->open(fileoutname.c_str(), std::ofstream::out);
     if (!fout->is_open()) error_exit("Can not open abundance file: " + fileoutname);
@@ -869,6 +878,8 @@ void PairEndProcessor::prepareResults(std::vector< std::unordered_map<std::strin
     fout->flush();
     fout->close();
     if (fout) delete fout;
+    fout = NULL;
+
     if (mOptions->verbose) loginfo("Finish to write KO abundance table");
     tmpSortedKOFreqVec.clear();
     tmpSortedKOFreqVec.shrink_to_fit();
@@ -1063,6 +1074,51 @@ void PairEndProcessor::prepareResults(std::vector< std::unordered_map<std::strin
         sortedOrgKOFreqVec.clear();
         sortedOrgKOFreqVec.shrink_to_fit();
     }
+    
+    //5 GO map
+    std::unordered_map< std::string, uint32 > totalGoFreqUMapResults;
+    for(const auto & it : totalGoFreqVecResults){
+        for(const auto & itr : it){
+            totalGoFreqUMapResults[itr.first] += itr.second;
+            mOptions->transSearch.nTransMappedGOReads += itr.second;
+        }
+    }
+    totalGoFreqVecResults.clear();
+    totalGoFreqVecResults.shrink_to_fit();
+
+    if (mOptions->samples.size() > 0) {
+        int sampleId = mOptions->getWorkingSampleId(mOptions->mHomoSearchOptions.prefix); // get the working sample id;
+        mOptions->samples.at(sampleId).totalGoFreqUMapResults = totalGoFreqUMapResults;
+    }
+    
+    mOptions->transSearch.nTransMappedGOs = totalGoFreqUMapResults.size();
+
+    auto tmpSortedGOFreqVec = sortUMapToVector(totalGoFreqUMapResults);
+
+    fileoutname.clear();
+    fileoutname = mOptions->mHomoSearchOptions.prefix + "_GO_abundance.txt";
+    {
+    std::ofstream * fout = new std::ofstream();
+    fout->open(fileoutname.c_str(), std::ofstream::out);
+    if (!fout->is_open()) error_exit("Can not open abundance file: " + fileoutname);
+    if (mOptions->verbose) loginfo("Starting to write GO abundance table");
+    *fout << "#GO_id" << "\t" << "Reads_count" << "\n";
+    for (const auto & it : tmpSortedGOFreqVec) {
+        *fout << it.first << "\t" << it.second << "\n";
+        mOptions->transSearch.nTransMappedGOReads += it.second;
+    }
+
+    fout->flush();
+    fout->close();
+    if (fout) delete fout;
+    fout = NULL;
+    }
+    if (mOptions->verbose) loginfo("Finish to write GO abundance table");
+    tmpSortedGOFreqVec.clear();
+    tmpSortedGOFreqVec.shrink_to_fit();
+    
+    totalGoFreqUMapResults.clear();
+    tmpSortedGOFreqVec.clear();
 
     time_t t_finished = time(NULL);
     mOptions->transSearch.endTime = t_finished;
@@ -1088,5 +1144,9 @@ void PairEndProcessor::prepareResults(std::vector< std::unordered_map<std::strin
         mOptions->samples.at(sampleId).endTime = mOptions->transSearch.endTime;
         mOptions->samples.at(sampleId).timeLapse = mOptions->transSearch.timeLapse;
         mOptions->samples.at(sampleId).rarefactionMap = mOptions->transSearch.rarefactionMap;
+        
+        mOptions->samples.at(sampleId).transSearchMappedGOReads = mOptions->transSearch.nTransMappedGOReads;
+        mOptions->samples.at(sampleId).mappedGOReadsRate = double(mOptions->samples.at(sampleId).transSearchMappedGOReads * 100) / double(mOptions->samples.at(sampleId).totalRawReads);
+        mOptions->samples.at(sampleId).nGO = mOptions->transSearch.nTransMappedGOs;
     }
 }
