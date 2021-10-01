@@ -570,7 +570,7 @@ void Options::readDB() {
     
     //read ko full name file;
     mHomoSearchOptions.fileName.clear();
-    mHomoSearchOptions.fileName = seq2funDir + "database/ko_fullname.txt";
+    mHomoSearchOptions.fileName = internalDBDir + "ko_fullname.txt";
     if(!mHomoSearchOptions.fileName.empty()) {
         if (verbose) {
             std::string msg = "Reading KO full name from file: " + mHomoSearchOptions.fileName;
@@ -590,7 +590,7 @@ void Options::readDB() {
     
     //read pathway ko map;
     mHomoSearchOptions.fileName.clear();
-    mHomoSearchOptions.fileName = seq2funDir + "database/pathway_ko.txt";
+    mHomoSearchOptions.fileName = internalDBDir + "pathway_ko.txt";
     if (!mHomoSearchOptions.fileName.empty()) {
         if (verbose) {
             std::string msg = "Reading KO pathway map from file: " + mHomoSearchOptions.fileName;
@@ -613,7 +613,7 @@ void Options::readDB() {
     }
     
     mHomoSearchOptions.fileName.clear();
-    mHomoSearchOptions.fileName = seq2funDir + "database/pathway_ko_stats.txt";
+    mHomoSearchOptions.fileName = internalDBDir + "pathway_ko_stats.txt";
     if (!mHomoSearchOptions.fileName.empty()) {
         if (verbose) {
             std::string msg = "Reading KO pathway stats map from file: " + mHomoSearchOptions.fileName;

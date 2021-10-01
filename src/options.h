@@ -412,7 +412,7 @@ public:
         SEG = true;
         useEvalue = false;
         minEvalue = 0.01;
-        minAAFragLength = 19;
+        minAAFragLength = 0;
 
         misMatches = 2;
         minScore = 80;
@@ -637,6 +637,9 @@ public:
     string seq2funProgPath;
     //seq2fun dir;
     string seq2funDir;
+    
+    string internalDBDir;
+    //for internal database
 
     bool screenout;
 
