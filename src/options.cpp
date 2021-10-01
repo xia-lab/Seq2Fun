@@ -544,20 +544,54 @@ void Options::readDB() {
         std::unordered_set<std::string> orgUSet;
         mHomoSearchOptions.filein.open(mHomoSearchOptions.genemap.c_str());
         if(!mHomoSearchOptions.filein.is_open()) error_exit("Can not open gene KO GO species map file : " + mHomoSearchOptions.genemap);        
-        std::string s1, s2, s3, s4;
+        const int maxLine = 10000;
+        char line[maxLine];
+        int readed = 0;
+        vector<string> splVec;
+        splVec.reserve(4);
         geneKoGoComb gkg;
-        while(mHomoSearchOptions.filein >> s1 >> s2 >> s3 >> s4){
-            gkg.ko = s2;
-            gkg.go = s3;
-            gkg.spec = s4;
-            mHomoSearchOptions.fullDbMap[s1] = gkg;
-//            mHomoSearchOptions.db_map[s1] = s2;
-//            mHomoSearchOptions.org_map[s1] = s3;
-            if(s2 != "UNASSIGNED"){
-                KUSet.insert(s2);
+
+        while (mHomoSearchOptions.filein.getline(line, maxLine)) {
+            readed = strlen(line);
+            if (readed >= 2) {
+                if (line[readed - 1] == '\n' || line[readed - 1] == '\r') {
+                    line[readed - 1] = '\0';
+                    if (line[readed - 2] == '\r') {
+                        line[readed - 2] = '\0';
+                    }
+                }
+
+                string lineStr(line);
+                splVec.clear();
+                splitStr(lineStr, splVec, "\t");
+                if (splVec.size() == 4) {
+                    auto ko = splVec[1];
+                    gkg.ko = ko;
+                    gkg.go = splVec[2];
+                    gkg.spec = splVec[3];
+                    if (ko != "UNASSIGNED") {
+                        KUSet.insert(ko);
+                    }
+                    orgUSet.insert(splVec[3]);
+                    mHomoSearchOptions.fullDbMap[splVec[0]] = gkg;
+                }
             }
-            orgUSet.insert(s4);
         }
+        
+//        std::string s1, s2, s3, s4;
+//        geneKoGoComb gkg;
+//        while(mHomoSearchOptions.filein >> s1 >> s2 >> s3 >> s4){
+//            gkg.ko = s2;
+//            gkg.go = s3;
+//            gkg.spec = s4;
+//            mHomoSearchOptions.fullDbMap[s1] = gkg;
+////            mHomoSearchOptions.db_map[s1] = s2;
+////            mHomoSearchOptions.org_map[s1] = s3;
+//            if(s2 != "UNASSIGNED"){
+//                KUSet.insert(s2);
+//            }
+//            orgUSet.insert(s4);
+//        }
         mHomoSearchOptions.filein.close(); 
         mHomoSearchOptions.filein.clear();
         transSearch.nKODB = KUSet.size();
