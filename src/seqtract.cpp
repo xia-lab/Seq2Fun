@@ -77,7 +77,6 @@ int main(int argc, char** argv) {
         }
         SeqTractPeProcessor sqt(& opt);
         sqt.process();
-
         if (i > 0) {
             std::string msg = "deleting file: " + opt.mSeqExtractions.undeterminedFileNameIn;
             loginfo(msg);

@@ -159,7 +159,7 @@ void SeqTractPeProcessor::producerTask(){
         check_file_valid(in);
         data = new Read*[PACK_SIZE];
         memset(data, 0, sizeof (Read*) * PACK_SIZE);
-        std::string msg = "Processing sample: " + in;
+        std::string msg = "\nProcessing sample: " + in;
         loginfo(msg);
         FastqReader reader(in, true);
         int count = 0;
@@ -196,10 +196,11 @@ void SeqTractPeProcessor::producerTask(){
                 readNum += PACK_SIZE;
                 if (mOptions->verbose) {
                     if (readNum > 100000 && readNum % 100000 == 0) {
-                        std::string msg = "loading " + std::to_string(readNum / 100000) + " * 100K reads" + 
-                                " detected " + std::to_string(featureUSet.size()) + " out of " + 
-                                std::to_string(mOptions->mSeqExtractions.targetGenesVec.size()) + " features";
-                        loginfo(msg);
+                        std::string msg = "loading \033[1;31m" + std::to_string(readNum / 100000) + 
+                                "\033[0m * 100K reads detected \033[1;32m" + std::to_string(featureUSet.size()) + 
+                                "\033[0m out of \033[1;36m" + 
+                                std::to_string(mOptions->mSeqExtractions.targetGenesVec.size()) + "\033[0m features";
+                        loginfo(msg, false);
                     }
                 }
             }

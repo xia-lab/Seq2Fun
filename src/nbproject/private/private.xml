@@ -6,6 +6,14 @@
     </data>
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/home/peng/NetBeansProjects/github/Seq2Fun2/src/options.h</file>
+            <file>file:/home/peng/NetBeansProjects/github/Seq2Fun2/src/seprocessor.cpp</file>
+            <file>file:/home/peng/NetBeansProjects/github/Seq2Fun2/src/peprocessor.cpp</file>
+            <file>file:/home/peng/NetBeansProjects/github/Seq2Fun2/src/options.cpp</file>
+            <file>file:/home/peng/NetBeansProjects/github/Seq2Fun2/src/util.h</file>
+            <file>file:/home/peng/NetBeansProjects/github/Seq2Fun2/src/bwtfmiDB.cpp</file>
+            <file>file:/home/peng/NetBeansProjects/github/Seq2Fun2/src/seq2fun2.cpp</file>
+        </group>
     </open-files>
 </project-private>
