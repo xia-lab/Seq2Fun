@@ -15,7 +15,7 @@
 
 * **All-in-one**: Seq2Fun directly takes raw RNA-seq reads as input and output gene abundance table without any intermediate file writing and loading, making I/O very efficient.
 
-* **Multifunctional**: Seq2Fun generates 6 levels of output files, including KO abundance table, hit pathway table, hit species table, reads KO table, a html report summarizing these tables and reads quality check, as well as output mapped clean reads for further analysis such as gene assembly.
+* **Multifunctional**: Seq2Fun generates 6 levels of output files, including KO and GO abundance tables, hit pathway table, hit species table, reads KO table, a html report summarizing these tables and reads quality check, as well as output mapped clean reads for further analysis such as gene assembly.
 
 * **Flexible**: Seq2Fun supports RNA-seq analysis on particular genes or groups of organisms using customized database.
 
@@ -450,6 +450,7 @@ We have followed the codon tables from [NCBI](https://www.ncbi.nlm.nih.gov/Taxon
 To inform us of any bugs or requests, please open a new issue or send an email to rocpengliu@gmail.com or jeff.xia@mcgill.ca
 
 ## Seq2Fun History & Updates
+10-01-2021 - seq2fun2_v2.0.0 released  
 08-23-2021 - seq2fun_v1.2.4 released  
 06-18-2021 - seq2fun_v1.2.3 released  
 06-05-2021 - seq2fun_v1.2.2 released  
