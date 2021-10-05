@@ -69,7 +69,8 @@ bool SeqTractPeProcessor::processReads(ReadPack* pack){
                 auto sample = getVecIndex(mOptions->mSeqExtractions.targetGenesSubVec, feature);
                 if (sample != -1) {
                     featureUSet.insert(feature);
-                    outputs[sample] += r->toString();
+                    mOptions->mSeqExtractions.numFeaturesProcessedUSet.insert(feature);
+                    outputs[sample] += r->toStringWithTagRm();
                 } else {
                     if(getVecIndex(mOptions->mSeqExtractions.targetGenesVec, feature) != -1){
                         sample = mSampleSize;
@@ -198,7 +199,7 @@ void SeqTractPeProcessor::producerTask(){
                     if (readNum > 100000 && readNum % 100000 == 0) {
                         std::string msg = "loading \033[1;31m" + std::to_string(readNum / 100000) + 
                                 "\033[0m * 100K reads detected \033[1;32m" + std::to_string(featureUSet.size()) + 
-                                "\033[0m out of \033[1;36m" + 
+                                "\033[0m and processing \033[1;33m" + std::to_string(mOptions->mSeqExtractions.numFeaturesProcessedUSet.size()) + "\033[0m out of \033[1;36m" + 
                                 std::to_string(mOptions->mSeqExtractions.targetGenesVec.size()) + "\033[0m features";
                         loginfo(msg, false);
                     }

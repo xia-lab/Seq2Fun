@@ -567,6 +567,7 @@ public:
     std::string targetGeneTableStr;
     std::string outputDir;
     int compression;
+    std::unordered_set<std::string> numFeaturesProcessedUSet;
     std::string undeterminedFileName;
     std::string undeterminedFileNameIn;
     std::string undeterminedFileNameOut;
@@ -599,6 +600,7 @@ public:
         suffix = "";
         numTotalReads = 0;
         numFeatures = 0;
+        numFeaturesProcessedUSet.clear();
     }
 };
 

@@ -144,6 +144,10 @@ string Read::toStringWithTag(string tag) {
 	return mName + "\t" + tag + "\n" + mSeq.mStr + "\n" + mStrand + "\n" + mQuality + "\n";
 }
 
+string Read::toStringWithTagRm() {
+	return removeStrs(mName) + "\n" + mSeq.mStr + "\n" + mStrand + "\n" + mQuality + "\n";
+}
+
 bool Read::fixMGI() {
 	int len = mName.length();
 	if(mName[len-1]=='1' || mName[len-1]=='2') {

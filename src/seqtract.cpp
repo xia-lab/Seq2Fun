@@ -23,9 +23,9 @@ int main(int argc, char** argv) {
 
     cmdline::parser cmd;
 
-    cmd.add<string>("sampleTable", 0, "input table for fastq files with annotation from Seq2Fun output", true, "");
-    cmd.add<string>("geneTable", 0, "input table of target genes for sequences extraction", true, "");
-    cmd.add<string>("outputDir", 0, "output folder for extract fastq files, default is current working dir", false, ".");
+    cmd.add<string>("sampleTable", 0, "input table for fastq.gz files with annotation from Seq2Fun2 output, eg: one column for SE samples or two columns (separated by '\t') of samples for PE sample", true, "");
+    cmd.add<string>("geneTable", 0, "input table of target genes for sequences extraction, eg: one columns of KO ids", true, "");
+    cmd.add<string>("outputDir", 0, "output folder for extract fastq.gz files, default is current working dir", false, ".");
     //cmd.add<string>("suffix", 0, "the suffix appended to the file name", false, "");
     cmd.add<string>("undetermined", 0, "the file name of undetermined data, default is Undetermined", false, "Undetermined");
     cmd.add<int>("compression", 0, "compression level for gzip output (1 - 9), default is 6", false, 6);
@@ -78,7 +78,7 @@ int main(int argc, char** argv) {
         SeqTractPeProcessor sqt(& opt);
         sqt.process();
         if (i > 0) {
-            std::string msg = "deleting file: " + opt.mSeqExtractions.undeterminedFileNameIn;
+            std::string msg = "\ndeleting file: " + opt.mSeqExtractions.undeterminedFileNameIn;
             loginfo(msg);
             remove(opt.mSeqExtractions.undeterminedFileNameIn.c_str());
         }
@@ -98,7 +98,7 @@ int main(int argc, char** argv) {
             SeqTractPeProcessor sqt(& opt);
             sqt.process();
             if (i > 0) {
-                std::string msg = "deleting file: " + opt.mSeqExtractions.undeterminedFileNameIn;
+                std::string msg = "\ndeleting file: " + opt.mSeqExtractions.undeterminedFileNameIn;
                 loginfo(msg);
                 remove(opt.mSeqExtractions.undeterminedFileNameIn.c_str());
             }
@@ -127,12 +127,12 @@ int main(int argc, char** argv) {
         SeqTractPeProcessor sqt(& opt);
         sqt.process();
 
-        std::string msg = "deleting file: " + opt.mSeqExtractions.undeterminedFileNameIn;
+        std::string msg = "\ndeleting file: " + opt.mSeqExtractions.undeterminedFileNameIn;
         loginfo(msg);
         remove(opt.mSeqExtractions.undeterminedFileNameIn.c_str());
 
         if (i > 0) {
-            std::string msg = "deleting file: " + opt.mSeqExtractions.undeterminedFileNameOut;
+            std::string msg = "\ndeleting file: " + opt.mSeqExtractions.undeterminedFileNameOut;
             loginfo(msg);
             remove(opt.mSeqExtractions.undeterminedFileNameOut.c_str());
         }
@@ -154,18 +154,18 @@ int main(int argc, char** argv) {
             SeqTractPeProcessor sqt(& opt);
             sqt.process();
 
-            std::string msg = "deleting file: " + opt.mSeqExtractions.undeterminedFileNameIn;
+            std::string msg = "\ndeleting file: " + opt.mSeqExtractions.undeterminedFileNameIn;
             loginfo(msg);
             remove(opt.mSeqExtractions.undeterminedFileNameIn.c_str());
 
             if (i > 0) {
-                std::string msg = "deleting file: " + opt.mSeqExtractions.undeterminedFileNameOut;
+                std::string msg = "\ndeleting file: " + opt.mSeqExtractions.undeterminedFileNameOut;
                 loginfo(msg);
                 remove(opt.mSeqExtractions.undeterminedFileNameOut.c_str());
             }
         }
     }
-
+    
     time_t t2 = time(NULL);
 
     cerr << endl << command << endl;

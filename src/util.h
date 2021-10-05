@@ -72,7 +72,7 @@ void colorCout(const T & str, string color = "red") {
 }
 
 inline char complement(char base) {
-    switch(base){
+    switch (base) {
         case 'A':
         case 'a':
             return 'T';
@@ -90,47 +90,47 @@ inline char complement(char base) {
     }
 }
 
-inline bool starts_with( string const & value,  string const & starting){
+inline bool starts_with(string const & value, string const & starting) {
     if (starting.size() > value.size()) return false;
-    return  equal(starting.begin(), starting.end(), value.begin());
+    return equal(starting.begin(), starting.end(), value.begin());
 }
 
-inline bool ends_with( string const & value,  string const & ending){
-	if (ending.size() > value.size()) return false;
-	return  equal(ending.rbegin(), ending.rend(), value.rbegin());
+inline bool ends_with(string const & value, string const & ending) {
+    if (ending.size() > value.size()) return false;
+    return equal(ending.rbegin(), ending.rend(), value.rbegin());
 }
 
-inline string trim(const string& str){
+inline string trim(const string& str) {
     string::size_type pos = str.find_first_not_of(' ');
-    if (pos == string::npos){
+    if (pos == string::npos) {
         return string("");
     }
     string::size_type pos2 = str.find_last_not_of(' ');
-    if (pos2 != string::npos){
+    if (pos2 != string::npos) {
         return str.substr(pos, pos2 - pos + 1);
     }
     return str.substr(pos);
 }
 
-inline string trimStr(const string& str){
+inline string trimStr(const string& str) {
     string::size_type pos = str.find_first_not_of(' ');
-    if (pos == string::npos){
+    if (pos == string::npos) {
         return string("");
     }
     string::size_type pos2 = str.find_last_not_of(' ');
-    if (pos2 != string::npos){
+    if (pos2 != string::npos) {
         return str.substr(pos, pos2 - pos + 1);
     }
     return str.substr(pos);
 }
 
-inline string trimEnd(char line[]){
+inline string trimEnd(char line[]) {
     int readed = strlen(line);
-    if(readed >= 2){
-        if(line[readed - 1] == '\n' || line[readed - 1] == '\r'){
+    if (readed >= 2) {
+        if (line[readed - 1] == '\n' || line[readed - 1] == '\r') {
             line[readed - 1] = '\0';
-            if(line[readed - 2] == '\r'){
-                line[readed -2] = '\0';
+            if (line[readed - 2] == '\r') {
+                line[readed - 2] = '\0';
             }
         }
     }
@@ -138,16 +138,16 @@ inline string trimEnd(char line[]){
     return str;
 }
 
-inline int splitStr(const string& str, vector<string>& ret_, string sep = "\t"){
-    if (str.empty()){
+inline int splitStr(const string& str, vector<string>& ret_, string sep = "\t") {
+    if (str.empty()) {
         return 0;
     }
     string tmp;
     string::size_type pos_begin = str.find_first_not_of(sep);
     string::size_type comma_pos = 0;
-    while (pos_begin != string::npos){
+    while (pos_begin != string::npos) {
         comma_pos = str.find(sep, pos_begin);
-        if (comma_pos != string::npos){
+        if (comma_pos != string::npos) {
             tmp = str.substr(pos_begin, comma_pos - pos_begin);
             pos_begin = comma_pos + sep.length();
         } else {
@@ -161,30 +161,28 @@ inline int splitStr(const string& str, vector<string>& ret_, string sep = "\t"){
     return 0;
 }
 
-inline std::vector<std::string> split2(const std::string & s, const char delim){
+inline std::vector<std::string> split2(const std::string & s, const char delim) {
     std::vector<std::string> tokens;
     std::string token;
     std::istringstream tokenStream(s);
-    while(std::getline(tokenStream, token, delim)){
+    while (std::getline(tokenStream, token, delim)) {
         tokens.push_back(token);
     }
     return tokens;
 }
 
-inline string replace(const string& str, const string& src, const string& dest){
+inline string replace(const string& str, const string& src, const string& dest) {
     string ret;
 
     string::size_type pos_begin = 0;
-    string::size_type pos       = str.find(src);
-    while (pos != string::npos)
-    {
+    string::size_type pos = str.find(src);
+    while (pos != string::npos) {
         ret.append(str.data() + pos_begin, pos - pos_begin);
         ret += dest;
         pos_begin = pos + 1;
-        pos       = str.find(src, pos_begin);
+        pos = str.find(src, pos_begin);
     }
-    if (pos_begin < str.length())
-    {
+    if (pos_begin < str.length()) {
         ret.append(str.begin() + pos_begin, str.end());
     }
     return ret;
@@ -192,20 +190,20 @@ inline string replace(const string& str, const string& src, const string& dest){
 
 inline string reverse(const string& str) {
     string ret(str.length(), 0);
-    for(int pos=0; pos<str.length(); pos++) {
+    for (int pos = 0; pos < str.length(); pos++) {
         ret[pos] = str[str.length() - pos - 1];
     }
     return ret;
 }
 
-inline string basename(const string& filename){
+inline string basename(const string& filename) {
     string::size_type pos = filename.find_last_of('/');
     if (pos == string::npos)
         return filename;
-    else if(pos == filename.length()-1)
+    else if (pos == filename.length() - 1)
         return ""; // a bad filename
     else
-        return filename.substr(pos+1, filename.length() - pos - 1);
+        return filename.substr(pos + 1, filename.length() - pos - 1);
 }
 
 inline string get_current_dir() {
@@ -219,59 +217,60 @@ inline string get_upper_dir() {
     std::string cwd = get_current_dir();
     std::string::size_type bepos = cwd.find_last_of("/");
     cwd.erase(bepos);
-    return(cwd);
+    return (cwd);
 }
 
 #ifdef WINDOWS
-std::string getexepath()
-{
-  char result[ MAX_PATH ];
-  return std::string( result, GetModuleFileName( NULL, result, MAX_PATH ) );
+
+std::string getexepath() {
+    char result[ MAX_PATH ];
+    return std::string(result, GetModuleFileName(NULL, result, MAX_PATH));
 }
 #else
+
 inline string GetExePath() {
     char result[ PATH_MAX ];
     ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
     return std::string(result, (count > 0) ? count : 0);
 }
+
 inline string get_seq2fun_dir() {
     std::string cwd = GetExePath();
     std::string::size_type bepos = cwd.find("/bin");
     cwd.erase(bepos);
-    return(cwd);
+    return (cwd);
 }
 #endif
 
-
-inline string dirname(const string& filename){
+inline string dirname(const string& filename) {
     string::size_type pos = filename.find_last_of('/');
     if (pos == string::npos) {
         return "./";
     } else {
-        return filename.substr(0, pos+1);
+        return filename.substr(0, pos + 1);
     }
 }
 
-inline string joinpath(const string& dirname, const string& basename){
-    if(dirname[dirname.length()-1] == '/'){
+inline string joinpath(const string& dirname, const string& basename) {
+    if (dirname[dirname.length() - 1] == '/') {
         return dirname + basename;
     } else {
         return dirname + "/" + basename;
     }
 }
 
-inline string checkDirEnd(const string & dirname){
+inline string checkDirEnd(const string & dirname) {
     return (dirname[dirname.length() - 1] == '/' ? dirname : dirname + '/');
 }
 
 //Check if a string is a file or directory
-inline bool file_exists(const  string& s)
-{
+
+inline bool file_exists(const string& s) {
     bool exists = false;
-    if(s.length() > 0) {
+    if (s.length() > 0) {
         struct stat status;
-        int result = stat( s.c_str(), &status );
-        if(result == 0) {
+        int result = stat(s.c_str(), &status);
+        if (result == 0) {
             exists = true;
         }
     }
@@ -280,8 +279,8 @@ inline bool file_exists(const  string& s)
 
 
 // check if a string is a directory
-inline bool is_directory(const  string& path)
-{
+
+inline bool is_directory(const string& path) {
     bool isdir = false;
     struct stat status;
     // visual studion use _S_IFDIR instead of S_IFDIR
@@ -289,47 +288,47 @@ inline bool is_directory(const  string& path)
 #ifdef _MSC_VER
 #define S_IFDIR _S_IFDIR
 #endif
-    stat( path.c_str(), &status );
-    if ( status.st_mode &  S_IFDIR  ) {
+    stat(path.c_str(), &status);
+    if (status.st_mode & S_IFDIR) {
         isdir = true;
     }
-// #endif
+    // #endif
     return isdir;
 }
 
-inline void check_file_valid(const  string& s) {
-    if(!file_exists(s)){
+inline void check_file_valid(const string& s) {
+    if (!file_exists(s)) {
         cerr << "ERROR: file '" << s << "' doesn't exist, quit now" << endl;
         exit(-1);
     }
-    if(is_directory(s)){
+    if (is_directory(s)) {
         cerr << "ERROR: '" << s << "' is a folder, not a file, quit now" << endl;
         exit(-1);
     }
 }
 
-inline bool check_filename_valid(const string& s){
+inline bool check_filename_valid(const string& s) {
     return 0 < trim(s).length() && trim(s).length() <= 255 && regex_match(s, regex("^[A-Za-z0-9_\\.\\-]+$"));
 }
 
-inline void check_file_writable(const  string& s) {
+inline void check_file_writable(const string& s) {
     string dir = dirname(s);
-    if(!file_exists(dir)) {
+    if (!file_exists(dir)) {
         cerr << "ERROR: '" << dir << " doesn't exist. Create this folder and run this command again." << endl;
         exit(-1);
     }
-    if(is_directory(s)){
+    if (is_directory(s)) {
         cerr << "ERROR: '" << s << "' is not a writable file, quit now" << endl;
         exit(-1);
     }
 }
 
 // Remove non alphabetic characters from a string
-inline  string str_keep_alpha(const  string& s)
-{
-     string new_str;
-    for( size_t it =0; it < s.size(); it++) {
-        if(  isalpha(s[it]) ) {
+
+inline string str_keep_alpha(const string& s) {
+    string new_str;
+    for (size_t it = 0; it < s.size(); it++) {
+        if (isalpha(s[it])) {
             new_str += s[it];
         }
     }
@@ -338,18 +337,18 @@ inline  string str_keep_alpha(const  string& s)
 
 
 // Remove invalid sequence characters from a string
-inline void str_keep_valid_sequence(  string& s, bool forceUpperCase = false)
-{
+
+inline void str_keep_valid_sequence(string& s, bool forceUpperCase = false) {
     size_t total = 0;
     const char case_gap = 'a' - 'A';
-    for( size_t it =0; it < s.size(); it++) {
+    for (size_t it = 0; it < s.size(); it++) {
         char c = s[it];
-        if(forceUpperCase && c>='a' && c<='z') {
+        if (forceUpperCase && c >= 'a' && c <= 'z') {
             c -= case_gap;
         }
-        if(  isalpha(c) || c == '-' || c == '*' ) {
+        if (isalpha(c) || c == '-' || c == '*') {
             s[total] = c;
-            total ++;
+            total++;
         }
     }
 
@@ -360,7 +359,7 @@ inline void str_keep_valid_sequence(  string& s, bool forceUpperCase = false)
 //    return((int)round(a * b));
 //}
 
-inline int find_with_right_pos(const string& str, const string& pattern, int start=0) {
+inline int find_with_right_pos(const string& str, const string& pattern, int start = 0) {
     int pos = str.find(pattern, start);
     if (pos < 0)
         return -1;
@@ -368,18 +367,18 @@ inline int find_with_right_pos(const string& str, const string& pattern, int sta
         return pos + pattern.length();
 }
 
-inline void str2upper(string& s){
+inline void str2upper(string& s) {
     transform(s.begin(), s.end(), s.begin(), (int (*)(int))toupper);
 }
 
-inline void str2lower(string& s){
+inline void str2lower(string& s) {
     transform(s.begin(), s.end(), s.begin(), (int (*)(int))tolower);
 }
 
 inline char num2qual(int num) {
-    if(num > 127 - 33)
+    if (num > 127 - 33)
         num = 127 - 33;
-    if(num < 0)
+    if (num < 0)
         num = 0;
 
     char c = num + 33;
@@ -392,11 +391,12 @@ inline void error_exit(const string& msg) {
 }
 
 extern mutex logmtx;
-inline void loginfo(const string & s, bool next = true){
+
+inline void loginfo(const string & s, bool next = true) {
     logmtx.lock();
     time_t tt = time(NULL);
-    tm* t= localtime(&tt);
-    if(next){
+    tm* t = localtime(&tt);
+    if (next) {
         fprintf(stderr, "[\033[1;35m%02d:%02d:%02d\033[0m] %s\n", t->tm_hour, t->tm_min, t->tm_sec, s.c_str());
     } else {
         fprintf(stderr, "[\033[1;35m%02d:%02d:%02d\033[0m] %s\r", t->tm_hour, t->tm_min, t->tm_sec, s.c_str());
@@ -404,44 +404,42 @@ inline void loginfo(const string & s, bool next = true){
     logmtx.unlock();
 }
 
-
-inline string trimName(string& str){
-   // string strnew;
+inline string trimName(string& str) {
+    // string strnew;
     str.erase(str.begin());
     string suffixStartCharacters = " /\t\r";
     size_t n = str.find_first_of(suffixStartCharacters);
-    if(n != string::npos){
+    if (n != string::npos) {
         return str.erase(n);
     } else {
         return str;
     }
 }
 
+inline std::string getMostFreqStrFromVec(std::vector<std::string> & vectorko) {
+    std::map<std::string, int> freq;
 
-inline std::string getMostFreqStrFromVec(std::vector<std::string> & vectorko){
-   std::map<std::string, int> freq;
-   
-   for(int i = 0; i < vectorko.size(); i ++){
-       freq[vectorko[i]]++;
-   }
-   
-   int max_F = 0;
-   std::string res = "";
-   for(auto j : freq){
-       if(max_F < j.second){
-           res = j.first;
-           max_F = j.second;
-       }
-   }
-   freq.clear();
-   vectorko.clear();
-   return res;
+    for (int i = 0; i < vectorko.size(); i++) {
+        freq[vectorko[i]]++;
+    }
+
+    int max_F = 0;
+    std::string res = "";
+    for (auto j : freq) {
+        if (max_F < j.second) {
+            res = j.first;
+            max_F = j.second;
+        }
+    }
+    freq.clear();
+    vectorko.clear();
+    return res;
 }
 
 inline std::string getUniqStrFromVec(std::vector<std::string> & vectorko) {
     sort(vectorko.begin(), vectorko.end());
-    vectorko.erase( unique( vectorko.begin(), vectorko.end() ), vectorko.end() );
-    
+    vectorko.erase(unique(vectorko.begin(), vectorko.end()), vectorko.end());
+
     std::string uniq = "";
     if (vectorko.size() == 1) {
         uniq = vectorko[1];
@@ -450,27 +448,42 @@ inline std::string getUniqStrFromVec(std::vector<std::string> & vectorko) {
     return uniq;
 }
 
-inline string removeStr(const string &str, const string &src){
+inline string removeStr(const string &str, const string &src) {
     string ret;
     string::size_type pos_begin = 0;
     string::size_type pos = str.find(src);
-    while (pos != string::npos)
-    {
+    while (pos != string::npos) {
         ret.append(str.data() + pos_begin, pos - pos_begin);
         pos_begin = pos + src.length();
         pos = str.find(src, pos_begin);
     }
-    if (pos_begin < str.length())
-    {
+    if (pos_begin < str.length()) {
         ret.append(str.begin() + pos_begin, str.end());
     }
     return ret;
 }
 
+inline string removeStrs(const string &str) {
+    string ret;
+    string::size_type pos_begin = 0;
+    string::size_type pos = str.find("\tK");
+    if (pos != string::npos) {
+        ret.append(str.data(), pos);
+    } else {
+        pos = str.find("\tUNASSIGNED");
+        if (pos != string::npos) {
+            ret.append(str.data(), pos);
+        } else {
+            return str;
+        }
+    }
+    return ret;
+}
+
 template<class T1, class T2>
-double getPercentage(T1 v1, T2 v2){
-   double ret = double (v1 * 100) / (double) v2;
-   return ret;
+double getPercentage(T1 v1, T2 v2) {
+    double ret = double (v1 * 100) / (double) v2;
+    return ret;
 }
 
 //inline double getPercetage(int v1, long v2){
@@ -484,49 +497,45 @@ double getPercentage(T1 v1, T2 v2){
 //}
 
 template<typename T>
-std::string unkown2Str(const T & t){
+std::string unkown2Str(const T & t) {
     std::ostringstream os;
     os << t;
     return os.str();
 }
 
 template <class T>
-std::vector<std::pair<std::string, T> > sortUMapToVector(std::unordered_map<std::string, T> &unMap)
-{
+std::vector<std::pair<std::string, T> > sortUMapToVector(std::unordered_map<std::string, T> &unMap) {
     int size = unMap.size();
-    std::vector<std::pair<std::string, T>> sortedVec(size);
+    std::vector<std::pair < std::string, T >> sortedVec(size);
     std::partial_sort_copy(unMap.begin(),
-                           unMap.end(),
-                           sortedVec.begin(),
-                           sortedVec.end(),
-                           [](std::pair<const std::string, float> const &l,
-                              std::pair<const std::string, float> const &r) {
-                               return l.second > r.second;
-                           });
+            unMap.end(),
+            sortedVec.begin(),
+            sortedVec.end(),
+            [](std::pair<const std::string, float> const &l,
+            std::pair<const std::string, float> const &r) {
+                return l.second > r.second;
+            });
     return sortedVec;
 }
 
-inline std::vector<std::tuple<std::string, double, int, int> > sortTupleVector(std::vector<std::tuple<std::string, double, int, int> > & OriVec)
-{
+inline std::vector<std::tuple<std::string, double, int, int> > sortTupleVector(std::vector<std::tuple<std::string, double, int, int> > & OriVec) {
     int size = OriVec.size();
     std::vector<std::tuple<std::string, double, int, int> > sortedVec(size);
     std::partial_sort_copy(OriVec.begin(),
-                           OriVec.end(),
-                           sortedVec.begin(),
-                           sortedVec.end(),
-                           [](const std::tuple<std::string, double, int, int > &l,
-                              const std::tuple<std::string, double, int, int > &r) {
-                               return get<1>(l) > get<1>(r);
-                           });
+            OriVec.end(),
+            sortedVec.begin(),
+            sortedVec.end(),
+            [](const std::tuple<std::string, double, int, int > &l,
+            const std::tuple<std::string, double, int, int > &r) {
+                return get<1>(l) > get<1>(r);
+            });
     return sortedVec;
 }
 
-inline void getUniqVec(std::vector<std::string> &orgVec)
-{
+inline void getUniqVec(std::vector<std::string> &orgVec) {
     std::unordered_set<std::string> s;
     std::vector<std::string>::iterator itr = orgVec.begin();
-    for (auto curr = orgVec.begin(); curr != orgVec.end(); ++curr)
-    {
+    for (auto curr = orgVec.begin(); curr != orgVec.end(); ++curr) {
         if (s.insert(*curr).second)
             *itr++ = *curr;
     }
@@ -543,19 +552,19 @@ inline void stripChar(std::string & s) {
 }
 
 template<typename T>
-inline std::string convertSeconds(const T & t){
+inline std::string convertSeconds(const T & t) {
     long seconds, minutes, hours;
     seconds = long(t);
     minutes = t / 60;
     hours = minutes / 60;
-    
+
     std::stringstream ss;
-    ss << hours << " hours "  << minutes % 60 << " minutes " << seconds % 60 << " seconds";
+    ss << hours << " hours " << minutes % 60 << " minutes " << seconds % 60 << " seconds";
     return ss.str();
 }
 
 template<typename T>
-vector<T> sliceVec(vector<T> vec, int x, int y){
+vector<T> sliceVec(vector<T> vec, int x, int y) {
     auto start = vec.begin() + x;
     auto end = vec.begin() + y;
     vector<T> res(y - x);
@@ -564,7 +573,7 @@ vector<T> sliceVec(vector<T> vec, int x, int y){
 }
 
 template<typename T>
-int getVecIndex(vector<T> & v, T i){
+int getVecIndex(vector<T> & v, T i) {
     auto it = std::find(v.begin(), v.end(), i);
     return (it != v.end() ? it - v.begin() : -1);
 }
