@@ -23,7 +23,7 @@
 
 ## Getting started
 ### Step 1. Install the package
-Seq2Fun (version 1.0.0) is written in C/C++11 and can be installed on Linux or Mac OS X (with Xcode and Xcode Command Line Tools installed). 
+Seq2Fun (version 2.0.0) is written in C/C++11 and can be installed on Linux or Mac OS X (with Xcode and Xcode Command Line Tools installed). 
 We have tested Seq2Fun on Ubuntu (16.04 LTS and above) and macOS Catalina.
 
 ```
