@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
     time_t t_begin = time(NULL);
 
     if (argc == 1) {
-        cerr << "Seq2Fun2: high-throughput functional profiling of RNA-seq data for non-model organisms" << endl << "version " << SEQ2FUNR_VER << endl;
+        cerr << "Seq2Fun: high-throughput functional profiling of RNA-seq data for non-model organisms" << endl << "version " << SEQ2FUNR_VER << endl;
     }
     if (argc == 2 && strcmp(argv[1], "test") == 0) {
         UnitTest tester;
@@ -172,7 +172,7 @@ int main(int argc, char* argv[]) {
     Options opt;
 
     opt.seq2funProgPath = string(argv[0]);
-    opt.seq2funDir = removeStr(opt.seq2funProgPath, "bin/seq2fun2");
+    opt.seq2funDir = removeStr(opt.seq2funProgPath, "bin/seq2fun");
     opt.internalDBDir = cmd.get<string>("dbDir") == "" ? opt.seq2funDir + "database" : cmd.get<string>("dbDir");
     opt.internalDBDir = checkDirEnd(opt.internalDBDir);
 

@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
 }
 
 static void display_usage() {
-    printf("\nUsage: TranSembler <command> [option]\n");
+    printf("\nUsage: SOAPdenovo-Trans <command> [option]\n");
     printf("    pregraph     construction kmer-graph\n");
     printf("    contig       eliminate errors and output contigs\n");
     printf("    map          map reads to contigs\n");

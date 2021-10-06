@@ -304,7 +304,7 @@ bool Options::validate() {
     if(thread < 1) {
         thread = 1;
     } else if(thread > 32) {
-        cerr << "WARNING: Seq2Fun2 uses up to 32 threads although you specified " << thread << endl;
+        cerr << "WARNING: Seq2Fun uses up to 32 threads although you specified " << thread << endl;
         thread = 32;
     }
 

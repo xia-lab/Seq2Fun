@@ -261,7 +261,7 @@
       <in>read.h</in>
       <in>seprocessor.cpp</in>
       <in>seprocessor.h</in>
-      <in>seq2fun2.cpp</in>
+      <in>seq2fun.cpp</in>
       <in>seqtract.cpp</in>
       <in>seqtractpeprocessor.cpp</in>
       <in>seqtractpeprocessor.h</in>

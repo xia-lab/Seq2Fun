@@ -116,7 +116,7 @@
       <in>processor.cpp</in>
       <in>read.cpp</in>
       <in>seprocessor.cpp</in>
-      <in>seq2fun2.cpp</in>
+      <in>seq2fun.cpp</in>
       <in>seqtract.cpp</in>
       <in>seqtractpeprocessor.cpp</in>
       <in>sequence.cpp</in>
@@ -635,7 +635,7 @@
         <ccTool flags="3">
         </ccTool>
       </item>
-      <item path="seq2fun2.cpp" ex="false" tool="1" flavor2="8">
+      <item path="seq2fun.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="3">
         </ccTool>
       </item>
