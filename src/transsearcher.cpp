@@ -13,7 +13,8 @@ TransSearcher::TransSearcher(Options * opt, BwtFmiDB * tbwtfmiDB) {
     goUSet.clear();
     tmpGoVec.clear();
     tmpGoVec.reserve(100);
-    
+    idUSet.clear();
+    subIdFreqUMap.clear();
     blosum_subst = {
         {'A',
             {'S', 'V', 'T', 'G', 'C', 'P', 'M', 'K', 'L', 'I', 'E', 'Q', 'R', 'Y', 'F', 'H', 'D', 'N', 'W'}},
@@ -1092,9 +1093,11 @@ void TransSearcher::flush_output(){
         std::lock_guard<std::mutex> out_lock(m);
         mOptions->transSearch.koUSet.insert(koUSet.begin(), koUSet.end());
         mOptions->transSearch.goUSet.insert(goUSet.begin(), goUSet.end());
+        mOptions->transSearch.idUSet.insert(idUSet.begin(), idUSet.end());
     }
     koUSet.clear();
     goUSet.clear();
+    idUSet.clear();
 }
 
 void TransSearcher::clearFragments() {
@@ -1343,38 +1346,32 @@ void TransSearcher::doProcess(){
     tmpKOProteinUMMap.clear();
     tmpGOVec.clear();//could use the sampe tmpKOVec;
     tmpGOVec.reserve(match_ids.size());
+    tmpIdVec.clear();//could use the sampe tmpKOVec;
+    tmpIdVec.reserve(match_ids.size());
     for (const auto it : match_ids) {
         auto gokoit = mOptions->mHomoSearchOptions.fullDbMap.find(it);
         if (gokoit != mOptions->mHomoSearchOptions.fullDbMap.end()) {
             tmpGKG = gokoit->second;
             if (tmpGKG.ko != "UNASSIGNED") {
-                tmpKOVec.push_back(tmpGKG.ko);
+                tmpKOVec.emplace_back(tmpGKG.ko);
                 if (mOptions->mHomoSearchOptions.profiling) {
                     tmpKOProteinUMMap.insert(std::pair<std::string, std::string> (tmpGKG.ko, gokoit->first)); //ko protein;
                 }
             }
             if(tmpGKG.go != "UNASSIGNED"){
-                tmpGOVec.push_back(tmpGKG.go);
+                tmpGOVec.emplace_back(tmpGKG.go);
+            }
+            if(tmpGKG.id != "UNASSIGNED"){
+                tmpIdVec.emplace_back(tmpGKG.id);
             }
         }
-        
-//        auto ko = mOptions->mHomoSearchOptions.db_map.find(it);
-//        if (ko != mOptions->mHomoSearchOptions.db_map.end()) {
-//            tmpKOVec.push_back(ko->second);
-//            if (mOptions->mHomoSearchOptions.profiling) {
-//                tmpKOProteinUMMap.insert(std::pair<std::string, std::string> (ko->second, ko->first)); //ko protein;
-//            }
-//        }
-//        
-//        auto go = mOptions->mHomoSearchOptions.geneGoMap.find(it);
-//        if(go != mOptions->mHomoSearchOptions.geneGoMap.end()){
-//            tmpGOVec.push_back(go->second);
-//        }
     }
-    extraoutput = tmpKOVec.size() > 0 ? getMostFreqStrFromVec(tmpKOVec) : "";
-    extraoutputGO = tmpGOVec.size() > 0 ? getMostFreqStrFromVec(tmpGOVec) : "";
+    extraoutput = tmpKOVec.empty() ? "" : getMostFreqStrFromVec(tmpKOVec);
+    extraoutputGO = tmpGOVec.empty() ? "" : getMostFreqStrFromVec(tmpGOVec);
+    extraoutputId = tmpIdVec.empty() ? "" : getMostFreqStrFromVec(tmpIdVec);
     tmpKOVec.shrink_to_fit();
     tmpGOVec.shrink_to_fit();
+    tmpIdVec.shrink_to_fit();
 }
 
 void TransSearcher::postProcess() {
@@ -1408,12 +1405,20 @@ void TransSearcher::postProcess() {
     }
 
     if (extraoutputGO.length() > 0) {
-        outputStr += "\t" + extraoutputGO;
+        outputStr += (outputStr.length() > 0 ? "\t" : "") + extraoutputGO;
         subGoFreqUMap[extraoutputGO]++;
         if (mOptions->verbose) {
             tmpGoVec.clear();
             splitStr(extraoutputGO, tmpGoVec, ";");
             goUSet.insert(tmpGoVec.begin(), tmpGoVec.end());
+        }
+    }
+    
+    if(extraoutputId.length() > 0){
+        outputStr += (outputStr.length() > 0 ? "\t" : "") + extraoutputId;
+        subIdFreqUMap[extraoutputId]++;
+        if(mOptions->verbose){
+            idUSet.insert(extraoutputId);
         }
     }
 }
@@ -1423,6 +1428,7 @@ std::string TransSearcher::transSearch(Read *item) {
     outputStr = "";
     extraoutput = "";
     extraoutputGO = "";
+    extraoutputId = "";
     query_len = static_cast<double> (item->length()) / 3.0;
     if (item->mSeq.length() >= mOptions->transSearch.minAAFragLength * 3) {
         if (mOptions->debug)
@@ -1456,6 +1462,7 @@ std::string TransSearcher::transSearch(Read *item1, Read *item2) {
     outputStr = "";
     extraoutput = "";
     extraoutputGO = "";
+    extraoutputId = "";
     query_len = static_cast<double> (item1->length()) / 3.0;
     if (item1->length() >= mOptions->transSearch.minAAFragLength * 3) {
         if (mOptions->debug)

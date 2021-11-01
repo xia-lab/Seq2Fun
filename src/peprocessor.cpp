@@ -185,6 +185,7 @@ bool PairEndProcessor::process() {
     vector< std::unordered_map<std::string, std::unordered_map<std::string, double> > > totalOrgKOFreqVecResults;
     totalOrgKOFreqVecResults.reserve(mOptions->thread);
     vector<std::unordered_map<std::string, uint32> > totalGoFreqVecResults;
+    vector<std::unordered_map<std::string, uint32> > totalIdFreqVecResults;
     totalGoFreqVecResults.reserve(mOptions->thread);
     for (int t = 0; t < mOptions->thread; t++) {
         preStats1.push_back(configs[t]->getPreStats1());
@@ -195,6 +196,7 @@ bool PairEndProcessor::process() {
         totalKoFreqVecResults.push_back(configs[t]->getTransSearcher()->getSubKoFreqUMap());
         totalOrgKOFreqVecResults.push_back(configs[t]->getTransSearcher()->getSubOrgKOAbunUMap());
         totalGoFreqVecResults.push_back(configs[t]->getTransSearcher()->getSubGoFreqUMap());
+        totalIdFreqVecResults.push_back(configs[t]->getTransSearcher()->getSubIdFreqUMap());
     }
     Stats* finalPreStats1 = Stats::merge(preStats1);
     Stats* finalPostStats1 = Stats::merge(postStats1);
@@ -204,7 +206,7 @@ bool PairEndProcessor::process() {
     mOptions->mHomoSearchOptions.nTotalReads = finalPreStats1->getReads(); //change to both reads??????
     mOptions->mHomoSearchOptions.nCleanReads = finalPostStats1->getReads();
 
-    prepareResults(totalKoFreqVecResults, totalOrgKOFreqVecResults, totalGoFreqVecResults);
+    prepareResults(totalKoFreqVecResults, totalOrgKOFreqVecResults, totalGoFreqVecResults, totalIdFreqVecResults);
 
     int* dupHist = NULL;
     double* dupMeanTlen = NULL;
@@ -478,9 +480,11 @@ bool PairEndProcessor::processPairEnd(ReadPairPack* pack, ThreadConfig* config) 
         auto rCount = long(mOptions->transSearch.nTransMappedKOReads);
         auto kCount = mOptions->transSearch.koUSet.size();
         auto gCount = mOptions->transSearch.goUSet.size();
+        auto iCount = mOptions->transSearch.idUSet.size();
         logMtx.unlock();
         std::string str = "Mapped \033[1;31m" + std::to_string(rCount) + "\033[0m reads to \033[1;32m" + 
-                std::to_string(kCount) + "\033[0m KOs and \033[1;36m" + std::to_string(gCount) + "\033[0m GO sets!";
+                std::to_string(kCount) + "\033[0m KOs and \033[1;36m" + std::to_string(gCount) + 
+                "\033[0m GO sets and \033[1;34m" +  std::to_string(iCount) + "\033[0m s2f ids!";
         loginfo(str, false);
     }
 
@@ -829,7 +833,8 @@ void PairEndProcessor::writeTask(WriterThread* config) {
 
 void PairEndProcessor::prepareResults(std::vector< std::unordered_map<std::string, uint32 > > & totalKoFreqVecResults,
         std::vector< std::unordered_map<std::string, std::unordered_map<std::string, double> > > & totalOrgKOFreqVecResults,
-        std::vector< std::unordered_map<std::string, uint32 > > & totalGoFreqVecResults) {
+        std::vector< std::unordered_map<std::string, uint32 > > & totalGoFreqVecResults, 
+        std::vector< std::unordered_map<std::string, uint32 > > & totalIdFreqVecResults) {
 
     if (mOptions->mHomoSearchOptions.prefix.size() == 0) {
         error_exit("sample prefix is not specific, quit now!");
@@ -1076,50 +1081,100 @@ void PairEndProcessor::prepareResults(std::vector< std::unordered_map<std::strin
     }
     
     //5 GO map
-    std::unordered_map< std::string, uint32 > totalGoFreqUMapResults;
-    for(const auto & it : totalGoFreqVecResults){
-        for(const auto & itr : it){
-            totalGoFreqUMapResults[itr.first] += itr.second;
-            mOptions->transSearch.nTransMappedGOReads += itr.second;
+    if (!totalGoFreqVecResults.empty()) {
+        std::unordered_map< std::string, uint32 > totalGoFreqUMapResults;
+        for (const auto & it : totalGoFreqVecResults) {
+            for (const auto & itr : it) {
+                totalGoFreqUMapResults[itr.first] += itr.second;
+                mOptions->transSearch.nTransMappedGOReads += itr.second;
+            }
         }
-    }
-    totalGoFreqVecResults.clear();
-    totalGoFreqVecResults.shrink_to_fit();
+        totalGoFreqVecResults.clear();
+        totalGoFreqVecResults.shrink_to_fit();
 
-    if (mOptions->samples.size() > 0) {
-        int sampleId = mOptions->getWorkingSampleId(mOptions->mHomoSearchOptions.prefix); // get the working sample id;
-        mOptions->samples.at(sampleId).totalGoFreqUMapResults = totalGoFreqUMapResults;
+        if (mOptions->samples.size() > 0) {
+            int sampleId = mOptions->getWorkingSampleId(mOptions->mHomoSearchOptions.prefix); // get the working sample id;
+            mOptions->samples.at(sampleId).totalGoFreqUMapResults = totalGoFreqUMapResults;
+        }
+
+        mOptions->transSearch.nTransMappedGOs = totalGoFreqUMapResults.size();
+
+        auto tmpSortedGOFreqVec = sortUMapToVector(totalGoFreqUMapResults);
+
+        fileoutname.clear();
+        fileoutname = mOptions->mHomoSearchOptions.prefix + "_GO_abundance.txt";
+        {
+            std::ofstream * fout = new std::ofstream();
+            fout->open(fileoutname.c_str(), std::ofstream::out);
+            if (!fout->is_open()) error_exit("Can not open abundance file: " + fileoutname);
+            if (mOptions->verbose) loginfo("Starting to write GO abundance table");
+            *fout << "#GO_id" << "\t" << "Reads_count" << "\n";
+            for (const auto & it : tmpSortedGOFreqVec) {
+                *fout << it.first << "\t" << it.second << "\n";
+                mOptions->transSearch.nTransMappedGOReads += it.second;
+            }
+
+            fout->flush();
+            fout->close();
+            if (fout) delete fout;
+            fout = NULL;
+        }
+        if (mOptions->verbose) loginfo("Finish to write GO abundance table");
+        tmpSortedGOFreqVec.clear();
+        tmpSortedGOFreqVec.shrink_to_fit();
+
+        totalGoFreqUMapResults.clear();
+        tmpSortedGOFreqVec.clear();
     }
     
-    mOptions->transSearch.nTransMappedGOs = totalGoFreqUMapResults.size();
-
-    auto tmpSortedGOFreqVec = sortUMapToVector(totalGoFreqUMapResults);
-
-    fileoutname.clear();
-    fileoutname = mOptions->mHomoSearchOptions.prefix + "_GO_abundance.txt";
-    {
-    std::ofstream * fout = new std::ofstream();
-    fout->open(fileoutname.c_str(), std::ofstream::out);
-    if (!fout->is_open()) error_exit("Can not open abundance file: " + fileoutname);
-    if (mOptions->verbose) loginfo("Starting to write GO abundance table");
-    *fout << "#GO_id" << "\t" << "Reads_count" << "\n";
-    for (const auto & it : tmpSortedGOFreqVec) {
-        *fout << it.first << "\t" << it.second << "\n";
-        mOptions->transSearch.nTransMappedGOReads += it.second;
-    }
-
-    fout->flush();
-    fout->close();
-    if (fout) delete fout;
-    fout = NULL;
-    }
-    if (mOptions->verbose) loginfo("Finish to write GO abundance table");
-    tmpSortedGOFreqVec.clear();
-    tmpSortedGOFreqVec.shrink_to_fit();
+    //6 for s2fid;
     
-    totalGoFreqUMapResults.clear();
-    tmpSortedGOFreqVec.clear();
+    if(!totalIdFreqVecResults.empty()){
+        std::unordered_map< std::string, uint32 > totalIdFreqUMapResults;
+        for (const auto & it : totalIdFreqVecResults) {
+            for (const auto & itr : it) {
+                totalIdFreqUMapResults[itr.first] += itr.second;
+                mOptions->transSearch.nTransMappedIdReads += itr.second;
+            }
+        }
+        totalIdFreqVecResults.clear();
+        totalIdFreqVecResults.shrink_to_fit();
 
+        if (mOptions->samples.size() > 0) {
+            int sampleId = mOptions->getWorkingSampleId(mOptions->mHomoSearchOptions.prefix); // get the working sample id;
+            mOptions->samples.at(sampleId).totalIdFreqUMapResults = totalIdFreqUMapResults;
+        }
+
+        mOptions->transSearch.nTransMappedIds = totalIdFreqUMapResults.size();
+
+        auto tmpSortedIdFreqVec = sortUMapToVector(totalIdFreqUMapResults);
+
+        fileoutname.clear();
+        fileoutname = mOptions->mHomoSearchOptions.prefix + "_s2fGene_abundance.txt";
+        {
+            std::ofstream * fout = new std::ofstream();
+            fout->open(fileoutname.c_str(), std::ofstream::out);
+            if (!fout->is_open()) error_exit("Can not open abundance file: " + fileoutname);
+            if (mOptions->verbose) loginfo("Starting to write s2fGene abundance table");
+            *fout << "#S2f_id" << "\t" << "Reads_count" << "\n";
+            for (const auto & it : tmpSortedIdFreqVec) {
+                *fout << it.first << "\t" << it.second << "\n";
+                mOptions->transSearch.nTransMappedIdReads += it.second;
+            }
+
+            fout->flush();
+            fout->close();
+            if (fout) delete fout;
+            fout = NULL;
+        }
+        if (mOptions->verbose) loginfo("Finish to write s2f gene abundance table");
+        tmpSortedIdFreqVec.clear();
+        tmpSortedIdFreqVec.shrink_to_fit();
+
+        totalIdFreqUMapResults.clear();
+        tmpSortedIdFreqVec.clear();
+    }
+    
     time_t t_finished = time(NULL);
     mOptions->transSearch.endTime = t_finished;
     mOptions->transSearch.timeLapse = difftime(mOptions->transSearch.endTime, mOptions->transSearch.startTime);
@@ -1148,5 +1203,9 @@ void PairEndProcessor::prepareResults(std::vector< std::unordered_map<std::strin
         mOptions->samples.at(sampleId).transSearchMappedGOReads = mOptions->transSearch.nTransMappedGOReads;
         mOptions->samples.at(sampleId).mappedGOReadsRate = double(mOptions->samples.at(sampleId).transSearchMappedGOReads * 100) / double(mOptions->samples.at(sampleId).totalRawReads);
         mOptions->samples.at(sampleId).nGO = mOptions->transSearch.nTransMappedGOs;
+        
+        mOptions->samples.at(sampleId).transSearchMappedIdReads = mOptions->transSearch.nTransMappedIdReads;
+        mOptions->samples.at(sampleId).mappedIdReadsRate = double(mOptions->samples.at(sampleId).transSearchMappedIdReads * 100) / double(mOptions->samples.at(sampleId).totalRawReads);
+        mOptions->samples.at(sampleId).nId = mOptions->transSearch.nTransMappedIds;
     }
 }

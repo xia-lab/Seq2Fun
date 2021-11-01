@@ -120,17 +120,23 @@ void HtmlReporterAll::outputRow(ofstream& ofs, std::vector<Sample> & samplesVec)
 
 void HtmlReporterAll::reportAllTables() {
     
-    std::set<std::string> koSet, orgSet, pathwaySet;
-    for (Sample & sample : mOptions->samples) {
+    std::set<std::string> koSet, orgSet, pathwaySet, goSet, idSet;
+    for (const Sample & sample : mOptions->samples) {
         smNmVec.push_back(basename(sample.prefix));
-        for(auto & it : sample.totalKoFreqUMapResults){
+        for(const auto & it : sample.totalKoFreqUMapResults){
             koSet.insert(it.first);
         }
-        for(auto & it : sample.totalPathwayMap){
+        for(const auto & it : sample.totalPathwayMap){
             pathwaySet.insert(it.first);
         }
-        for(auto & it : sample.totalOrgKOUMap){
+        for(const auto & it : sample.totalOrgKOUMap){
             orgSet.insert(it.first);
+        }
+        for(const auto & it : sample.totalGoFreqUMapResults){
+            goSet.insert(it.first);
+        }
+        for(const auto & it : sample.totalIdFreqUMapResults){
+            idSet.insert(it.first);
         }
     }
     
@@ -143,13 +149,13 @@ void HtmlReporterAll::reportAllTables() {
     if (mOptions->verbose) loginfo("Starting to write all samples KO abundance table");
     
     *fOut << "#NAME\t";
-    for(auto & it : smNmVec){
+    for(const auto & it : smNmVec){
         *fOut << it << "\t";
     }
     *fOut << "KO_name\n";
     
     *fOut << "#CLASS\t";
-    for(auto & it : mOptions->samples){
+    for(const auto & it : mOptions->samples){
         *fOut << it.feature  << "\t";
     }
     *fOut << "class_info\n";
@@ -157,7 +163,7 @@ void HtmlReporterAll::reportAllTables() {
     koFreqVec.reserve(koSet.size());
     std::vector<std::string> tmpVec;
     tmpVec.reserve(smNmVec.size() + 2);
-    for(auto & it : koSet){
+    for(const auto & it : koSet){
         *fOut << it << "\t";
         tmpVec.clear();
         tmpVec.push_back(it);
@@ -193,7 +199,7 @@ void HtmlReporterAll::reportAllTables() {
     if (mOptions->verbose) loginfo("Starting to write all samples KO abundance table");
     
     *fOut << "#NAME\t";
-    for(auto & it : smNmVec){
+    for(const auto & it : smNmVec){
         if(it != smNmVec.back()){
             *fOut << it << "\t";
         } else {
@@ -202,7 +208,7 @@ void HtmlReporterAll::reportAllTables() {
     }
     
     *fOut << "#CLASS:XX\t";
-    for(auto & it : mOptions->samples){
+    for(const auto & it : mOptions->samples){
         if(it.prefix != mOptions->samples.back().prefix){
             *fOut << it.feature  << "\t";
         } else {
@@ -210,7 +216,7 @@ void HtmlReporterAll::reportAllTables() {
         }
     }
 
-    for(auto & it : koSet){
+    for(const auto & it : koSet){
         *fOut << it << "\t";
         for (Sample & sample : mOptions->samples) {
             auto itkf = sample.totalKoFreqUMapResults.find(it);
@@ -233,6 +239,54 @@ void HtmlReporterAll::reportAllTables() {
     fOut->close();
     
     if (mOptions->verbose) loginfo("Finish to write KO abundance table for all samples");
+    
+    fOutNm = joinpath(mOptions->samples.front().path, "All_sample_s2fid_abundance_table_submit2networkanalyst.txt");
+    fOut->open(fOutNm.c_str(), std::ofstream::out);
+    if(!fOut->is_open()) error_exit("Can not open All_sample_s2fid_abundance_table_submit2networkanalyst.txt");
+    if (mOptions->verbose) loginfo("Starting to write all samples s2fid abundance table");
+    
+    *fOut << "#NAME\t";
+    for(const auto & it : smNmVec){
+        if(it != smNmVec.back()){
+            *fOut << it << "\t";
+        } else {
+            *fOut << it << "\n";
+        }
+    }
+    
+    *fOut << "#CLASS:XX\t";
+    for(const auto & it : mOptions->samples){
+        if(it.prefix != mOptions->samples.back().prefix){
+            *fOut << it.feature  << "\t";
+        } else {
+            *fOut << it.feature  << "\n";
+        }
+    }
+
+    for(const auto & it : idSet){
+        *fOut << it << "\t";
+        for (Sample & sample : mOptions->samples) {
+            auto itkf = sample.totalIdFreqUMapResults.find(it);
+            if (itkf == sample.totalIdFreqUMapResults.end()) {
+                if (sample.prefix != mOptions->samples.back().prefix) {
+                    *fOut << 0 << "\t";
+                } else {
+                    *fOut << 0 << "\n";
+                }
+            } else {
+                if (sample.prefix != mOptions->samples.back().prefix) {
+                    *fOut << itkf->second << "\t";
+                } else {
+                    *fOut << itkf->second << "\n";
+                }
+            }
+        }
+    }
+    fOut->flush();
+    fOut->close();
+    
+    if (mOptions->verbose) loginfo("Finish to write s2fid abundance table for all samples");
+    
     
     if (mOptions->mHomoSearchOptions.profiling) {
         //2. for pathway

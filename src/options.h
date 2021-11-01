@@ -346,12 +346,13 @@ public:
         koRate = 0;
         
         nGO = 0;
-        
+        nId = 0;
         transSearchMappedKOReads = 0;
         transSearchMappedKOReads = 0;
+        transSearchMappedIdReads = 0;
         mappedKOReadsRate = 0;
         mappedGOReadsRate = 0;
-        
+        mappedIdReadsRate = 0;
         totalCleanReads = 0;
         cleanReadsRate = 0;
         totalRawReads = 0;
@@ -364,6 +365,7 @@ public:
         nMappedOrgs = 0;
         totalKoFreqUMapResults.clear();
         totalGoFreqUMapResults.clear();
+        totalIdFreqUMapResults.clear();
         rarefactionMap.clear();
         totalPathwayMap.clear();
         totalOrgKOUMap.clear();
@@ -380,10 +382,13 @@ public:
     int nKODb;
     double koRate;
     int nGO;
+    int nId;
     long transSearchMappedKOReads;
     long transSearchMappedGOReads;
+    long transSearchMappedIdReads;
     double mappedKOReadsRate;
     double mappedGOReadsRate;
+    double mappedIdReadsRate;
     long totalCleanReads;
     double cleanReadsRate;
     long totalRawReads;
@@ -398,6 +403,7 @@ public:
     CodonTable tCodonTable;
     std::unordered_map<std::string, uint32 > totalKoFreqUMapResults;
     std::unordered_map<std::string, uint32 > totalGoFreqUMapResults;
+    std::unordered_map<std::string, uint32 > totalIdFreqUMapResults;
     std::map<long, int> rarefactionMap;
     std::unordered_map<std::string, int> totalPathwayMap;
     std::unordered_map<std::string, int> totalOrgKOUMap;
@@ -426,12 +432,16 @@ public:
         sampleKOAbunUMap.clear();
         koUSet.clear();
         goUSet.clear();
+        idUSet.clear();
         nTransMappedKOReads = 0;
         nTransMappedGOReads = 0;
+        nTransMappedIdReads = 0;
         nKODB = 0;
         nGODB = 0;
+        nIdDB = 0;
         nTransMappedKOs = 0;
         nTransMappedGOs = 0;
+        nTransMappedIds = 0;
         sortedKOFreqTupleVector.clear();
         rarefactionMap.clear();
         sortedPathwayFreqTupleVector.clear();
@@ -447,10 +457,13 @@ public:
         sampleKOAbunUMap.clear();
         koUSet.clear();
         goUSet.clear();
+        idUSet.clear();
         nTransMappedKOReads = 0;
         nTransMappedGOReads = 0;
+        nTransMappedIdReads = 0;
         nTransMappedKOs = 0;
         nTransMappedGOs = 0;
+        nTransMappedIds = 0;
         sortedKOFreqTupleVector.clear();
         rarefactionMap.clear();
         sortedPathwayFreqTupleVector.clear();
@@ -483,12 +496,16 @@ public:
     CodonTable codonTable;
     std::unordered_set<std::string> koUSet;
     std::unordered_set<std::string> goUSet;
+    std::unordered_set<std::string> idUSet;
     atomic_long nTransMappedKOReads;
-    long nTransMappedGOReads;
+    atomic_long nTransMappedGOReads;
+    atomic_long nTransMappedIdReads;
     unsigned int nKODB;
     unsigned int nGODB;
+    unsigned int nIdDB;
     unsigned int nTransMappedKOs;
     unsigned int nTransMappedGOs;
+    unsigned int nTransMappedIds;
     int nMappedPathways;
     int nPathwaysDB;
     int nOrgsDB;
@@ -506,15 +523,20 @@ public:
     std::string ko;
     std::string go;
     std::string spec;
+    std::string org;
+    std::string id;
     std::string getKo(){ return ko;};
     std::string getGo(){ return go;};
     std::string getSpec(){ return spec;};
-    
+    std::string getOrg(){ return org;};
+    std::string getId(){ return id;};
 public:
     geneKoGoComb(){
         ko = "UNASSIGNED";
         go = "UNASSIGNED";
         spec = "UNASSIGNED";
+        org = "UNASSIGNED";
+        id = "UNASSIGNED";
     }
 };
 

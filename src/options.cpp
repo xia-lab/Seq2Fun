@@ -543,6 +543,7 @@ void Options::readDB() {
         std::unordered_set<std::string> KUSet;
         std::unordered_set<std::string> orgUSet;
         std::unordered_set<std::string> GOUSet;
+        std::unordered_set<std::string> IdUSet;
         mHomoSearchOptions.filein.open(mHomoSearchOptions.genemap.c_str());
         if(!mHomoSearchOptions.filein.is_open()) error_exit("Can not open gene KO GO species map file : " + mHomoSearchOptions.genemap);        
         const int maxLine = 10000;
@@ -565,7 +566,7 @@ void Options::readDB() {
                 string lineStr(line);
                 splVec.clear();
                 splitStr(lineStr, splVec, "\t");
-                if (splVec.size() == 4) {
+                if (splVec.size() == 6) {
                     auto ko = splVec[1];
                     gkg.ko = ko;
                     if (ko != "UNASSIGNED") {
@@ -578,6 +579,9 @@ void Options::readDB() {
                     }
                     gkg.spec = splVec[3];
                     orgUSet.insert(splVec[3]);
+                    gkg.org = splVec[4];
+                    gkg.id = splVec[5];
+                    IdUSet.insert(splVec[5]);
                     mHomoSearchOptions.fullDbMap[splVec[0]] = gkg;
                 }
             }
@@ -587,9 +591,11 @@ void Options::readDB() {
         transSearch.nKODB = KUSet.size();
         transSearch.nGODB = GOUSet.size();
         transSearch.nOrgsDB = orgUSet.size();
+        transSearch.nIdDB = IdUSet.size();
         KUSet.clear();
         GOUSet.clear();
         orgUSet.clear();
+        IdUSet.clear();
     } else {
         error_exit("Gene KO GO species map file is empty : " + mHomoSearchOptions.genemap);
     }

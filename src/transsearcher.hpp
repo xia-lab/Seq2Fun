@@ -69,6 +69,7 @@ protected:
     std::string outputStr = "";
     std::string extraoutput = "";
     std::string extraoutputGO = "";
+    std::string extraoutputId = "";
     double query_len;
     uint32_t read_count = 0;
 
@@ -113,6 +114,10 @@ protected:
     std::unordered_set<std::string> goUSet;
     std::vector<std::string> tmpGoVec;
     
+    std::vector<std::string> tmpIdVec;
+    std::unordered_set<std::string> idUSet;
+    std::unordered_map<std::string, uint32 > subIdFreqUMap;
+    
     Options * mOptions;   
     BwtFmiDB * tbwtfmiDB;
     
@@ -122,6 +127,7 @@ public:
     std::string transSearch(Read * item1, Read * item2);
     inline std::unordered_map<std::string, uint32 > getSubKoFreqUMap(){return subKoFreqUMap;};
     inline std::unordered_map<std::string, uint32 > getSubGoFreqUMap(){return subGoFreqUMap;};
+    inline std::unordered_map<std::string, uint32 > getSubIdFreqUMap(){return subIdFreqUMap;};
     std::unordered_map<std::string, std::unordered_map<std::string, double> > getSubOrgKOAbunUMap();
     std::unordered_map<std::string, std::vector<std::string> > getSubPathwayUMap();
 };
