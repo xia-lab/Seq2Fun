@@ -39,6 +39,9 @@ private:
     void reportRarefactionKO(ofstream& ofs);
     void reportRarefactionKO3D(ofstream& ofs);
     void reportKOBarPlot(ofstream& ofs);
+    void reportRarefactionS2f(ofstream& ofs);
+    void reportRarefactionS2f3D(ofstream& ofs);
+    void reportS2fBarPlot(ofstream& ofs);
     void reportPathwayBarPlot(ofstream& ofs);
     void reportOrgBarPlot(ofstream& ofs);
     void reportReadsQualityPlot3D(ofstream& ofs);
@@ -50,6 +53,7 @@ private:
     static string list2string2(std::vector<string> & x_vec, int top);
     std::vector<std::string> smNmVec;
     std::vector<std::vector<std::string> > koFreqVec;
+    std::vector<std::vector<std::string> > idFreqVec;
     std::vector<std::vector<std::string> > pathwayFreqVec;
     std::vector<std::vector<std::string> > orgFreqVec;
     

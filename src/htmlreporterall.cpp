@@ -23,7 +23,7 @@ void HtmlReporterAll::printHeader(ofstream& ofs){
 void HtmlReporterAll::printCSS(ofstream& ofs){
     ofs << "<style type=\"text/css\">" << endl;
     ofs << "td {border:1px solid #dddddd;padding:5px;font-size:12px;}" << endl;
-    ofs << "table {border:1px solid #999999;padding:2x;border-collapse:collapse; width:800px}" << endl;
+    ofs << "table {border:1px solid #999999;padding:2x;border-collapse:collapse; width:1000px}" << endl;
     ofs << "table thead{position:fixed;}" << endl;
     ofs << ".display"<< endl;
     ofs << ".col1 {width:400px; font-weight:bold;}" << endl;
@@ -85,6 +85,11 @@ void HtmlReporterAll::outputRow(ofstream& ofs, std::vector<Sample> & samplesVec)
     ofs << "<td class='col1'> Id </td>" <<
             "<td class='col1'> sample </td>" <<
             "<td class='col1'> class </td>" <<
+            "<td class='col1'> n. S2F ids </td>" <<
+            "<td class='col1'> S2F ids rate(%) </td>" <<
+            "<td class='col1'> n. S2F ids(db) </td>" <<
+            "<td class='col1'> n. reads (S2F id) </td>" <<
+            "<td class='col1'> S2F id reads rate(%) </td>" <<
             "<td class='col1'> n. KOs </td>" <<
             "<td class='col1'> KO rate(%) </td>" <<
             "<td class='col1'> n. KOs(db) </td>" <<
@@ -103,7 +108,12 @@ void HtmlReporterAll::outputRow(ofstream& ofs, std::vector<Sample> & samplesVec)
         ofs << "<tr>";
         ofs <<  "<td class='col1'>" + to_string(id) + "</td>" << 
                 "<td class='col1'>" + basename(it.prefix) + "</td>" << 
-                 "<td class='col1'>" + it.feature + "</td>" << 
+                "<td class='col1'>" + it.feature + "</td>" << 
+                "<td class='col1'>" + to_string(it.nId) + "</td>" <<
+                "<td class='col1'>" + to_string(it.idRate) << "</td>" <<
+                "<td class='col1'>" + to_string(it.nIdDb) + "</td>" <<
+                "<td class='col1'>" + to_string(it.transSearchMappedIdReads) << "</td>" <<
+                "<td class='col1'>" + to_string(it.mappedIdReadsRate) << "</td>" <<
                 "<td class='col1'>" + to_string(it.nKO) + "</td>" <<
                 "<td class='col1'>" + to_string(it.koRate) << "</td>" <<
                 "<td class='col1'>" + to_string(it.nKODb) + "</td>" <<
@@ -263,11 +273,65 @@ void HtmlReporterAll::reportAllTables() {
         }
     }
 
-    for(const auto & it : idSet){
+    idFreqVec.reserve(idSet.size());
+    for (const auto & it : idSet) {
         *fOut << it << "\t";
-        for (Sample & sample : mOptions->samples) {
+        tmpVec.clear();
+        tmpVec.push_back(it);
+        for (const Sample & sample : mOptions->samples) {
             auto itkf = sample.totalIdFreqUMapResults.find(it);
             if (itkf == sample.totalIdFreqUMapResults.end()) {
+                if (sample.prefix != mOptions->samples.back().prefix) {
+                    *fOut << 0 << "\t";
+                } else {
+                    *fOut << 0 << "\n";
+                }
+                tmpVec.push_back("0");
+            } else {
+                if (sample.prefix != mOptions->samples.back().prefix) {
+                    *fOut << itkf->second << "\t";
+                } else {
+                    *fOut << itkf->second << "\n";
+                }
+                tmpVec.push_back(to_string(itkf->second));
+            }
+        }
+        idFreqVec.push_back(tmpVec);
+        tmpVec.clear();
+    }
+    fOut->flush();
+    fOut->close();
+    
+    if (mOptions->verbose) loginfo("Finish to write s2fid abundance table for all samples");
+    
+    fOutNm = joinpath(mOptions->samples.front().path, "All_sample_GO_abundance_table.txt");
+    fOut->open(fOutNm.c_str(), std::ofstream::out);
+    if(!fOut->is_open()) error_exit("Can not open All_sample_GO_abundance_table.txt");
+    if (mOptions->verbose) loginfo("Starting to write all samples GO abundance table");
+    
+    *fOut << "#NAME\t";
+    for(const auto & it : smNmVec){
+        if(it != smNmVec.back()){
+            *fOut << it << "\t";
+        } else {
+            *fOut << it << "\n";
+        }
+    }
+    
+    *fOut << "#CLASS:XX\t";
+    for(const auto & it : mOptions->samples){
+        if(it.prefix != mOptions->samples.back().prefix){
+            *fOut << it.feature  << "\t";
+        } else {
+            *fOut << it.feature  << "\n";
+        }
+    }
+
+    for(const auto & it : goSet){
+        *fOut << it << "\t";
+        for (Sample & sample : mOptions->samples) {
+            auto itkf = sample.totalGoFreqUMapResults.find(it);
+            if (itkf == sample.totalGoFreqUMapResults.end()) {
                 if (sample.prefix != mOptions->samples.back().prefix) {
                     *fOut << 0 << "\t";
                 } else {
@@ -285,8 +349,7 @@ void HtmlReporterAll::reportAllTables() {
     fOut->flush();
     fOut->close();
     
-    if (mOptions->verbose) loginfo("Finish to write s2fid abundance table for all samples");
-    
+    if (mOptions->verbose) loginfo("Finish to write GO abundance table for all samples");
     
     if (mOptions->mHomoSearchOptions.profiling) {
         //2. for pathway
@@ -428,6 +491,27 @@ void HtmlReporterAll::printAnnotationResults(ofstream& ofs) {
     if (mOptions->mHomoSearchOptions.profiling) {
         
         ofs << "<div class='section_div'>\n";
+        ofs << "<div class='section_title' onclick=showOrHide('rarefactionS2fid')><a name='summary'>Rarefaction curve (S2F id) <I>" << "</I><font color='#88CCFF' > (click to show/hide) </font></a></div>\n";
+        ofs << "<div id='rarefactionS2fid'>\n";
+        reportRarefactionS2f(ofs);
+        ofs << "</div>\n";
+        ofs << "</div>\n";
+
+        ofs << "<div class='section_div'>\n";
+        ofs << "<div class='section_title' onclick=showOrHide('rarefactionS2fid3d')><a name='summary'>Rarefaction curve (S2F) 3D <I>" << "</I><font color='#88CCFF' > (click to show/hide) </font></a></div>\n";
+        ofs << "<div id='rarefactionS2fid3d'>\n";
+        reportRarefactionS2f3D(ofs);
+        ofs << "</div>\n";
+        ofs << "</div>\n";
+
+        ofs << "<div class='section_div'>\n";
+        ofs << "<div class='section_title' onclick=showOrHide('top_s2fids')><a name='summary'>Top abundant S2F ids</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
+        ofs << "<div id='top_s2fids'>\n";
+        reportS2fBarPlot(ofs);
+        ofs << "</div>\n";
+        ofs << "</div>\n";
+        
+        ofs << "<div class='section_div'>\n";
         ofs << "<div class='section_title' onclick=showOrHide('rarefactionKO')><a name='summary'>Rarefaction curve (KO) <I>" << "</I><font color='#88CCFF' > (click to show/hide) </font></a></div>\n";
         ofs << "<div id='rarefactionKO'>\n";
         reportRarefactionKO(ofs);
@@ -470,6 +554,14 @@ void HtmlReporterAll::printAnnotationResults(ofstream& ofs) {
         ofs << "</div>\n";
         
     } else {
+
+        ofs << "<div class='section_div'>\n";
+        ofs << "<div class='section_title' onclick=showOrHide('top_s2fids')><a name='summary'>Top abundant S2F ids</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
+        ofs << "<div id='top_s2fids'>\n";
+        reportS2fBarPlot(ofs);
+        ofs << "</div>\n";
+        ofs << "</div>\n";
+        
         ofs << "<div class='section_div'>\n";
         ofs << "<div class='section_title' onclick=showOrHide('top_kos')><a name='summary'>Top abundant KOs</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
         ofs << "<div id='top_kos'>\n";
@@ -578,6 +670,160 @@ void HtmlReporterAll::reportRarefactionKO3D(ofstream& ofs) {
 
     ofs << json_str;
     ofs << "</script>" << endl;
+}
+
+void HtmlReporterAll::reportKOBarPlot(ofstream& ofs){
+    
+    ofs << "<div class='subsection_title' onclick=showOrHide('ko_table')><a name='summary'>KOs Table (full list) (click to show/hide) </a></div>\n";
+    ofs << "<div id='ko_table' style='overflow:auto; height: 400px;'>\n";
+    ofs << "<table class='summary_table'>\n";
+    ofs << "<tr><td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "Sample" << "</td>";
+    for(auto & it : smNmVec){
+        ofs << "<td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << it << "</td>";
+    }
+    ofs << "<td class='exlarge' style='font-size:14px;color:#ffffff;background:#008000'>" << "Name" << "</td></tr>\n";
+
+    ofs << "<tr><td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "Class" << "</td>";
+    for (auto & it : mOptions->samples) {
+        ofs << "<td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << it.feature << "</td>";
+    }
+    ofs << "<td class='exlarge' style='font-size:14px;color:#ffffff;background:#008000'>" << "Class_info" << "</td></tr>\n";
+    
+    for (auto & it : koFreqVec) {
+        ofs << "<tr><td class='ko_col'>" << it.at(0) << "</td>";
+        if (it.size() > 2) {
+            for (int i = 1; i < (it.size() - 1); i++) {
+                ofs << "<td class='ko_col'>" << it.at(i) << "</td>";
+            }
+        }
+        ofs << "<td class='exlarge'>" << it.back() << "</td></tr>\n";
+    }
+    
+    ofs << "</table>\n";
+    ofs << "</div>\n";
+}
+
+void HtmlReporterAll::reportRarefactionS2f(ofstream& ofs) {
+
+    ofs << "<div id='s2f_hits_figure'>\n";
+    ofs << "<div class='figure' id='plot_rarefaction_s2f_curve' style='height:400px;'></div>\n";
+    ofs << "</div>\n";
+
+    ofs << "\n<script type=\"text/javascript\">" << endl;
+    string json_str = "var data=[";
+    
+    for (Sample & sample : mOptions->samples) {
+        
+        int top = sample.rarefactionIdMap.size();
+        std::vector<long> x_vec;
+        std::vector<double> y_vec;
+
+        for (auto & it : sample.rarefactionIdMap) {
+            x_vec.push_back(it.first);
+            y_vec.push_back((double) it.second);
+        }
+        
+        json_str += "{";
+        json_str += "x:[" + list2string(x_vec, top) + "],";
+        json_str += "y:[" + list2string(y_vec, top) + "],";
+        json_str += "name: '" + basename(sample.prefix) + "',";
+        json_str += "type:'scatter'";
+        json_str += "},";
+
+        x_vec.clear();
+        y_vec.clear();
+    }
+    json_str.pop_back();
+    json_str += "];\n";
+    json_str += "var layout={title:'Rarefaction curve (S2F id) ', "
+            "xaxis:{title:'Number of reads', automargin: true}, "
+            "yaxis:{title:'Number of S2F ids', automargin: true}};\n";
+    json_str += "Plotly.newPlot('plot_rarefaction_s2f_curve', data, layout);\n";
+
+    ofs << json_str;
+    ofs << "</script>" << endl;
+}
+
+void HtmlReporterAll::reportRarefactionS2f3D(ofstream& ofs) {
+
+    ofs << "<div id='s2f3d_hits_figure'>\n";
+    ofs << "<div class='figure' id='plot_rarefaction_s2f3d_curve' style='height:600px;'></div>\n";
+    ofs << "</div>\n";
+
+    ofs << "\n<script type=\"text/javascript\">" << endl;
+    string json_str = "var data=[";
+    
+    for (Sample & sample : mOptions->samples) {
+        int top = sample.rarefactionIdMap.size();
+        std::vector<long> x_vec;
+        std::vector<double> y_vec;
+        std::vector<string> z_vec;
+
+        for (auto & it : sample.rarefactionIdMap) {
+            x_vec.push_back(it.first);
+            y_vec.push_back((double) it.second);
+            z_vec.push_back(basename(sample.prefix));
+        }
+
+        sample.rarefactionIdMap.clear();
+        
+        json_str += "{";
+        json_str += "x:[" + list2string(z_vec, top) + "],";
+        json_str += "y:[" + list2string(x_vec, top) + "],";
+        json_str += "z:[" + list2string(y_vec, top) + "],";
+        json_str += "name: '" + basename(sample.prefix) + "',";
+        json_str += "type: 'scatter3d',";
+        json_str += "mode: 'lines',";
+        json_str += "line: {width:5},";
+        json_str += "showscale: true";
+        json_str += "},";
+
+        x_vec.clear();
+        y_vec.clear();
+        z_vec.clear();
+    }
+    json_str.pop_back();
+    json_str += "];\n";
+    json_str += "var layout={title:'Rarefaction curve (S2F ids) 3d', "
+            "autosize: 'true',"
+            "width: 800, height: 600,"
+            "scene: {"
+            "xaxis:{title:'Sample', automargin: true}, "
+            "yaxis:{title:'Number of reads', automargin: true}, "
+            "zaxis:{title:'Number of S2F ids', automargin: true}}};\n";
+    json_str += "Plotly.newPlot('plot_rarefaction_s2f3d_curve', data, layout);\n";
+
+    ofs << json_str;
+    ofs << "</script>" << endl;
+}
+
+void HtmlReporterAll::reportS2fBarPlot(ofstream& ofs){
+    
+    ofs << "<div class='subsection_title' onclick=showOrHide('id_table')><a name='summary'>S2F id Table (full list) </a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
+    ofs << "<div id='id_table' style='overflow:auto; height: 400px;'>\n";
+    ofs << "<table class='summary_table'>\n";
+    ofs << "<tr><td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "Sample" << "</td>";
+    for (auto & it : smNmVec) {
+        ofs << "<td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << it << "</td>";
+    }
+
+    ofs << "<tr><td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "Class" << "</td>";
+    for (auto & it : mOptions->samples) {
+        ofs << "<td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << it.feature << "</td>";
+    }
+
+    for (const auto & it : idFreqVec) {
+        ofs << "<tr><td class='ko_col'>" << it.at(0) << "</td>";
+        if (it.size() > 2) {
+            for (int i = 1; i < (it.size() - 1); i++) {
+                ofs << "<td class='ko_col'>" << it.at(i) << "</td>";
+            }
+        }
+        ofs << "<td class='ko_col'>" << it.back() << "</td></tr>\n";
+    }
+
+    ofs << "</table>\n";
+    ofs << "</div>\n";
 }
 
 void HtmlReporterAll::reportReadsQualityPlot3D(ofstream& ofs) {
@@ -757,160 +1003,6 @@ void HtmlReporterAll::reportReadsQualityPlot3D(ofstream& ofs) {
         ofs << json_str;
         ofs << "</script>" << endl;
     }
-}
-
-//void HtmlReporterAll::reportReadsQualityPlot3D(ofstream& ofs) {
-//
-//    ofs << "<div id='reads_quality3d_figure'>\n";
-//    ofs << "<div class='figure' id='plot_reads_quality_3d_curve' style='height:600px;'></div>\n";
-//    ofs << "</div>\n";
-//
-//    ofs << "\n<script type=\"text/javascript\">" << endl;
-//    string json_str = "var data=[";
-//    
-//    std::vector<std::string> labelVec{"preReads1", "preReads2", "postReads1", "postReads2"};
-//    
-//    for (Sample & sample : mOptions->samples) {
-//        
-//        for (int i = 0; i < sample.totoalReadsQualityVec.size(); i++){
-//            auto it = sample.totoalReadsQualityVec.at(i);
-//            int total = get<2>(it);
-//            std::vector<std::string> tmpLabelVec(total, labelVec.at(i));
-//            std::vector<std::string> tmpVec(total, basename(sample.prefix));
-//            json_str += "{";
-//            json_str += "x:[" + list2string(tmpVec, total) + "],";
-//            json_str += "y:[" + get<0>(it) + "], ";
-//            json_str += "z:[" + get<1>(it) + "], ";
-//            json_str += "name: '" + basename(sample.prefix) + "', ";
-//            json_str += "type: 'scatter3d', ";
-//            json_str += "mode: 'lines', ";
-//            json_str += "line: {width:5}, ";
-//            json_str += "showscale: true, ";
-//            json_str += "transforms: [{ type: 'groupby', ";
-//            json_str += "groups: [" + list2string(tmpLabelVec, total) + "], ";
-//            json_str += "styles: [";
-//            json_str += "{target: 'preReads1', value:{line: {dash:'solid'}}}, ";
-//            json_str += "{target: 'preReads2', value:{line: {dash: 'dot'}}}, ";
-//            json_str += "{target: 'postReads1', value:{line: {dash:'solid'}}}, ";
-//            json_str += "{target: 'postReads2', value:{line: {dash: 'dashdot'}}}";
-//            json_str += "]";
-//            json_str += "}]";
-//            json_str += "},";
-//        }
-//        
-//    }
-//    
-//    json_str.pop_back();
-//    json_str += "];\n";
-//    json_str += "var layout={title:'Reads quality 3d', "
-//            "autosize: 'true',"
-//            "width: 800, height: 600,"
-//            "scene: {"
-//            "xaxis:{title:'Sample', automargin: true}, "
-//            "yaxis:{title:'Number of cycles', automargin: true}, "
-//            "zaxis:{title:'Reads quality', automargin: true}}};\n";
-//    json_str += "Plotly.newPlot('plot_reads_quality_3d_curve', data, layout);\n";
-//
-//    ofs << json_str;
-//    ofs << "</script>" << endl;
-//}
-
-//void HtmlReporterAll::reportReadsQualityPlot3D(ofstream& ofs) {
-//
-//    ofs << "<div id='reads_quality3d_figure'>\n";
-//    ofs << "<div class='figure' id='plot_reads_quality_3d_curve' style='height:600px;'></div>\n";
-//    ofs << "</div>\n";
-//
-//    ofs << "\n<script type=\"text/javascript\">" << endl;
-//    string json_str = "var data=[";
-//    
-//    std::vector<std::string> labelVec{"preReads1", "preReads2", "postReads1", "postReads2"};
-//    for (Sample & sample : mOptions->samples) {
-//        std::vector<std::string> z_vec;
-//        std::vector<std::string> x_vec;
-//        std::vector<std::string> y_vec;
-//        std::vector<std::string> tmpLabelVec;
-//        int total = 0;
-//        for(int i = 0; i < sample.totoalReadsQualityVec.size(); i++){
-//            auto it = sample.totoalReadsQualityVec.at(i);
-//            total = get<2>(it);
-//            std::vector<std::string> tmpVec(total, basename(sample.prefix));
-//            z_vec.push_back(list2string(tmpVec, total));
-//            x_vec.push_back(get<0>(it));
-//            y_vec.push_back(get<1>(it));
-//            std::vector<std::string> tmpVec2(total, labelVec.at(i));
-//            tmpLabelVec.push_back(list2string(tmpVec2, total));
-//        }
-//        
-//        json_str += "{";
-//        json_str += "x:[" + list2string2(z_vec, sample.totoalReadsQualityVec.size()) + "],";
-//        json_str += "y:[" + list2string2(x_vec, sample.totoalReadsQualityVec.size()) + "],";
-//        json_str += "z:[" + list2string2(y_vec, sample.totoalReadsQualityVec.size()) + "],";
-//        json_str += "name: '" + basename(sample.prefix) + "',";
-//        json_str += "type: 'scatter3d',";
-//        json_str += "mode: 'lines',";
-//        json_str += "line: {width:5},";
-//        json_str += "showscale: true, ";
-//        json_str += "transforms: [{ type: 'groupby', ";
-//        json_str += "groups: [" + list2string2(tmpLabelVec, sample.totoalReadsQualityVec.size()) + "], ";
-//        json_str += "styles: [";
-//        json_str += "{target: 'preReads1', value:{line: {dash:'solid'}}}, ";
-//        json_str += "{target: 'preReads2', value:{line: {dash: 'dot'}}}, ";
-//        json_str += "{target: 'postReads1', value:{line: {dash: 'dashdot'}}}, ";
-//        json_str += "{target: 'postReads2', value:{line: {dash: 'dot'}}} ";
-//        json_str += "]";
-//        json_str += "}]";
-//        json_str += "},";
-//
-//        x_vec.clear();
-//        y_vec.clear();
-//        z_vec.clear();
-//        tmpLabelVec.clear();
-//    }
-//    json_str.pop_back();
-//    json_str += "];\n";
-//    json_str += "var layout={title:'Reads quality 3d', "
-//            "autosize: 'true',"
-//            "width: 800, height: 600,"
-//            "scene: {"
-//            "xaxis:{title:'Sample', automargin: true}, "
-//            "yaxis:{title:'Number of cycles', automargin: true}, "
-//            "zaxis:{title:'Reads quality', automargin: true}}};\n";
-//    json_str += "Plotly.newPlot('plot_reads_quality_3d_curve', data, layout);\n";
-//
-//    ofs << json_str;
-//    ofs << "</script>" << endl;
-//}
-
-void HtmlReporterAll::reportKOBarPlot(ofstream& ofs){
-    
-    ofs << "<div class='subsection_title' onclick=showOrHide('ko_table')><a name='summary'>KOs Table (full list) (click to show/hide) </a></div>\n";
-    ofs << "<div id='ko_table' style='overflow:auto; height: 400px;'>\n";
-    ofs << "<table class='summary_table'>\n";
-    ofs << "<tr><td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "Sample" << "</td>";
-    for(auto & it : smNmVec){
-        ofs << "<td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << it << "</td>";
-    }
-    ofs << "<td class='exlarge' style='font-size:14px;color:#ffffff;background:#008000'>" << "Name" << "</td></tr>\n";
-
-    ofs << "<tr><td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "Class" << "</td>";
-    for (auto & it : mOptions->samples) {
-        ofs << "<td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << it.feature << "</td>";
-    }
-    ofs << "<td class='exlarge' style='font-size:14px;color:#ffffff;background:#008000'>" << "Class_info" << "</td></tr>\n";
-    
-    for (auto & it : koFreqVec) {
-        ofs << "<tr><td class='ko_col'>" << it.at(0) << "</td>";
-        if (it.size() > 2) {
-            for (int i = 1; i < (it.size() - 1); i++) {
-                ofs << "<td class='ko_col'>" << it.at(i) << "</td>";
-            }
-        }
-        ofs << "<td class='exlarge'>" << it.back() << "</td></tr>\n";
-    }
-    
-    ofs << "</table>\n";
-    ofs << "</div>\n";
 }
 
 void HtmlReporterAll::reportPathwayBarPlot(ofstream& ofs){

@@ -347,6 +347,8 @@ public:
         
         nGO = 0;
         nId = 0;
+        nIdDb = 0;
+        idRate = 0;
         transSearchMappedKOReads = 0;
         transSearchMappedKOReads = 0;
         transSearchMappedIdReads = 0;
@@ -367,6 +369,7 @@ public:
         totalGoFreqUMapResults.clear();
         totalIdFreqUMapResults.clear();
         rarefactionMap.clear();
+        rarefactionIdMap.clear();
         totalPathwayMap.clear();
         totalOrgKOUMap.clear();
         totoalReadsQualityVec.clear();
@@ -383,6 +386,8 @@ public:
     double koRate;
     int nGO;
     int nId;
+    int nIdDb;
+    double idRate;
     long transSearchMappedKOReads;
     long transSearchMappedGOReads;
     long transSearchMappedIdReads;
@@ -405,6 +410,7 @@ public:
     std::unordered_map<std::string, uint32 > totalGoFreqUMapResults;
     std::unordered_map<std::string, uint32 > totalIdFreqUMapResults;
     std::map<long, int> rarefactionMap;
+    std::map<long, int> rarefactionIdMap;
     std::unordered_map<std::string, int> totalPathwayMap;
     std::unordered_map<std::string, int> totalOrgKOUMap;
     std::vector<std::tuple<string, std::string, int> > totoalReadsQualityVec;
@@ -444,6 +450,7 @@ public:
         nTransMappedIds = 0;
         sortedKOFreqTupleVector.clear();
         rarefactionMap.clear();
+        rarefactionIdMap.clear();
         sortedPathwayFreqTupleVector.clear();
         nPathwaysDB = 0;
         sortedOrgFreqVec.clear();
@@ -466,6 +473,7 @@ public:
         nTransMappedIds = 0;
         sortedKOFreqTupleVector.clear();
         rarefactionMap.clear();
+        rarefactionIdMap.clear();
         sortedPathwayFreqTupleVector.clear();
         sortedOrgFreqVec.clear();
         nMappedOrgs = 0;
@@ -513,6 +521,7 @@ public:
     std::vector< std::tuple <std::string, uint32, std::string> > sortedKOFreqTupleVector;
     std::vector<std::tuple<std::string, double, std::string, int, int> > sortedPathwayFreqTupleVector;
     std::map<long, int> rarefactionMap;
+    std::map<long, int> rarefactionIdMap;
     std::vector<std::pair<std::string, int> > sortedOrgFreqVec;
     std::unordered_map<std::string, int> sampleKOAbunUMap;
     bool transSearchFinished;

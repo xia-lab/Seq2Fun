@@ -1128,8 +1128,8 @@ void PairEndProcessor::prepareResults(std::vector< std::unordered_map<std::strin
     }
     
     //6 for s2fid;
-    
-    if(!totalIdFreqVecResults.empty()){
+
+    if (!totalIdFreqVecResults.empty()) {
         std::unordered_map< std::string, uint32 > totalIdFreqUMapResults;
         for (const auto & it : totalIdFreqVecResults) {
             for (const auto & itr : it) {
@@ -1171,8 +1171,52 @@ void PairEndProcessor::prepareResults(std::vector< std::unordered_map<std::strin
         tmpSortedIdFreqVec.clear();
         tmpSortedIdFreqVec.shrink_to_fit();
 
-        totalIdFreqUMapResults.clear();
+        
         tmpSortedIdFreqVec.clear();
+
+        //2. rarefiction curve;
+        if (mOptions->mHomoSearchOptions.profiling && mOptions->transSearch.nTransMappedIdReads > 0) {
+            std::vector<std::string> reshuff_vec;
+            reshuff_vec.reserve(mOptions->transSearch.nTransMappedIdReads);
+            for (auto & it : totalIdFreqUMapResults) {
+                for (int i = 0; i < it.second; i++) {
+                    reshuff_vec.push_back(it.first);
+                }
+            }
+            auto future_rarefaction = std::async(std::launch::async,
+                    [](std::vector<std::string> reshuff_vec,
+                    long total_reads_html_report) {
+                        std::random_shuffle(reshuff_vec.begin(), reshuff_vec.end());
+                        int total = reshuff_vec.size();
+                        double ratio = total_reads_html_report / total;
+                        int step = 50;
+                        int step_size = floor(total / step);
+                        auto first = reshuff_vec.begin();
+                        std::map<long, int> rarefaction_map_tmp;
+                        rarefaction_map_tmp.insert(pair<long, int>(0, 0));
+                        for (int i = 1; i < step; i++) {
+                            auto last = reshuff_vec.begin() + step_size * i;
+                                    std::vector<std::string> rarefaction_vec(first, last);
+                                    std::sort(rarefaction_vec.begin(), rarefaction_vec.end());
+                                    int unic = std::unique(rarefaction_vec.begin(), rarefaction_vec.end()) - rarefaction_vec.begin();
+                                    rarefaction_map_tmp[(long) round((step_size * i) * ratio)] = unic;
+                                    rarefaction_vec.clear();
+                        }
+                        std::sort(reshuff_vec.begin(), reshuff_vec.end());
+                        int unic = std::unique(reshuff_vec.begin(), reshuff_vec.end()) - reshuff_vec.begin();
+                        rarefaction_map_tmp.insert(pair<long, int>(total_reads_html_report, unic));
+                        reshuff_vec.clear();
+                        return (rarefaction_map_tmp);
+                        rarefaction_map_tmp.clear();
+                    }, reshuff_vec, mOptions->mHomoSearchOptions.nTotalReads);
+
+            future_rarefaction.wait();
+            mOptions->transSearch.rarefactionIdMap = future_rarefaction.get();
+            reshuff_vec.clear();
+            reshuff_vec.shrink_to_fit();
+        }
+        
+        totalIdFreqUMapResults.clear();
     }
     
     time_t t_finished = time(NULL);
@@ -1207,5 +1251,8 @@ void PairEndProcessor::prepareResults(std::vector< std::unordered_map<std::strin
         mOptions->samples.at(sampleId).transSearchMappedIdReads = mOptions->transSearch.nTransMappedIdReads;
         mOptions->samples.at(sampleId).mappedIdReadsRate = double(mOptions->samples.at(sampleId).transSearchMappedIdReads * 100) / double(mOptions->samples.at(sampleId).totalRawReads);
         mOptions->samples.at(sampleId).nId = mOptions->transSearch.nTransMappedIds;
+        mOptions->samples.at(sampleId).nIdDb = mOptions->transSearch.nIdDB;
+        mOptions->samples.at(sampleId).idRate = double(mOptions->samples.at(sampleId).nId * 100) / double(mOptions->samples.at(sampleId).nIdDb);
+        mOptions->samples.at(sampleId).rarefactionIdMap = mOptions->transSearch.rarefactionIdMap;
     }
 }
