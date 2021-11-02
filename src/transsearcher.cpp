@@ -15,6 +15,9 @@ TransSearcher::TransSearcher(Options * opt, BwtFmiDB * tbwtfmiDB) {
     tmpGoVec.reserve(100);
     idUSet.clear();
     subIdFreqUMap.clear();
+    tmpGeneKGI.clear();
+    tmpGeneKGIGo.clear();
+    tmpGeneKGIKo.clear();
     blosum_subst = {
         {'A',
             {'S', 'V', 'T', 'G', 'C', 'P', 'M', 'K', 'L', 'I', 'E', 'Q', 'R', 'Y', 'F', 'H', 'D', 'N', 'W'}},
@@ -1348,6 +1351,12 @@ void TransSearcher::doProcess(){
     tmpGOVec.reserve(match_ids.size());
     tmpIdVec.clear();//could use the sampe tmpKOVec;
     tmpIdVec.reserve(match_ids.size());
+    tmpGeneKGI.clear();
+    tmpGeneKGI.reserve(match_ids.size());
+    tmpGeneKGIGo.clear();
+    tmpGeneKGIGo.reserve(match_ids.size());
+    tmpGeneKGIKo.clear();
+    tmpGeneKGIKo.reserve(match_ids.size());
     for (const auto it : match_ids) {
         auto gokoit = mOptions->mHomoSearchOptions.fullDbMap.find(it);
         if (gokoit != mOptions->mHomoSearchOptions.fullDbMap.end()) {
@@ -1358,19 +1367,76 @@ void TransSearcher::doProcess(){
                     tmpKOProteinUMMap.insert(std::pair<std::string, std::string> (tmpGKG.ko, gokoit->first)); //ko protein;
                 }
             }
+            
             if(tmpGKG.go != "UNASSIGNED"){
                 tmpGOVec.emplace_back(tmpGKG.go);
             }
-            if(tmpGKG.id != "UNASSIGNED"){
-                tmpIdVec.emplace_back(tmpGKG.id);
+            
+//            if(tmpGKG.id != "UNASSIGNED"){
+//                tmpIdVec.emplace_back(tmpGKG.id);
+//            }
+            
+            if(tmpGKG.nGos != 0 && tmpGKG.nKos != 0){
+                tmpGeneKGI.emplace_back(tmpGKG);
+            } else {
+                if(tmpGKG.nGos != 0){
+                    tmpGeneKGIGo.emplace_back(tmpGKG);
+                } else {
+                    tmpGeneKGIKo.emplace_back(tmpGKG);
+                    //tmpKOVec.emplace_back(it);//attention
+                }
             }
         }
     }
+    
+    if(!tmpGeneKGI.empty()){
+        sort(tmpGeneKGI.begin(), tmpGeneKGI.end(), 
+            [](const geneKoGoComb & l, const geneKoGoComb & r){
+                return l.nGos > r.nGos || (l.nGos == r.nGos && l.nKos > r.nKos);
+            });
+        int nGs = tmpGeneKGI.at(0).nGos;
+        for (const geneKoGoComb & igk : tmpGeneKGI) {
+            if (igk.nGos == nGs) {
+                tmpIdVec.emplace_back(igk.id);
+            }
+        }
+    } else {
+        
+        if(!tmpGeneKGIGo.empty()){
+            sort(tmpGeneKGIGo.begin(), tmpGeneKGIGo.end(), 
+            [](const geneKoGoComb & l, const geneKoGoComb & r){
+                return l.nGos > r.nGos;
+            });
+            
+            int nGs = tmpGeneKGIGo.at(0).nGos;
+            
+            for(const geneKoGoComb & igk : tmpGeneKGIGo){
+                if(igk.nGos == nGs){
+                    tmpIdVec.emplace_back(igk.id);
+                }
+            }
+            
+        } else {
+            for (const geneKoGoComb & igk : tmpGeneKGIKo) {
+                 tmpIdVec.emplace_back(igk.id);
+            }
+        }
+    }
+    
+    tmpGeneKGI.clear();
+    tmpGeneKGI.shrink_to_fit();
+    tmpGeneKGIGo.clear();
+    tmpGeneKGIGo.shrink_to_fit();
+    tmpGeneKGIKo.clear();
+    tmpGeneKGIKo.shrink_to_fit();
     extraoutput = tmpKOVec.empty() ? "" : getMostFreqStrFromVec(tmpKOVec);
     extraoutputGO = tmpGOVec.empty() ? "" : getMostFreqStrFromVec(tmpGOVec);
     extraoutputId = tmpIdVec.empty() ? "" : getMostFreqStrFromVec(tmpIdVec);
+    tmpKOVec.clear();
     tmpKOVec.shrink_to_fit();
+    tmpGOVec.clear();
     tmpGOVec.shrink_to_fit();
+    tmpIdVec.clear();
     tmpIdVec.shrink_to_fit();
 }
 

@@ -95,6 +95,9 @@ protected:
     std::set<char *> match_ids;
     
     geneKoGoComb tmpGKG;
+    std::vector<geneKoGoComb> tmpGeneKGI;
+    std::vector<geneKoGoComb> tmpGeneKGIKo;
+    std::vector<geneKoGoComb> tmpGeneKGIGo;
     std::vector<std::string> tmpKOVec;
     std::set<std::string> orgSet;
     std::unordered_set<std::string> koUSet;

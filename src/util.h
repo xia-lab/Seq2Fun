@@ -171,6 +171,23 @@ inline std::vector<std::string> split2(const std::string & s, const char delim) 
     return tokens;
 }
 
+inline int countFreq(std::string & s, std::string p){
+    int M = s.length();
+    int N = p.length();
+    int res = 0;
+    for(int i = 0; i <= M - N; i ++){
+        int j;
+        for(j = 0; j < N; j++){
+            if(s[i+j] != p[j]) break;
+        }
+        if(j == N){
+            res++;
+            j = 0;
+        }
+    }
+    return res;
+}
+
 inline string replace(const string& str, const string& src, const string& dest) {
     string ret;
 

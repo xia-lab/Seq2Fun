@@ -567,15 +567,22 @@ void Options::readDB() {
                 splVec.clear();
                 splitStr(lineStr, splVec, "\t");
                 if (splVec.size() == 6) {
+                    //gkg.gid = splVec[0];
                     auto ko = splVec[1];
                     gkg.ko = ko;
                     if (ko != "UNASSIGNED") {
                         KUSet.insert(ko);
+                        gkg.nKos = 0;
+                    } else {
+                        gkg.nKos = 1;
                     }
                     auto go = splVec[2];
                     gkg.go = go;
                     if(go != "UNASSIGNED"){
                         GOUSet.insert(go);
+                        gkg.nGos = countFreq(go, "GO:");
+                    } else {
+                        gkg.nGos = 0;
                     }
                     gkg.spec = splVec[3];
                     orgUSet.insert(splVec[3]);
