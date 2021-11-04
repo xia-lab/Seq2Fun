@@ -765,6 +765,8 @@ public:
     std::vector<Sample> samples;
     int getWorkingSampleId(string & samplePrefix); 
     SeqExtractions mSeqExtractions;
+    //for seqtract
+    bool s2fid4Strct;
 };
 
 #endif

@@ -1441,51 +1441,56 @@ void TransSearcher::doProcess(){
 }
 
 void TransSearcher::postProcess() {
-    if (extraoutput.length() > 0) {
-        outputStr = extraoutput;
-        subKoFreqUMap[extraoutput]++;
-        if (mOptions->verbose) {
-            koUSet.insert(extraoutput);
-        }
-        if (mOptions->mHomoSearchOptions.profiling) {
-            if (tmpKOProteinUMMap.size() == 1) {
-                auto proteinID = tmpKOProteinUMMap.begin()->second;
-                //auto org = mOptions->mHomoSearchOptions.org_map.find(proteinID)->second;
-                auto org = mOptions->mHomoSearchOptions.fullDbMap.find(proteinID)->second.spec;
-                orgSet.insert(org);
-                auto KOAbunPair = std::make_pair(tmpKOProteinUMMap.begin()->first, (double) 1);
-                tmpOrgKOAbunUMMap.insert(std::pair<std::string, std::pair < std::string, double> >(org, KOAbunPair));
-            } else {
-                auto count = tmpKOProteinUMMap.count(extraoutput);
-                double doubleNum = (double) 1 / count;
-                auto it = tmpKOProteinUMMap.equal_range(extraoutput);
-                for (auto itr = it.first; itr != it.second; ++itr) {
-                    auto org = mOptions->mHomoSearchOptions.fullDbMap.find(itr->second)->second.spec;
-                    //auto org = mOptions->mHomoSearchOptions.org_map.find(itr->second)->second;
-                    orgSet.insert(org);
-                    auto KOAbunPair = std::make_pair(it.first->first, doubleNum);
-                    tmpOrgKOAbunUMMap.insert(std::pair<std::string, std::pair < std::string, double > >(org, KOAbunPair));
-                }
-            }
-        }
-    }
-
-    if (extraoutputGO.length() > 0) {
-        outputStr += (outputStr.length() > 0 ? "\t" : "") + extraoutputGO;
-        subGoFreqUMap[extraoutputGO]++;
-        if (mOptions->verbose) {
-            tmpGoVec.clear();
-            splitStr(extraoutputGO, tmpGoVec, ";");
-            goUSet.insert(tmpGoVec.begin(), tmpGoVec.end());
-        }
-    }
-    
-    if(extraoutputId.length() > 0){
-        outputStr += (outputStr.length() > 0 ? "\t" : "") + extraoutputId;
+    if (extraoutputId.length() > 0) {
+        outputStr = extraoutputId;
         subIdFreqUMap[extraoutputId]++;
-        if(mOptions->verbose){
+        if (mOptions->verbose) {
             idUSet.insert(extraoutputId);
         }
+
+        if (extraoutput.length() > 0) {
+            outputStr += "\t" + extraoutput;
+            subKoFreqUMap[extraoutput]++;
+            if (mOptions->verbose) {
+                koUSet.insert(extraoutput);
+            }
+            if (mOptions->mHomoSearchOptions.profiling) {
+                if (tmpKOProteinUMMap.size() == 1) {
+                    auto proteinID = tmpKOProteinUMMap.begin()->second;
+                    //auto org = mOptions->mHomoSearchOptions.org_map.find(proteinID)->second;
+                    auto org = mOptions->mHomoSearchOptions.fullDbMap.find(proteinID)->second.spec;
+                    orgSet.insert(org);
+                    auto KOAbunPair = std::make_pair(tmpKOProteinUMMap.begin()->first, (double) 1);
+                    tmpOrgKOAbunUMMap.insert(std::pair<std::string, std::pair < std::string, double> >(org, KOAbunPair));
+                } else {
+                    auto count = tmpKOProteinUMMap.count(extraoutput);
+                    double doubleNum = (double) 1 / count;
+                    auto it = tmpKOProteinUMMap.equal_range(extraoutput);
+                    for (auto itr = it.first; itr != it.second; ++itr) {
+                        auto org = mOptions->mHomoSearchOptions.fullDbMap.find(itr->second)->second.spec;
+                        //auto org = mOptions->mHomoSearchOptions.org_map.find(itr->second)->second;
+                        orgSet.insert(org);
+                        auto KOAbunPair = std::make_pair(it.first->first, doubleNum);
+                        tmpOrgKOAbunUMMap.insert(std::pair<std::string, std::pair < std::string, double > >(org, KOAbunPair));
+                    }
+                }
+            }
+        } else {
+            outputStr += "\tUNASSIGNED";
+        }
+
+        if (extraoutputGO.length() > 0) {
+            outputStr += "\t" + extraoutputGO;
+            subGoFreqUMap[extraoutputGO]++;
+            if (mOptions->verbose) {
+                tmpGoVec.clear();
+                splitStr(extraoutputGO, tmpGoVec, ";");
+                goUSet.insert(tmpGoVec.begin(), tmpGoVec.end());
+            }
+        } else {
+            outputStr += "\tUNASSIGNED";
+        }
+
     }
 }
 

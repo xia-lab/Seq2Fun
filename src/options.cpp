@@ -960,6 +960,13 @@ void Options::readSampleExtraction(){
                 error_exit("You have duplicated values gene table, please remove the duplicated value: " + lineStr);
             }
             mSeqExtractions.targetGenesVec.emplace_back(lineStr);
+            if(starts_with(lineStr, "s2f_")){
+                s2fid4Strct = true;
+            } else if(starts_with(lineStr, "K")){
+                s2fid4Strct = false;
+            } else {
+                s2fid4Strct = true;
+            }
         }
     }
     file.close();
