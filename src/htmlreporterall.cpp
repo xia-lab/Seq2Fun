@@ -478,7 +478,7 @@ void HtmlReporterAll::report(){
 
 void HtmlReporterAll::printAnnotationResults(ofstream& ofs) {
     ofs << "<div class='section_div'>\n";
-    ofs << "<div class='section_title' onclick=showOrHide('result')><a name='result'>Taxon classfication and Functional quantification results: <I>" << "</I><font color='#88CCFF' > (click to show/hide) </font></a></div>\n";
+    ofs << "<div class='section_title' onclick=showOrHide('result')><a name='result'>Functional quantification results: <I>" << "</I><font color='#88CCFF' > (click to show/hide) </font></a></div>\n";
     ofs << "<div id='result'>\n";
 
     ofs << "<div id='detection_result' style='overflow:auto; height: 400px;'>\n";
