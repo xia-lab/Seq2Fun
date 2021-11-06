@@ -535,8 +535,8 @@ public:
     std::string org;
     std::string id;
     //std::string gid;
-    int nGos;
-    int nKos;
+    unsigned short int nGos;
+    unsigned short int nKos;
     std::string getKo(){ return ko;};
     std::string getGo(){ return go;};
     std::string getSpec(){ return spec;};
