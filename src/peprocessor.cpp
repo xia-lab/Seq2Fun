@@ -185,8 +185,9 @@ bool PairEndProcessor::process() {
     vector< std::unordered_map<std::string, std::unordered_map<std::string, double> > > totalOrgKOFreqVecResults;
     totalOrgKOFreqVecResults.reserve(mOptions->thread);
     vector<std::unordered_map<std::string, uint32> > totalGoFreqVecResults;
-    vector<std::unordered_map<std::string, uint32> > totalIdFreqVecResults;
     totalGoFreqVecResults.reserve(mOptions->thread);
+    vector<std::unordered_map<std::string, uint32> > totalIdFreqVecResults;
+    totalIdFreqVecResults.reserve(mOptions->thread);
     for (int t = 0; t < mOptions->thread; t++) {
         preStats1.push_back(configs[t]->getPreStats1());
         postStats1.push_back(configs[t]->getPostStats1());
@@ -1150,15 +1151,16 @@ void PairEndProcessor::prepareResults(std::vector< std::unordered_map<std::strin
         auto tmpSortedIdFreqVec = sortUMapToVector(totalIdFreqUMapResults);
 
         fileoutname.clear();
-        fileoutname = mOptions->mHomoSearchOptions.prefix + "_s2fGene_abundance.txt";
+        fileoutname = mOptions->mHomoSearchOptions.prefix + "_s2fid_abundance.txt";
         {
             std::ofstream * fout = new std::ofstream();
             fout->open(fileoutname.c_str(), std::ofstream::out);
             if (!fout->is_open()) error_exit("Can not open abundance file: " + fileoutname);
-            if (mOptions->verbose) loginfo("Starting to write s2fGene abundance table");
-            *fout << "#S2f_id" << "\t" << "Reads_count" << "\n";
+            if (mOptions->verbose) loginfo("Starting to write s2f id abundance table");
+            *fout << "#S2f_id\t" << "Reads_count\t" << "s2f_gene\n";
             for (const auto & it : tmpSortedIdFreqVec) {
-                *fout << it.first << "\t" << it.second << "\n";
+                auto ita = mOptions->mHomoSearchOptions.idDbMap.find(it.first);
+                *fout << it.first << "\t" << it.second << "\t" << (ita != mOptions->mHomoSearchOptions.idDbMap.end() ? ita->second : "UNASSIGNED") << "\n";
                 mOptions->transSearch.nTransMappedIdReads += it.second;
             }
 
@@ -1167,7 +1169,7 @@ void PairEndProcessor::prepareResults(std::vector< std::unordered_map<std::strin
             if (fout) delete fout;
             fout = NULL;
         }
-        if (mOptions->verbose) loginfo("Finish to write s2f gene abundance table");
+        if (mOptions->verbose) loginfo("Finish to write s2f id abundance table");
         tmpSortedIdFreqVec.clear();
         tmpSortedIdFreqVec.shrink_to_fit();
 

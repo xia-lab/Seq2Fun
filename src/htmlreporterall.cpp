@@ -200,70 +200,131 @@ void HtmlReporterAll::reportAllTables() {
     }
     fOut->flush();
     fOut->close();
-//    if(fOut) delete fOut;
-//    fOut = NULL;
     
-    fOutNm = joinpath(mOptions->samples.front().path, "All_sample_KO_abundance_table_submit2networkanalyst.txt");
-    fOut->open(fOutNm.c_str(), std::ofstream::out);
-    if(!fOut->is_open()) error_exit("Can not open All_sample_KO_abundance_table_submit2networkanalyst.txt");
-    if (mOptions->verbose) loginfo("Starting to write all samples KO abundance table");
-    
-    *fOut << "#NAME\t";
-    for(const auto & it : smNmVec){
-        if(it != smNmVec.back()){
-            *fOut << it << "\t";
-        } else {
-            *fOut << it << "\n";
-        }
-    }
-    
-    *fOut << "#CLASS:XX\t";
-    for(const auto & it : mOptions->samples){
-        if(it.prefix != mOptions->samples.back().prefix){
-            *fOut << it.feature  << "\t";
-        } else {
-            *fOut << it.feature  << "\n";
-        }
-    }
-
-    for(const auto & it : koSet){
-        *fOut << it << "\t";
-        for (Sample & sample : mOptions->samples) {
-            auto itkf = sample.totalKoFreqUMapResults.find(it);
-            if (itkf == sample.totalKoFreqUMapResults.end()) {
-                if (sample.prefix != mOptions->samples.back().prefix) {
-                    *fOut << 0 << "\t";
-                } else {
-                    *fOut << 0 << "\n";
-                }
-            } else {
-                if (sample.prefix != mOptions->samples.back().prefix) {
-                    *fOut << itkf->second << "\t";
-                } else {
-                    *fOut << itkf->second << "\n";
-                }
-            }
-        }
-    }
-    fOut->flush();
-    fOut->close();
+//    fOutNm = joinpath(mOptions->samples.front().path, "All_sample_KO_abundance_table_submit2networkanalyst.txt");
+//    fOut->open(fOutNm.c_str(), std::ofstream::out);
+//    if(!fOut->is_open()) error_exit("Can not open All_sample_KO_abundance_table_submit2networkanalyst.txt");
+//    if (mOptions->verbose) loginfo("Starting to write all samples KO abundance table");
+//    
+//    *fOut << "#NAME\t";
+//    for(const auto & it : smNmVec){
+//        if(it != smNmVec.back()){
+//            *fOut << it << "\t";
+//        } else {
+//            *fOut << it << "\n";
+//        }
+//    }
+//    
+//    *fOut << "#CLASS:XX\t";
+//    for(const auto & it : mOptions->samples){
+//        if(it.prefix != mOptions->samples.back().prefix){
+//            *fOut << it.feature  << "\t";
+//        } else {
+//            *fOut << it.feature  << "\n";
+//        }
+//    }
+//
+//    for(const auto & it : koSet){
+//        *fOut << it << "\t";
+//        for (Sample & sample : mOptions->samples) {
+//            auto itkf = sample.totalKoFreqUMapResults.find(it);
+//            if (itkf == sample.totalKoFreqUMapResults.end()) {
+//                if (sample.prefix != mOptions->samples.back().prefix) {
+//                    *fOut << 0 << "\t";
+//                } else {
+//                    *fOut << 0 << "\n";
+//                }
+//            } else {
+//                if (sample.prefix != mOptions->samples.back().prefix) {
+//                    *fOut << itkf->second << "\t";
+//                } else {
+//                    *fOut << itkf->second << "\n";
+//                }
+//            }
+//        }
+//    }
+//    fOut->flush();
+//    fOut->close();
     
     if (mOptions->verbose) loginfo("Finish to write KO abundance table for all samples");
     
-    fOutNm = joinpath(mOptions->samples.front().path, "All_sample_s2fid_abundance_table_submit2networkanalyst.txt");
+    //for s2fid abundance table
+    fOutNm = joinpath(mOptions->samples.front().path, "All_sample_s2fid_abundance_table.txt");
     fOut->open(fOutNm.c_str(), std::ofstream::out);
-    if(!fOut->is_open()) error_exit("Can not open All_sample_s2fid_abundance_table_submit2networkanalyst.txt");
+    if(!fOut->is_open()) error_exit("Can not open All_sample_s2fid_abundance_table.txt");
     if (mOptions->verbose) loginfo("Starting to write all samples s2fid abundance table");
     
     *fOut << "#NAME\t";
     for(const auto & it : smNmVec){
+        //if(it != smNmVec.back()){
+            *fOut << it << "\t";
+        //} else {
+            //*fOut << it << "\t";
+        //}
+    }
+    *fOut << "s2f_gene\n";
+    *fOut << "#CLASS:XX\t";
+    for(const auto & it : mOptions->samples){
+        //if(it.prefix != mOptions->samples.back().prefix){
+            *fOut << it.feature  << "\t";
+       // } else {
+            //*fOut << it.feature  << "\n";
+        //}
+    }
+    *fOut << "s2f_gene\n";
+    idFreqVec.reserve(idSet.size());
+    tmpVec.reserve(smNmVec.size() + 2);
+    for (const auto & it : idSet) {
+        *fOut << it << "\t";
+        tmpVec.clear();
+        tmpVec.push_back(it);
+        for (const Sample & sample : mOptions->samples) {
+            auto itkf = sample.totalIdFreqUMapResults.find(it);
+            if (itkf == sample.totalIdFreqUMapResults.end()){
+                //if (sample.prefix != mOptions->samples.back().prefix) {
+                    *fOut << 0 << "\t";
+                //} else {
+                    //*fOut << 0 << "\t";
+                //}
+                tmpVec.push_back("0");
+            } else {
+                //if (sample.prefix != mOptions->samples.back().prefix) {
+                    *fOut << itkf->second << "\t";
+                //} else {
+                    //*fOut << itkf->second << "\t";
+                //}
+                tmpVec.push_back(to_string(itkf->second));
+            }
+        }
+
+        auto ita = mOptions->mHomoSearchOptions.idDbMap.find(it);
+        if (ita != mOptions->mHomoSearchOptions.idDbMap.end()) {
+            *fOut << ita->second << "\n";
+            tmpVec.push_back(ita->second);
+        } else {
+            *fOut << "UNASSIGNED" << "\n";
+            tmpVec.push_back("UNASSIGNED");
+        }
+
+        idFreqVec.push_back(tmpVec);
+        tmpVec.clear();
+    }
+    fOut->flush();
+    fOut->close();
+    
+    fOutNm = joinpath(mOptions->samples.front().path, "All_sample_s2fid_abundance_table_submit2networkanalyst.txt");
+    fOut->open(fOutNm.c_str(), std::ofstream::out);
+    if(!fOut->is_open()) error_exit("Can not open All_sample_s2fid_abundance_table_submit2networkanalyst.txt");
+    if (mOptions->verbose) loginfo("Starting to write all samples s2fid abundance table (submit2networkanalyst)");
+    
+    *fOut << "#NAME\t";
+    for(const auto & it : smNmVec){
         if(it != smNmVec.back()){
             *fOut << it << "\t";
         } else {
             *fOut << it << "\n";
         }
     }
-    
     *fOut << "#CLASS:XX\t";
     for(const auto & it : mOptions->samples){
         if(it.prefix != mOptions->samples.back().prefix){
@@ -587,7 +648,7 @@ void HtmlReporterAll::reportRarefactionKO(ofstream& ofs) {
     ofs << "\n<script type=\"text/javascript\">" << endl;
     string json_str = "var data=[";
     
-    for (Sample & sample : mOptions->samples) {
+    for (const Sample & sample : mOptions->samples) {
         
         int top = sample.rarefactionMap.size();
         std::vector<long> x_vec;
@@ -712,7 +773,7 @@ void HtmlReporterAll::reportRarefactionS2f(ofstream& ofs) {
     ofs << "\n<script type=\"text/javascript\">" << endl;
     string json_str = "var data=[";
     
-    for (Sample & sample : mOptions->samples) {
+    for (const Sample & sample : mOptions->samples) {
         
         int top = sample.rarefactionIdMap.size();
         std::vector<long> x_vec;
@@ -799,32 +860,63 @@ void HtmlReporterAll::reportRarefactionS2f3D(ofstream& ofs) {
 
 void HtmlReporterAll::reportS2fBarPlot(ofstream& ofs){
     
-    ofs << "<div class='subsection_title' onclick=showOrHide('id_table')><a name='summary'>S2F id Table (full list) </a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
+    ofs << "<div class='subsection_title' onclick=showOrHide('id_table')><a name='summary'>S2F id Table (full list) (click to show/hide) </a></div>\n";
     ofs << "<div id='id_table' style='overflow:auto; height: 400px;'>\n";
     ofs << "<table class='summary_table'>\n";
     ofs << "<tr><td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "Sample" << "</td>";
-    for (auto & it : smNmVec) {
+    for(auto & it : smNmVec){
         ofs << "<td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << it << "</td>";
     }
+    ofs << "<td class='exlarge' style='font-size:14px;color:#ffffff;background:#008000'>" << "Name" << "</td></tr>\n";
 
     ofs << "<tr><td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "Class" << "</td>";
     for (auto & it : mOptions->samples) {
         ofs << "<td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << it.feature << "</td>";
     }
-
-    for (const auto & it : idFreqVec) {
+    ofs << "<td class='exlarge' style='font-size:14px;color:#ffffff;background:#008000'>" << "Class_info" << "</td></tr>\n";
+    
+    for (auto & it : idFreqVec) {
         ofs << "<tr><td class='ko_col'>" << it.at(0) << "</td>";
         if (it.size() > 2) {
             for (int i = 1; i < (it.size() - 1); i++) {
                 ofs << "<td class='ko_col'>" << it.at(i) << "</td>";
             }
         }
-        ofs << "<td class='ko_col'>" << it.back() << "</td></tr>\n";
+        ofs << "<td class='exlarge'>" << it.back() << "</td></tr>\n";
     }
-
+    
     ofs << "</table>\n";
     ofs << "</div>\n";
 }
+
+//void HtmlReporterAll::reportS2fBarPlot(ofstream& ofs){
+//    
+//    ofs << "<div class='subsection_title' onclick=showOrHide('id_table')><a name='summary'>S2F id Table (full list) </a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
+//    ofs << "<div id='id_table' style='overflow:auto; height: 400px;'>\n";
+//    ofs << "<table class='summary_table'>\n";
+//    ofs << "<tr><td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "Sample" << "</td>";
+//    for (auto & it : smNmVec) {
+//        ofs << "<td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << it << "</td>";
+//    }
+//
+//    ofs << "<tr><td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "Class" << "</td>";
+//    for (auto & it : mOptions->samples) {
+//        ofs << "<td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << it.feature << "</td>";
+//    }
+//
+//    for (const auto & it : idFreqVec) {
+//        ofs << "<tr><td class='ko_col'>" << it.at(0) << "</td>";
+//        if (it.size() > 2) {
+//            for (int i = 1; i < (it.size() - 1); i++) {
+//                ofs << "<td class='ko_col'>" << it.at(i) << "</td>";
+//            }
+//        }
+//        ofs << "<td class='ko_col'>" << it.back() << "</td></tr>\n";
+//    }
+//
+//    ofs << "</table>\n";
+//    ofs << "</div>\n";
+//}
 
 void HtmlReporterAll::reportReadsQualityPlot3D(ofstream& ofs) {
     

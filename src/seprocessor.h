@@ -79,7 +79,8 @@ private:
     void writeTask(WriterThread* config);
     void prepareResults(std::vector< std::unordered_map<std::string, uint32 > > & totalKoFreqVecResults,
                         std::vector< std::unordered_map<std::string, std::unordered_map<std::string, double> > > & totalOrgKOFreqVecResults,
-                        std::vector< std::unordered_map<std::string, uint32 > > & totalGoFreqVecResults);
+                        std::vector< std::unordered_map<std::string, uint32 > > & totalGoFreqVecResults,
+                        std::vector< std::unordered_map<std::string, uint32 > > & totalIdFreqVecResults);
 
 private:
     Options* mOptions;

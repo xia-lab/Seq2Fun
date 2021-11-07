@@ -590,6 +590,7 @@ void Options::readDB() {
                     gkg.id = splVec[5];
                     IdUSet.insert(splVec[5]);
                     mHomoSearchOptions.fullDbMap[splVec[0]] = gkg;
+                    mHomoSearchOptions.idDbMap[splVec[5]] = splVec[1] + ";" + splVec[2];
                 }
             }
         }

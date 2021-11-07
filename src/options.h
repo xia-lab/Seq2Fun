@@ -586,6 +586,7 @@ public:
     long nTotalReads;
 
     std::map<std::string, geneKoGoComb> fullDbMap;
+    std::map<std::string, std::string> idDbMap;
     //std::map<std::string, std::string> db_map;
     //std::map<std::string, std::string> org_map;
     std::multimap<std::string, std::string> pathway_ko_multimap;

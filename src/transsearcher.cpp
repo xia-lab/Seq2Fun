@@ -1357,7 +1357,7 @@ void TransSearcher::doProcess(){
     tmpGeneKGIGo.reserve(match_ids.size());
     tmpGeneKGIKo.clear();
     tmpGeneKGIKo.reserve(match_ids.size());
-    for (const auto it : match_ids) {
+    for (const auto & it : match_ids) {
         auto gokoit = mOptions->mHomoSearchOptions.fullDbMap.find(it);
         if (gokoit != mOptions->mHomoSearchOptions.fullDbMap.end()) {
             tmpGKG = gokoit->second;
@@ -1602,7 +1602,7 @@ void TransSearcher::ids_from_SI_recursive(SI *si) {
 
 std::unordered_map<std::string, std::unordered_map<std::string, double> > TransSearcher::getSubOrgKOAbunUMap() {
     priOrgKOAbunUMap.clear();
-    for (auto & org : orgSet) {
+    for (const auto & org : orgSet) {
         auto it = subOrgKOAbunUMMap.equal_range(org);
         tmpKOFreqMMap.clear();
         for(auto & itr = it.first; itr != it.second; itr++){
