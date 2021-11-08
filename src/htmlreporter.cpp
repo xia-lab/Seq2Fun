@@ -424,6 +424,105 @@ void HtmlReporter::reportKOBarPlot(ofstream& ofs){
     y_lable_vec.shrink_to_fit();
 }
 
+void HtmlReporter::reportRarefactionId(ofstream& ofs){
+
+    int top = mOptions->transSearch.rarefactionIdMap.size();
+    std::vector<int> x_vec;
+    x_vec.reserve(top);
+    std::vector<double> y_vec;
+    y_vec.reserve(top);
+
+    for (auto & it : mOptions->transSearch.rarefactionIdMap) {
+        x_vec.push_back(it.first);
+        y_vec.push_back((double)it.second);
+    }
+    
+    mOptions->transSearch.rarefactionIdMap.clear();
+    
+    ofs << "<div id='rare_figure'>\n";
+    ofs << "<div class='figure' id='plot_rarefaction_curve_id' style='height:400px;'></div>\n";
+    ofs << "</div>\n";
+    
+    ofs << "\n<script type=\"text/javascript\">" << endl;
+    string json_str = "var data=[";
+
+    json_str += "{";
+    json_str += "x:[" + Stats::list2string(x_vec, top) + "],";
+    json_str += "y:[" + Stats::list2string(y_vec, top) + "],";
+    json_str += "name: 'Rarefaction curve for s2f id  ',";
+    json_str += "type:'scatter',";
+    json_str += "}";
+    json_str += "];\n";
+
+    json_str += "var layout={title:'Rarefaction curve for s2f id', xaxis:{title:'Number of reads', automargin: true}, yaxis:{title:'Number of s2f ids', automargin: true}};\n";
+    json_str += "Plotly.newPlot('plot_rarefaction_curve_id', data, layout);\n";
+
+    ofs << json_str;
+    ofs << "</script>" << endl;
+
+    x_vec.clear();
+    x_vec.shrink_to_fit();
+    y_vec.clear();
+    y_vec.shrink_to_fit();
+}
+
+void HtmlReporter::reportBarPlotId(ofstream& ofs){
+    std::vector<std::string> x_vec;
+    std::vector<double> y_vec;
+    std::vector<std::string> y_lable_vec;
+    
+    int total = mOptions->transSearch.sortedIdFreqTupleVector.size();
+    int top = 50;
+    top = min(top, total);
+
+    for (int i = 0; i < total; i++) {
+        auto it = mOptions->transSearch.sortedIdFreqTupleVector.at(i);
+        x_vec.push_back(get<0>(it));
+        y_vec.push_back((double) get<1>(it));
+        y_lable_vec.push_back(get<2>(it));
+    }
+    
+    mOptions->transSearch.sortedIdFreqTupleVector.clear();
+    mOptions->transSearch.sortedIdFreqTupleVector.shrink_to_fit();
+
+    ofs << "<div class='subsection_title' onclick=showOrHide('plot_id_hits')><a name='summary'>Top-hit s2f id bar plot<font color='#88CCFF' > (click to show/hide) </font></a></div>\n";
+    ofs << "<div class='figure' id='plot_id_hits' style='height:400px;'></div>\n";
+
+    ofs << "\n<script type=\"text/javascript\">" << endl;
+    string json_str = "var data=[";
+
+    json_str += "{";
+    json_str += "x:[" + Stats::list2string(x_vec, top) + "],";
+    json_str += "y:[" + Stats::list2string(y_vec, top) + "],";
+    json_str += "name: 'Number of hitted s2f ids  ',";
+    json_str += "type:'bar',";
+    json_str += "line:{color:'rgba(128,0,128,1.0)', width:1}\n";
+    json_str += "}";
+    json_str += "];\n";
+    json_str += "var layout={title:'Top " + to_string(top) + " abundant s2f ids ', xaxis:{title:'s2f id', automargin: true}, yaxis:{title:'Number of reads hits', automargin: true}};\n";
+    json_str += "Plotly.newPlot('plot_id_hits', data, layout);\n";
+    ofs << json_str;
+    ofs << "</script>" << endl;
+    
+    ofs << "<div class='subsection_title' onclick=showOrHide('top_id_table')><a name='summary'>S2f ids Table (full list)<font color='#88CCFF' > (click to show/hide) </font></a></div>\n";
+    ofs << "<div id='top_id_table' style='overflow-y:auto; height: 400px;'>\n";
+    ofs << "<table class='summary_table'>\n";
+    ofs << "<tr><td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "KO ID" << "</td><td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "Number" << "</td><td class='collarge' style='font-size:14px;color:#ffffff;background:#008000'>" << "Name" << "</td></tr>\n";
+    for (int i = 0; i < total; i++) {
+        ofs << "<tr><td class='ko_col'>" << x_vec[i] << "</td><td class='ko_col'>" << y_vec[i] << "</td><td class='collarge'>" << y_lable_vec[i] << "</td></tr>\n";
+    }
+    
+    ofs << "</table>\n";
+    ofs << "</div>\n";
+    
+    x_vec.clear();
+    x_vec.shrink_to_fit();
+    y_vec.clear();
+    y_vec.shrink_to_fit();
+    y_lable_vec.clear();
+    y_lable_vec.shrink_to_fit();
+}
+
 void HtmlReporter::reportPathway(ofstream& ofs){
     
     int total = mOptions->transSearch.sortedPathwayFreqTupleVector.size();
@@ -570,6 +669,11 @@ void HtmlReporter::printAnnotationResults(ofstream& ofs) {
         outputLongRow(ofs, "Class", mOptions->samples.at(sampleId).feature);
     }
     
+    double ratioId = (mOptions->transSearch.nTransMappedIds * 100) / mOptions->transSearch.nIdDB;
+    std::string rStrResultId = to_string(mOptions->transSearch.nTransMappedIds) + " / " +  to_string(mOptions->transSearch.nIdDB) + " (" + to_string(ratioId) +  "%)";
+    
+    outputLongRow(ofs, "Number of s2f id mapped / total s2f ids in database", rStrResultId);
+    
     double ratio = (mOptions->transSearch.nTransMappedKOs * 100) / mOptions->transSearch.nKODB;
     std::string rStrResult = to_string(mOptions->transSearch.nTransMappedKOs) + " / " +  to_string(mOptions->transSearch.nKODB) + " (" + to_string(ratio) +  "%)";
     
@@ -601,6 +705,21 @@ void HtmlReporter::printAnnotationResults(ofstream& ofs) {
     ofs << "</div>\n";
 
     if (mOptions->mHomoSearchOptions.profiling) {
+        
+        ofs << "<div class='section_div'>\n";
+        ofs << "<div class='section_title' onclick=showOrHide('rarefactionId')><a name='summary'>Rarefaction curve for s2f id</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
+        ofs << "<div id='rarefactionid'>\n";
+        reportRarefactionId(ofs);
+        ofs << "</div>\n";
+        ofs << "</div>\n";
+
+        ofs << "<div class='section_div'>\n";
+        ofs << "<div class='section_title' onclick=showOrHide('top_ids')><a name='summary'>Top abundant s2f ids</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
+        ofs << "<div id='top_ids'>\n";
+        reportBarPlotId(ofs);
+        ofs << "</div>\n";
+        ofs << "</div>\n";
+        
         ofs << "<div class='section_div'>\n";
         ofs << "<div class='section_title' onclick=showOrHide('rarefaction')><a name='summary'>Rarefaction curve</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
         ofs << "<div id='rarefaction'>\n";

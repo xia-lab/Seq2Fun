@@ -913,8 +913,16 @@ void SingleEndProcessor::prepareResults(std::vector< std::unordered_map<std::str
             *fout << "#S2f_id\t" << "Reads_count\t" << "s2f_gene\n";
             for (const auto & it : tmpSortedIdFreqVec) {
                 auto ita = mOptions->mHomoSearchOptions.idDbMap.find(it.first);
-                *fout << it.first << "\t" << it.second << "\t" << (ita != mOptions->mHomoSearchOptions.idDbMap.end() ? ita->second : "UNASSIGNED") << "\n";
-                mOptions->transSearch.nTransMappedIdReads += it.second;
+                if (ita != mOptions->mHomoSearchOptions.idDbMap.end()) {
+                    tmpKOTuple = make_tuple(it.first, it.second, ita->second);
+                    mOptions->transSearch.sortedIdFreqTupleVector.push_back(tmpKOTuple);
+                    *fout << it.first << "\t" << it.second << "\t" << ita->second << "\n";
+                    mOptions->transSearch.nTransMappedIdReads += it.second;
+                } else {
+                    tmpKOTuple = make_tuple(it.first, it.second, "UNASSIGNED");
+                    mOptions->transSearch.sortedIdFreqTupleVector.push_back(tmpKOTuple);
+                    *fout << it.first << "\t" << it.second << "\tUNASSIGNED\n";
+                }
             }
 
             fout->flush();

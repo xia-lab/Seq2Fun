@@ -501,7 +501,7 @@ int main(int argc, char* argv[]) {
         }
 
         if (opt.outputReadsKOMap) {
-            opt.outReadsKOMap = opt.mHomoSearchOptions.prefix + "_readsKOMap.txt.gz";
+            opt.outReadsKOMap = opt.mHomoSearchOptions.prefix + "_readsMap.txt.gz";
         }
 
         stringstream ss;
@@ -629,7 +629,7 @@ int main(int argc, char* argv[]) {
             }
 
             if (opt.outputReadsKOMap) {
-                opt.outReadsKOMap = opt.mHomoSearchOptions.prefix + "_readsKOMap.txt.gz";
+                opt.outReadsKOMap = opt.mHomoSearchOptions.prefix + "_readsMap.txt.gz";
             }
 
             std::stringstream ss;

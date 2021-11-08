@@ -449,6 +449,7 @@ public:
         nTransMappedGOs = 0;
         nTransMappedIds = 0;
         sortedKOFreqTupleVector.clear();
+        sortedIdFreqTupleVector.clear();
         rarefactionMap.clear();
         rarefactionIdMap.clear();
         sortedPathwayFreqTupleVector.clear();
@@ -472,6 +473,7 @@ public:
         nTransMappedGOs = 0;
         nTransMappedIds = 0;
         sortedKOFreqTupleVector.clear();
+        sortedIdFreqTupleVector.clear();
         rarefactionMap.clear();
         rarefactionIdMap.clear();
         sortedPathwayFreqTupleVector.clear();
@@ -519,6 +521,7 @@ public:
     int nOrgsDB;
     int nMappedOrgs;
     std::vector< std::tuple <std::string, uint32, std::string> > sortedKOFreqTupleVector;
+    std::vector< std::tuple <std::string, uint32, std::string> > sortedIdFreqTupleVector;
     std::vector<std::tuple<std::string, double, std::string, int, int> > sortedPathwayFreqTupleVector;
     std::map<long, int> rarefactionMap;
     std::map<long, int> rarefactionIdMap;

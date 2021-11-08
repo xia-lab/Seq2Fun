@@ -41,6 +41,8 @@ private:
     void printAnnotationResults(ofstream & ofs);
     void reportRarefaction(ofstream& ofs);
     void reportKOBarPlot(ofstream& ofs);
+    void reportRarefactionId(ofstream& ofs);
+    void reportBarPlotId(ofstream& ofs);
     void reportPathway(ofstream& ofs);
     void reportSpecies(ofstream& ofs);
     
