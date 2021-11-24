@@ -1357,6 +1357,7 @@ void TransSearcher::doProcess(){
     tmpGeneKGIGo.reserve(match_ids.size());
     tmpGeneKGIKo.clear();
     tmpGeneKGIKo.reserve(match_ids.size());
+    colorCout(match_ids.size(), "green");
     for (const auto & it : match_ids) {
         auto gokoit = mOptions->mHomoSearchOptions.fullDbMap.find(it);
         if (gokoit != mOptions->mHomoSearchOptions.fullDbMap.end()) {
