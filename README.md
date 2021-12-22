@@ -87,20 +87,21 @@ The samples can be download from [here](http://gofile.me/4esAc/UPNLXPxxO)
 
 This file consists of 4 columns and separated by '\t'. The first column is the prefix name of each sample, and the second is the forward reads file, the thrid column is the reverse reads file, and last one is the sample group info. If you have a single-end (SE) reads, remove the reverse reads (third) column. It looks like this:
 ```
-A1.CE2-S1-LT	A1.CE2-S1-LT_R1.fastq.gz	A1.CE2-S1-LT_R2.fastq.gz	control
-A2.CE2-M4-LT	A2.CE2-M4-LT_R1.fastq.gz	A2.CE2-M4-LT_R2.fastq.gz	medium
-B1.CE2-S2-LT	B1.CE2-S2-LT_R1.fastq.gz	B1.CE2-S2-LT_R2.fastq.gz	control
-B2.CE2-M5-LT	B2.CE2-M5-LT_R1.fastq.gz	B2.CE2-M5-LT_R2.fastq.gz	medium
-C1.CE2-S3-LT	C1.CE2-S3-LT_R1.fastq.gz	C1.CE2-S3-LT_R2.fastq.gz	control
-D1.CE2-S4-LT	D1.CE2-S4-LT_R1.fastq.gz	D1.CE2-S4-LT_R2.fastq.gz	control
-D2.CE2-H2-LT	D2.CE2-H2-LT_R1.fastq.gz	D2.CE2-H2-LT_R2.fastq.gz	high
-E1.CE2-S5-LT	E1.CE2-S5-LT_R1.fastq.gz	E1.CE2-S5-LT_R2.fastq.gz	control
-E2.CE2-H3-LT	E2.CE2-H3-LT_R1.fastq.gz	E2.CE2-H3-LT_R2.fastq.gz	high
-F1.CE2-M1-LT	F1.CE2-M1-LT_R1.fastq.gz	F1.CE2-M1-LT_R2.fastq.gz	medium
-F2.CE2-H4-LT	F2.CE2-H4-LT_R1.fastq.gz	F2.CE2-H4-LT_R2.fastq.gz	high
-G1.CE2-M2-LT	G1.CE2-M2-LT_R1.fastq.gz	G1.CE2-M2-LT_R2.fastq.gz	medium
-G2.CE2-H5-LT	G2.CE2-H5-LT_R1.fastq.gz	G2.CE2-H5-LT_R2.fastq.gz	high
-H1.CE2-M3-LT	H1.CE2-M3-LT_R1.fastq.gz	H1.CE2-M3-LT_R2.fastq.gz	medium
+A1.CE2-S1	A1.CE2-S1_R1.fastq.gz	A1.CE2-S1_R1.fastq.gz	control
+A3.CE1-M2	A3.CE1-M2_R1.fastq.gz	A3.CE1-M2_R1.fastq.gz	middle
+A4.CE1-H5	A4.CE1-H5_R1.fastq.gz	A4.CE1-H5_R1.fastq.gz	high
+B1.CE2-S2	B1.CE2-S2_R1.fastq.gz	B1.CE2-S2_R1.fastq.gz	control
+B3.CE1-M3	B3.CE1-M3_R1.fastq.gz	B3.CE1-M3_R1.fastq.gz	middle
+C1.CE2-S3	C1.CE2-S3_R1.fastq.gz	C1.CE2-S3_R1.fastq.gz	control
+C3.CE1-M4	C3.CE1-M4_R1.fastq.gz	C3.CE1-M4_R1.fastq.gz	middle
+D1.CE2-S4	D1.CE2-S4_R1.fastq.gz	D1.CE2-S4_R1.fastq.gz	control
+D3.CE1-M5	D3.CE1-M5_R1.fastq.gz	D3.CE1-M5_R1.fastq.gz	middle
+E1.CE2-S5	E1.CE2-S5_R1.fastq.gz	E1.CE2-S5_R1.fastq.gz	control
+E3.CE1-H1	E3.CE1-H1_R1.fastq.gz	E3.CE1-H1_R1.fastq.gz	high
+F3.CE1-H2	F3.CE1-H2_R1.fastq.gz	F3.CE1-H2_R1.fastq.gz	high
+G3.CE1-H3	G3.CE1-H3_R1.fastq.gz	G3.CE1-H3_R1.fastq.gz	high
+H2.CE1-M1	H2.CE1-M1_R1.fastq.gz	H2.CE1-M1_R1.fastq.gz	middle
+H3.CE1-H4	H3.CE1-H4_R1.fastq.gz	H3.CE1-H4_R1.fastq.gz	high
 ```
 
 #### 2. Running Seq2Fun to quantify RNA-seq reads.
