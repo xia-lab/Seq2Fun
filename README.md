@@ -21,7 +21,7 @@
 * **Support target gene assemble**: new features to extract mapped reads and conduct target gene assemble.
 
 ## Getting started
-### Step 1. Install the package
+### Step 1. Install the software
 Seq2Fun (version 2.0.0) is written in C/C++11 and can be installed on Linux or Mac OS X (with Xcode and Xcode Command Line Tools installed). 
 We have tested Seq2Fun on Ubuntu (16.04 LTS and above) and macOS Catalina.
 
@@ -35,9 +35,9 @@ make
 There are four sub folders under seq2fun - src, bin, database and testdata. The bin folder contains the binary code we just complied. The testdata contains a small test data from the Case Study.
 From within the <code><b> testdata </b></code> folder, issue the following commands:
 ```
-../bin/seq2fun --sampletable sample.txt --tfmi birds_cdhit99_proteins.fmi --genemap birds_protein_ko_species_cdhit99.txt -w 8 --profiling -V --outputMappedCleanReads --outputReadsKOMap
+../bin/seq2fun --sampletable sample.txt --tfmi example.fmi --genemap example_annotation.txt -w 8 --profiling -V --outputMappedCleanReads --outputReadsAnnoMap
 or if you want the trim the first 6 bases
-../bin/seq2fun --sampletable sample.txt --tfmi birds_cdhit99_proteins.fmi --genemap birds_protein_ko_species_cdhit99.txt --trim_front1 6 --trim_front2 6 -w 8 --profiling -V --outputMappedCleanReads --outputReadsAnnoMap
+../bin/seq2fun --sampletable sample.txt --tfmi example.fmi --genemap example_annotation.txt --trim_front1 6 --trim_front2 6 -w 8 --profiling -V --outputMappedCleanReads --outputReadsAnnoMap
 ```
 
 
