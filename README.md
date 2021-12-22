@@ -1,9 +1,9 @@
 ## Description 
 
-**Seq2Fun** is an ultra-fast, all-in-one functional profiling tool directly from RNA-seq raw reads for organisms without reference genomes. For more detailed descriptions of the concept and algorithm, and instructions, please visit the Seq2Fun website **www.seq2fun.ca** .
+**Seq2Fun version 2** is an ultra-fast, all-in-one functional profiling tool directly from RNA-seq raw reads for organisms without reference genomes. For more detailed descriptions of the concept and algorithm, and instructions, please visit the Seq2Fun website **www.seq2fun.ca** .
 
 
-## Key features of Seq2Fun
+## Key features of Seq2Fun version 2
 
 * **Ultra-fast**: Seq2Fun is > 120 times faster (~ 2 million reads / minute) than the conventional RNA-seq workflow.
 
@@ -79,7 +79,7 @@ The samples can be download from here
 
 | Group | Chemicals (dose)	| Number of samples	| Number of reads	|
 | ----- | ----------------- | ----------------- | --------------- |
-| High	| EE2 (31.9 mg/ml)	  |    4	            |     20,000,000	|
+| High	| EE2 (31.9 mg/ml)	  |    5	            |     25,000,000	|
 | Medium| EE2 (2.3 mg/ml)	  |    5	            |     25,000,000	|
 | Control| DMSO         	  |    5	            |     25,000,000	|
 
