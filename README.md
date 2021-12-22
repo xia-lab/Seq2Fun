@@ -50,18 +50,17 @@ Note: * these KOs in the database are KOs assigned to KEGG pathways and they are
 
 | Group | Species | Proteins*	| KOs*	| Filename*	|
 | ----- | ------- | --------- | ----- | --------- |
-| Eukaryotes	| 537	| 1,908,542	| 8,041	| [eukaryotes.tar.gz](http://gofile.me/4esAc/lwO0sfr5c)	|
-| Animals	| 250	| 1,126,598	| 6,723	| [animals.tar.gz](http://gofile.me/4esAc/MfQbpPK02)	|
-| Plants	| 105	| 480,379	| 3,012	| [plants.tar.gz](http://gofile.me/4esAc/jp5UT8xwG")	|
-| Fungi	| 130	| 237,631	| 2,423	| [fungi.tar.gz](http://gofile.me/4esAc/1vo0BgUTU)	|
-| Protists	| 51	| 64,058	| 2,696	| [protists.tar.gz](http://gofile.me/4esAc/Cbb9LcFLS)	|
-| Mammals	| 66	| 378,311	| 5,622	| [mammals.tar.gz](http://gofile.me/4esAc/PYOHX6r1y)	|
-| Birds	| 24	| 87,530	| 4,177	| [birds.tar.gz](http://gofile.me/4esAc/G0QBrqmvn)	|
-| Reptiles	| 12	| 62,677	| 4,342	| [reptiles.tar.gz](http://gofile.me/4esAc/GjjKjzAsL)	|
-| Amphibians	| 3	| 20,880	| 4,207	| [amphibians.tar.gz](http://gofile.me/4esAc/zUegm99hY)	|
-| Fishes	| 39	| 273,691	| 4,308	| [fishes.tar.gz](http://gofile.me/4esAc/VCC2q7LC6)	|
-| Arthropods	| 72	| 196,277	| 3,541	| [arthropods.tar.gz](http://gofile.me/4esAc/tu3lbSwk2)	|
-| Nematodes	| 6	| 13,379	| 2,324	| [nematodes.tar.gz](http://gofile.me/4esAc/6axLombcd)	|
+| Animals | 250	| 1,126,598	| 6,723	| [animals.tar.gz](http://gofile.me/4esAc/MfQbpPK02)	|
+| Plants | 105	| 480,379	| 3,012	| [plants.tar.gz](http://gofile.me/4esAc/jp5UT8xwG")	|
+| Fungi	| 130 | 237,631	| 2,423	| [fungi.tar.gz](http://gofile.me/4esAc/1vo0BgUTU)	|
+| Protists | 51	| 64,058	| 2,696	| [protists.tar.gz](http://gofile.me/4esAc/Cbb9LcFLS)	|
+| Mammals | 66	| 378,311	| 5,622	| [mammals.tar.gz](http://gofile.me/4esAc/PYOHX6r1y)	|
+| Birds	| 24 | 87,530	| 4,177	| [birds.tar.gz](http://gofile.me/4esAc/G0QBrqmvn)	|
+| Reptiles| 12	| 62,677	| 4,342	| [reptiles.tar.gz](http://gofile.me/4esAc/GjjKjzAsL)	|
+| Amphibians| 3	| 20,880	| 4,207	| [amphibians.tar.gz](http://gofile.me/4esAc/zUegm99hY)	|
+| Fishes| 39	| 273,691	| 4,308	| [fishes.tar.gz](http://gofile.me/4esAc/VCC2q7LC6)	|
+| Arthropods| 72	| 196,277	| 3,541	| [arthropods.tar.gz](http://gofile.me/4esAc/tu3lbSwk2)	|
+| Nematodes| 6	| 13,379	| 2,324	| [nematodes.tar.gz](http://gofile.me/4esAc/6axLombcd)	|
 
 ## Case Studies
 This short tutorial below demonstrates how to run Seq2Fun. We use a RNA-seq dataset from a real non-model organism double-crested cormorant (DCCO), treated with ethinyl estradiol (EE2) as a show case.
