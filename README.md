@@ -1,6 +1,7 @@
 ## Description 
 
-**Seq2Fun version 2** is an ultra-fast, all-in-one high resolution functional profiling tool directly from RNA-seq raw reads for organisms without reference genomes. For more detailed descriptions of the concept and algorithm, and instructions, please visit the Seq2Fun website **www.seq2fun.ca** .
+**Seq2Fun version 2** is an ultra-fast, all-in-one high resolution functional profiling tool directly from RNA-seq raw reads for organisms without reference genomes. For more detailed descriptions of the concept and algorithm, and instructions, please visit the Seq2Fun website **www.seq2fun.ca**.
+If you want to use version 1, please download the source code [here](http://gofile.me/4esAc/OY02RFz5y) and database from [here]()
 
 
 ## Key features of Seq2Fun version 2
