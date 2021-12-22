@@ -48,13 +48,13 @@ We provide dozens of pre-built databases that can be downloaded here based on [N
 
 | Group | Species | Proteins*	| ortholog | Filename*	|
 | ----- | ------- | --------- | ----- | --------- |
-| Animals | 436	| 14,072,810	| 30,392 | [animals.tar.gz](http://gofile.me/4esAc/MfQbpPK02)	|
-| Arthropods| 72	| 196,277	| 3,541	| [arthropods.tar.gz](http://gofile.me/4esAc/tu3lbSwk2)	|
-| Mammals | 170	| 6,991,695	| 19,323 | [mammals.tar.gz](http://gofile.me/4esAc/PYOHX6r1y)	|
-| Birds	| 91 | 2,189,089	| 15,537 | [birds.tar.gz](http://gofile.me/4esAc/G0QBrqmvn)	|
-| Reptiles| 24	| 73,6134	| 15,884 | [reptiles.tar.gz](http://gofile.me/4esAc/GjjKjzAsL)	|
-| Amphibians| 9	| 230,744	| 15,199 | [amphibians.tar.gz](http://gofile.me/4esAc/zUegm99hY)|
-| Fishes| 125	| 3,500,392	| 21,427 | [fishes.tar.gz](http://gofile.me/4esAc/VCC2q7LC6)	|
+| Animals | 436	| 14,072,810	| 30,392 | [animals.tar.gz](http://gofile.me/4esAc/UbEtvikec)	|
+| Arthropods| 72	| 196,277	| 3,541	| [arthropods.tar.gz](http://gofile.me/4esAc/UbEtvikec)	|
+| Mammals | 170	| 6,991,695	| 19,323 | [mammals.tar.gz](http://gofile.me/4esAc/UbEtvikec)	|
+| Birds	| 91 | 2,189,089	| 15,537 | [birds.tar.gz](http://gofile.me/4esAc/UbEtvikec)	|
+| Reptiles| 24	| 73,6134	| 15,884 | [reptiles.tar.gz](http://gofile.me/4esAc/UbEtvikec)	|
+| Amphibians| 9	| 230,744	| 15,199 | [amphibians.tar.gz](http://gofile.me/4esAc/UbEtvikec)|
+| Fishes| 125	| 3,500,392	| 21,427 | [fishes.tar.gz](http://gofile.me/4esAc/UbEtvikec)	|
 
 ## Case Studies
 This short tutorial below demonstrates how to run Seq2Fun. We use a RNA-seq dataset from a real non-model organism double-crested cormorant (DCCO), treated with ethinyl estradiol (EE2) as a show case.
@@ -67,7 +67,7 @@ DCCO embryos were exposed via egg injection to EE2, a synthetic estrogen that is
 #### 2. Experimental samples
 
 Each sample was subsampled with 5 million reads, just for demonstration purpose.
-The samples can be download from here
+The samples can be download from [here](http://gofile.me/4esAc/UPNLXPxxO)
 
 | Group | Chemicals (dose)	| Number of samples	| Number of reads	|
 | ----- | ----------------- | ----------------- | --------------- |
@@ -78,9 +78,9 @@ The samples can be download from here
 
 #### 3. Database used
 
-| Group | Number of proteins	| Number of KOs	| Number of species	| Database name |
+| Group | Number of species | Number of proteins | Number of ortholog | Database name |
 | ----- | ----------------    | ------------- | ---------------   | ------------- |
-| Birds	| 87,530          	  |    4,177	    |     24         	  |[birds.tar.gz](http://gofile.me/4esAc/G0QBrqmvn)|   
+| Birds	| 91 | 2,189,089 | 15,537 | [birds.tar.gz](http://gofile.me/4esAc/UbEtvikec) |
 
 ### Running Seq2Fun
 #### 1.Preparing sample.txt file
