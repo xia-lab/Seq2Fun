@@ -1,25 +1,24 @@
 ## Description 
 
-**Seq2Fun version 2** is an ultra-fast, all-in-one functional profiling tool directly from RNA-seq raw reads for organisms without reference genomes. For more detailed descriptions of the concept and algorithm, and instructions, please visit the Seq2Fun website **www.seq2fun.ca** .
+**Seq2Fun version 2** is an ultra-fast, all-in-one high resolution functional profiling tool directly from RNA-seq raw reads for organisms without reference genomes. For more detailed descriptions of the concept and algorithm, and instructions, please visit the Seq2Fun website **www.seq2fun.ca** .
 
 
 ## Key features of Seq2Fun version 2
 
-* **Ultra-fast**: Seq2Fun is > 120 times faster (~ 2 million reads / minute) than the conventional RNA-seq workflow.
+* **Ultra-fast**: > 120 times faster (~ 2 million reads / minute) than the conventional RNA-seq workflow.
 
-* **Extremely low memory cost**: Seq2Fun consumes as little as 2.27 GB memory and can run on a standard PC with 8 threads and 16 GB memory.
+* **Extremely low memory cost**: consumes as little as 2.27 GB memory and can run on a standard PC with 8 threads and 16 GB memory.
 
-* **Reference-free**: Seq2Fun does not require the genome or transcriptome reference of the organism; it is also transcriptome de novo assembly-free.
-
-* **Highly accurate**: Seq2Fun generates KO abundance with R2 value as high as 0.93 comparing with the ground truth.
+* **Reference-free**: does not require the genome or transcriptome reference of the organism; it is also transcriptome de novo assembly-free.
 
 * **All-in-one**: Seq2Fun directly takes raw RNA-seq reads as input and output gene abundance table without any intermediate file writing and loading, making I/O very efficient.
 
-* **Multifunctional**: Seq2Fun generates 6 levels of output files, including KO and GO abundance tables, hit pathway table, hit species table, reads KO table, a html report summarizing these tables and reads quality check, as well as output mapped clean reads for further analysis such as gene assembly.
+* **Multifunctional**: Seq2Fun generates several output files, including ortholog gene bundance tables, a html report summarizing these tables and reads quality check, as well as output mapped clean reads for further analysis such as gene assembly.
 
-* **Flexible**: Seq2Fun supports RNA-seq analysis on particular genes or groups of organisms using customized database.
+* **Flexible**: supports RNA-seq analysis on particular genes or groups of organisms using customized database.
 
-* **Easy to use**: Seq2Fun requires minimal programing skills.
+* **Easy to use**: requires minimal programing skills.
+* **Support target gene assemble**: new features to extract mapped reads and conduct target gene assemble.
 
 ## Getting started
 ### Step 1. Install the package
@@ -38,12 +37,12 @@ From within the <code><b> testdata </b></code> folder, issue the following comma
 ```
 ../bin/seq2fun --sampletable sample.txt --tfmi birds_cdhit99_proteins.fmi --genemap birds_protein_ko_species_cdhit99.txt -w 8 --profiling -V --outputMappedCleanReads --outputReadsKOMap
 or if you want the trim the first 6 bases
-../bin/seq2fun --sampletable sample.txt --tfmi birds_cdhit99_proteins.fmi --genemap birds_protein_ko_species_cdhit99.txt --trim_front1 6 --trim_front2 6 -w 8 --profiling -V --outputMappedCleanReads --outputReadsKOMap
+../bin/seq2fun --sampletable sample.txt --tfmi birds_cdhit99_proteins.fmi --genemap birds_protein_ko_species_cdhit99.txt --trim_front1 6 --trim_front2 6 -w 8 --profiling -V --outputMappedCleanReads --outputReadsAnnoMap
 ```
 
 
 ### Step 3. Database download 
-For most non-model organisms, biological understanding of study outcomes is limited to protein-coding genes with functional annotations such as KEGG pathways, Gene Ontology or PANTHER classification system. Therefore, developing Seq2Fun database to focus on functionally annotated genes such as KOs largely meets the preferred needs of most scientists studying non-model organisms.
+For most non-model organisms, biological understanding of study outcomes is limited to protein-coding genes with functional annotations such as KEGG pathways, Gene Ontology or PANTHER classification system. Therefore, developing Seq2Fun version 2 database to focus on functionally annotated genes such as orthologs largely meets the preferred needs of most scientists studying non-model organisms.
 
 We provide dozens of pre-built databases that can be downloaded here.
 Note: * these KOs in the database are KOs assigned to KEGG pathways and they are only a proportion of whole list of KOs.
