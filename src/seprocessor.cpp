@@ -46,7 +46,7 @@ void SingleEndProcessor::initOutput() {
         return;
     mLeftWriter = new WriterThread(mOptions, mOptions->out1);
 
-    if (mOptions->outputReadsKOMap && !mOptions->outReadsKOMap.empty()) {
+    if (mOptions->outputReadsAnnoMap && !mOptions->outReadsKOMap.empty()) {
         mReadsKOWriter = new WriterThread(mOptions, mOptions->outReadsKOMap);
     }
 }

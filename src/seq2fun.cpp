@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
     cmd.add<string>("in2", 'I', "read2 input file name", false, "");
     cmd.add<string>("prefix", 'X', "prefix name for output files, eg: sample01", false, "");
     cmd.add("outputMappedCleanReads", 0, "enable output mapped clean reads into fastq.gz files, by default is false, using --outputMappedCleanReads to enable it");
-    cmd.add("outputReadsKOMap", 0, "enable output mapped clean reads-KO map into .gz files, by default is false, using --outputReadsKOMap to enable it");
+    cmd.add("outputReadsAnnoMap", 0, "enable output mapped clean reads-annotation map into .gz files, by default is false, using --outputReadsAnnoMap to enable it");
 
     // Homology search;
     cmd.add<string>("genemap", 'D', "gene/protein KO species map", false, "");
@@ -482,7 +482,7 @@ int main(int argc, char* argv[]) {
     opt->mHomoSearchOptions.sampleTable = cmd.get<string>("sampletable");
     opt->mHomoSearchOptions.prefix = cmd.get<string>("prefix");
     opt->outputMappedCleanReads = cmd.exist("outputMappedCleanReads");
-    opt->outputReadsKOMap = cmd.exist("outputReadsKOMap");
+    opt->outputReadsAnnoMap = cmd.exist("outputReadsAnnoMap");
 
     if (opt->mHomoSearchOptions.prefix.empty() && opt->mHomoSearchOptions.sampleTable.empty()) {
         error_exit("You must specify output file using --prefix or using --sampletable, which contains prefix string");
@@ -503,7 +503,7 @@ int main(int argc, char* argv[]) {
             if (opt->isPaired()) opt->out2 = opt->mHomoSearchOptions.prefix + "_mapped_R2.fastq.gz";
         }
 
-        if (opt->outputReadsKOMap) {
+        if (opt->outputReadsAnnoMap) {
             opt->outReadsKOMap = opt->mHomoSearchOptions.prefix + "_readsMap.txt.gz";
         }
 
@@ -632,7 +632,7 @@ int main(int argc, char* argv[]) {
                 if (opt->isPaired()) opt->out2 = it.prefix + "_mapped_R2.fastq.gz";
             }
 
-            if (opt->outputReadsKOMap) {
+            if (opt->outputReadsAnnoMap) {
                 opt->outReadsKOMap = opt->mHomoSearchOptions.prefix + "_readsMap.txt.gz";
             }
 

@@ -90,7 +90,7 @@ void PairEndProcessor::initOutput() {
     if (!mOptions->out2.empty())
         mRightWriter = new WriterThread(mOptions, mOptions->out2);
 
-    if (mOptions->outputReadsKOMap && !mOptions->outReadsKOMap.empty()) {
+    if (mOptions->outputReadsAnnoMap && !mOptions->outReadsKOMap.empty()) {
         mReadsKOWriter = new WriterThread(mOptions, mOptions->outReadsKOMap);
     }
 }

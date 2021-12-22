@@ -681,7 +681,7 @@ public:
     string out2;
     // enable output mapped reads
     bool outputMappedCleanReads;
-    bool outputReadsKOMap;
+    bool outputReadsAnnoMap;
     string outReadsKOMap;
 
     //seq2fun file dir;

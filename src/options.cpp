@@ -30,7 +30,7 @@ Options::Options(){
     verbose = false;
     debug = false;
     outputMappedCleanReads = false;
-    outputReadsKOMap = false;
+    outputReadsAnnoMap = false;
     outReadsKOMap = "";
     seqLen1 = 151;
     seqLen2 = 151;
