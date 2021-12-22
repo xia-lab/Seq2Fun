@@ -40,10 +40,10 @@ We provide dozens of pre-built databases that can be downloaded here based on [N
 
 We are also building more databases such as, plants, fungi... using [JustOrthologs](https://academic.oup.com/bioinformatics/article/35/4/546/5063405).
 
-| Group | Species | Proteins*	| ortholog | Filename*	|
+| Group | Species | Proteins	| ortholog | Filename	|
 | ----- | ------- | --------- | ----- | --------- |
 | Animals | 436	| 14,072,810	| 30,392 | [animals.tar.gz](http://gofile.me/4esAc/UbEtvikec)	|
-| Arthropods| 72	| 196,277	| 3,541	| [arthropods.tar.gz](http://gofile.me/4esAc/UbEtvikec)	|
+| Vertebrates| 434 | 14,072,808	| 30,392 | [vertebrates.tar.gz](http://gofile.me/4esAc/UbEtvikec)	|
 | Mammals | 170	| 6,991,695	| 19,323 | [mammals.tar.gz](http://gofile.me/4esAc/UbEtvikec)	|
 | Birds	| 91 | 2,189,089	| 15,537 | [birds.tar.gz](http://gofile.me/4esAc/UbEtvikec)	|
 | Reptiles| 24	| 73,6134	| 15,884 | [reptiles.tar.gz](http://gofile.me/4esAc/UbEtvikec)	|
