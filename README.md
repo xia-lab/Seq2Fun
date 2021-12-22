@@ -111,9 +111,9 @@ H3.CE1-H4	H3.CE1-H4_R1.fastq.gz	H3.CE1-H4_R1.fastq.gz	high
 Seq2Fun has two output modes: comparative and profiling mode (default).
 The comparative mode produces only the ortholog abundance table, while the profiling mode produces 4 tables 1). ortholog abundance table for all samples, 2). ortholog abundance table for all samples submit to networkanalyst and 3). annotation file sumbit to networkanalyst for downstream analysis, and ortholog abundance table for each sample, 4). mapped clean reads file, and 5). a html report summarizing these tables.
 ```
-S2F_HOME/bin/seq2fun --sampletable sample.txt --tfmi S2F_HOME/database/birds/birds.fmi --genemap S2F_HOME/database/birds/birds_annotation.txt -w 8 --profiling ----outputMappedCleanReads
+S2F_HOME/bin/seq2fun --sampletable sample.txt --tfmi S2F_HOME/database/birds/birds.fmi --genemap S2F_HOME/database/birds/birds_annotation.txt -w 8 --profiling --outputMappedCleanReads
 of if you want to trim the first 6 bases
-S2F_HOME/bin/seq2fun --sampletable sample.txt --tfmi S2F_HOME/database/birds/birds.fmi --genemap S2F_HOME/database/birds/birds_annotation.txt --trim_front1 6 --trim_front2 6 -w 8 --profiling ----outputMappedCleanReads
+S2F_HOME/bin/seq2fun --sampletable sample.txt --tfmi S2F_HOME/database/birds/birds.fmi --genemap S2F_HOME/database/birds/birds_annotation.txt --trim_front1 6 --trim_front2 6 -w 8 --profiling --outputMappedCleanReads
 ```
 
 ### Main results
