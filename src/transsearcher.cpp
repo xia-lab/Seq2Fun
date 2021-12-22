@@ -1099,7 +1099,7 @@ void TransSearcher::flush_output(){
         std::lock_guard<std::mutex> out_lock(m);
 //        mOptions->transSearch.koUSet.insert(koUSet.begin(), koUSet.end());
 //        mOptions->transSearch.goUSet.insert(goUSet.begin(), goUSet.end());
-//        mOptions->transSearch.idUSet.insert(idUSet.begin(), idUSet.end());
+        //mOptions->transSearch.idUSet.insert(idUSet.begin(), idUSet.end());
     }
 //    koUSet.clear();
 //    goUSet.clear();

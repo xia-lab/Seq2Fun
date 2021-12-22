@@ -348,6 +348,7 @@ bool PairEndProcessor::processPairEnd(ReadPairPack* pack, ThreadConfig* config) 
     //std::string koTag = "";
     uint32 * orthId = NULL;
     int mappedReads = 0;
+    std::set<uint32 *> idSet;
 
     int readPassed = 0;
     int mergedCount = 0;
@@ -478,6 +479,9 @@ bool PairEndProcessor::processPairEnd(ReadPairPack* pack, ThreadConfig* config) 
                 }
                 
                 if (orthId != NULL) {
+                    if(mOptions->verbose){
+                       idSet.insert(orthId); 
+                    }
                     mappedReads++;
                     if (mLeftWriter && mRightWriter) {
                         outstr1 += r1->toStringWithTag(orthId);
@@ -511,6 +515,7 @@ bool PairEndProcessor::processPairEnd(ReadPairPack* pack, ThreadConfig* config) 
         auto rCount = long(mOptions->transSearch.nTransMappedIdReads);
 //        auto kCount = mOptions->transSearch.koUSet.size();
 //        auto gCount = mOptions->transSearch.goUSet.size();
+        mOptions->transSearch.idUSet.insert(idSet.begin(), idSet.end());
         auto iCount = mOptions->transSearch.idUSet.size();
         logMtx.unlock();
         std::string str = "Mapped \033[1;31m" + std::to_string(rCount) + "\033[0m reads to \033[1;32m" + std::to_string(iCount) + "\033[0m s2f ids!";
@@ -522,6 +527,8 @@ bool PairEndProcessor::processPairEnd(ReadPairPack* pack, ThreadConfig* config) 
 
     mappedReads = 0;
 
+    idSet.clear();
+    
     // if splitting output, then no lock is need since different threads write different files
     if (!mOptions->split.enabled)
         mOutputMtx.lock();

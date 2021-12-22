@@ -507,7 +507,7 @@ public:
     CodonTable codonTable;
     std::unordered_set<std::string> koUSet;
     std::unordered_set<std::string> goUSet;
-    std::unordered_set<uint32> idUSet;
+    std::set<uint32 *> idUSet;
     atomic_long nTransMappedKOReads;
     atomic_long nTransMappedGOReads;
     atomic_long nTransMappedIdReads;

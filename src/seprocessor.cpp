@@ -223,6 +223,7 @@ bool SingleEndProcessor::processSingleEnd(ReadPack* pack, ThreadConfig* config){
     std::string outReadsKOMapStr = "";
     //std::string koTag = "";
     uint32* orthId = NULL;
+    std::set<uint32 *> idSet;
     
     int mappedReads = 0;
     
@@ -295,6 +296,9 @@ bool SingleEndProcessor::processSingleEnd(ReadPack* pack, ThreadConfig* config){
             config->getTransSearcher()->transSearch(r1, orthId);
 
             if (orthId != NULL) {
+                if(mOptions->verbose){
+                    idSet.insert(orthId);
+                }
                 mappedReads++;
                 if (mLeftWriter) {
                     outstr += r1->toStringWithTag(orthId);
@@ -322,6 +326,7 @@ bool SingleEndProcessor::processSingleEnd(ReadPack* pack, ThreadConfig* config){
         mOptions->transSearch.nTransMappedIdReads += mappedReads;
         logMtx.lock();
         auto rCount = long(mOptions->transSearch.nTransMappedIdReads);
+        mOptions->transSearch.idUSet.insert(idSet.begin(), idSet.end());
         auto iCount = mOptions->transSearch.idUSet.size();
 //        auto kCount = mOptions->transSearch.koUSet.size();
 //        auto gCount = mOptions->transSearch.goUSet.size();
@@ -333,7 +338,7 @@ bool SingleEndProcessor::processSingleEnd(ReadPack* pack, ThreadConfig* config){
     }
 
     mappedReads = 0;
-        
+    idSet.clear();
     // if splitting output, then no lock is need since different threads write different files
     if(!mOptions->split.enabled)
         mOutputMtx.lock();
