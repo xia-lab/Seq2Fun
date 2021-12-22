@@ -107,84 +107,56 @@ H3.CE1-H4	H3.CE1-H4_R1.fastq.gz	H3.CE1-H4_R1.fastq.gz	high
 #### 2. Running Seq2Fun to quantify RNA-seq reads.
 
 Seq2Fun has two output modes: comparative and profiling mode (default).
-The comparative mode produces only the KO abundance table, while the profiling mode produces 4 tables 1). KO abundance table for all samples, and KO abundance table for each sample, 2). hit pathway, 3). hit species, 4). reads KO table, and 5). a html report summarizing these tables summarizing these tables.
+The comparative mode produces only the ortholog abundance table, while the profiling mode produces 4 tables 1). ortholog abundance table for all samples, 2). ortholog abundance table for all samples submit to networkanalyst and 3). annotation file sumbit to networkanalyst for downstream analysis, and ortholog abundance table for each sample, 4). mapped clean reads file, and 5). a html report summarizing these tables.
 ```
-S2F_HOME/bin/seq2fun --sampletable sample.txt --tfmi S2F_HOME/database/birds/birds_cdhit99_proteins.fmi --genemap S2F_HOME/database/birds/birds_protein_ko_species_cdhit99.txt -w 8 --profiling
+S2F_HOME/bin/seq2fun --sampletable sample.txt --tfmi S2F_HOME/database/birds/birds.fmi --genemap S2F_HOME/database/birds/birds_annotation.txt -w 8 --profiling ----outputMappedCleanReads
 of if you want to trim the first 6 bases
-S2F_HOME/bin/seq2fun --sampletable sample.txt --tfmi S2F_HOME/database/birds/birds_cdhit99_proteins.fmi --genemap S2F_HOME/database/birds/birds_protein_ko_species_cdhit99.txt --trim_front1 6 --trim_front2 6 -w 8 --profiling
+S2F_HOME/bin/seq2fun --sampletable sample.txt --tfmi S2F_HOME/database/birds/birds.fmi --genemap S2F_HOME/database/birds/birds_annotation.txt --trim_front1 6 --trim_front2 6 -w 8 --profiling ----outputMappedCleanReads
 ```
 
 ### Results
-#### 1 KO abundance for all the samples table (KO_abundance.txt)
+#### 1  abundance for all the samples table (All_sample_s2fid_abundance_table.txt)
 
-This table has KO id, sample names and KO name separated by '\t'. (how many reads have assigned to the homology KO), the full name of the assigned KO. It looks like this:
+This table has sample names, meta data and s2fid, KO, GO, gene symbol and gene description separated by '\t'. (how many reads have assigned to the s2fid/ortholog). It looks like this:
 ```
-#Name   A1.CE2-S1-LT    A2.CE2-M4-LT    B1.CE2-S2-LT    B2.CE2-M5-LT    C1.CE2-S3-LT    D1.CE2-S4-LT    D2.CE2-H2-LT    E1.CE2-S5-LT    E2.CE2-H3-LT    F1.CE2-M1-LT    F2.CE2-H4-LT    G1.CE2-M2-LT    G2.CE2-H5-LT    H1.CE2-M3-LT    KO_name
-#Class	control		medium		control		medium		control		control		high		control		high		medium		high		medium		high		medium		class_info	
-K00002	118             96              386             131             147             141             106             129             120             98              148             117             136             121             AKR1A1, adh; alcohol dehydrogenase (NADP+) [EC:1.1.1.2]
-K00006	629             604             235             648             664             506             628             499             670             455             838             615             579             521             GPD1; glycerol-3-phosphate dehydrogenase (NAD+) [EC:1.1.1.8]
-K00008	971             755             715             770             1122            770             1058            1010            1023            829             1055            1351            954             1139            SORD, gutB; L-iditol 2-dehydrogenase [EC:1.1.1.14]
-K00010	17              18              31              17              17              14              15              17              17              17              15              9               20              25              iolG; myo-inositol 2-dehydrogenase   D-chiro-inositol 1-dehydrogenase [EC:1.1.1.18 1.1.1.369]
-K00011	276             292             1581            303             315             336             290             305             353             263             316             279             290             296             AKR1B; aldehyde reductase [EC:1.1.1.21]
-K00012	130             94              609             112             111             134             127             344             103             193             163             382             116             299             UGDH, ugd; UDPglucose 6-dehydrogenase [EC:1.1.1.22]
+#NAME	A1.CE2-S1	A3.CE1-M2	A4.CE1-H5	B1.CE2-S2	B3.CE1-M3	C1.CE2-S3	C3.CE1-M4	D1.CE2-S4	D3.CE1-M5	E1.CE2-S5	E3.CE1-H1	F3.CE1-H2	G3.CE1-H3	H2.CE1-M1	H3.CE1-H4	annotation
+#CLASS:XX	control	middle	high	control	middle	control	middle	control	middle	control	high	high	high	middle	high	-
+s2f_10	596	723	689	326	721	728	831	459	407	394	616	633	499	823	681	K13524|GO:0003824;GO:0003867;GO:0005739;GO:0008483;GO:0009448;GO:0009450;GO:0016740;GO:0030170;GO:0032144;GO:0034386;GO:0042135;GO:0042802;GO:0047298;GO:0048148;|ABAT|4-aminobutyrate aminotransferase
+s2f_100	6	17	22	1	22	7	27	5	10	6	13	11	5	17	24	K04137|GO:0004930;GO:0004935;GO:0004937;GO:0005886;GO:0007165;GO:0007186;GO:0016020;GO:0016021;GO:0071875;|ADRA1D|adrenoceptor alpha 1d
+s2f_1000	164	107	103	66	148	143	140	104	94	129	92	91	105	123	147	K00344|GO:0008270;GO:0016491|CRYZ|crystallin zeta
+s2f_10000	39	52	56	51	77	46	68	45	58	42	72	77	61	79	60	K10105|GO:0006464;GO:0009249|LIPT1|lipoyltransferase 1
+s2f_10001	156	323	283	211	324	134	457	214	439	202	368	362	335	309	259	K14565|GO:0001094;GO:0001650;GO:0005634;GO:0005654;GO:0005730;GO:0005732;GO:0005829;GO:0015030;GO:0030515;GO:0031428;GO:0032040;GO:0042254;GO:0048254;GO:0051117;GO:0070761;|NOP58|nop58 ribonucleoprotein
+s2f_10002	46	79	83	54	85	46	101	63	122	39	76	90	90	89	48	K25166|GO:0008168;GO:0016740;GO:0032259;|METTL13|methyltransferase 13, eef1a lysine and n-terminal methyltransferase
+s2f_10003	53	110	113	126	98	46	110	63	132	45	125	132	105	125	108	K05292|GO:0005737;GO:0016255;GO:0030182;GO:0031410;GO:0042765;GO:0051402;|PIGT|phosphatidylinositol glycan anchor biosynthesis class t
+s2f_10004	43	84	77	85	71	57	81	72	117	58	64	93	87	77	82	K03256|GO:0005634;GO:0008033;GO:0030488;GO:0031515;GO:0080009;|TRMT6|trna methyltransferase 6 non-catalytic subunit
+s2f_10005	58	92	96	281	83	57	79	63	86	51	124	119	92	93	112	K02144|GO:0000221;GO:0006811;GO:0046961;GO:1902600;|ATP6V1H|atpase h+ transporting v1 subunit h
+s2f_10006	123	167	174	149	185	87	167	119	149	72	196	196	143	179	198	K23387|GO:0045048|GET4|guided entry of tail-anchored proteins factor 4
+s2f_10007	28	67	45	35	51	35	52	47	49	34	60	53	74	50	50	K00586|GO:0004164;GO:0008168;GO:0016740;GO:0017183;GO:0032259;|DPH5|diphthamide biosynthesis 5
+s2f_10008	125	124	118	149	143	100	177	127	180	91	130	159	147	136	122	K20367|GO:0005783;GO:0006888;GO:0006890;GO:0016020;GO:0016021;GO:0016192;GO:0030134;GO:0030173;GO:0030176;GO:0033116;|ERGIC3|ergic and golgi 3
+s2f_10009	14	37	47	46	44	21	52	48	53	26	38	48	39	35	43	K14535|GO:0005634;GO:0006352;GO:0046982|TAF9B|tata-box binding protein associated factor 9b
+s2f_1001	110	226	244	674	228	108	223	218	461	159	216	277	353	180	205	K01647|GO:0005759;GO:0016740;GO:0046912|CS|citrate synthase
+s2f_10010	1	3	3	34	5	1	2	3	30	1	4	8	8	1	2	U|GO:0007212;GO:0016020;GO:0016021;GO:0032051;GO:0048268;|NSG2|neuronal vesicle trafficking associated 2
+s2f_10012	1	1	3	3	2	2	5	0	1	2	1	1	4	2	2	K09208|GO:0000978;GO:0000981;GO:0001228;GO:0003677;GO:0006357;GO:0008285;GO:0045647;GO:0045944;GO:1990837;|KLF13|kruppel like factor 13
+s2f_10013	95	138	127	141	138	106	129	93	142	95	173	139	157	121	133	U|GO:0005764;GO:0005765;GO:0016020;GO:0016192;GO:0035658;GO:0043231;|CCZ1|ccz1 homolog, vacuolar protein trafficking and biogenesis associated
+s2f_10014	5	11	17	36	13	10	18	14	30	12	17	28	27	20	15	K10417|GO:0005737;GO:0005813;GO:0005815;GO:0005856;GO:0005868;GO:0005874;GO:0005929;GO:0005930;GO:0007368;GO:0031514;GO:0035721;GO:0035735;GO:0035869;GO:0036064;GO:0045177;GO:0045504;GO:0060271;GO:1902017;|DYNC2LI1|dynein cytoplasmic 2 light intermediate chain 1
+s2f_10015	197	248	217	197	207	173	233	173	193	168	225	238	218	216	176	K15119|GO:0016020;GO:0016021;GO:0055085;|SLC25A39|solute carrier family 25 member 39
+s2f_10017	18	37	55	34	48	24	49	36	67	20	50	44	55	57	48	K18342|GO:0004843;GO:0006508;GO:0008233;GO:0008234|OTUD6B|otu K23387|GO:0045048|GET4|guided entry of tail-anchored proteins fact
 ...
 ```
-#### 2. Hit pathway table (A1.CE2-S1_pathway_hits.txt).
-
-This table has five columns separated by '\t', pathway_id, pathway_name, KO_id (which hit KOs are mapped to this pathway), KO_count and KO_name. It looks like this:
-```
-pathway_id	pathway_name                    KO_id	KO_count	KO_name
-map00010	Glycolysis_/_Gluconeogenesis	K00002	118             AKR1A1, adh; alcohol dehydrogenase (NADP+) [EC:1.1.1.2]
-map00010	Glycolysis_/_Gluconeogenesis	K00016	12019           LDH, ldh; L-lactate dehydrogenase [EC:1.1.1.27]
-map00010	Glycolysis_/_Gluconeogenesis	K00121	573             frmA, ADH5, adhC; S-(hydroxymethyl)glutathione dehydrogenase   alcohol dehydrogenase [EC:1.1.1.284 1.1.1.1]
-map00010	Glycolysis_/_Gluconeogenesis	K00128	3721            ALDH; aldehyde dehydrogenase (NAD+) [EC:1.2.1.3]
-map00010	Glycolysis_/_Gluconeogenesis	K00129	13              E1.2.1.5; aldehyde dehydrogenase (NAD(P)+) [EC:1.2.1.5]
-map00010	Glycolysis_/_Gluconeogenesis	K00134	29734           GAPDH, gapA; glyceraldehyde 3-phosphate dehydrogenase [EC:1.2.1.12]
-map00010	Glycolysis_/_Gluconeogenesis	K00149	4504            ALDH9A1; aldehyde dehydrogenase family 9 member A1 [EC:1.2.1.47 1.2.1.3]
-...             ...                             ...     ...             ...
-```
-#### 3. Hit species table (A1.CE2-S1_species_hits.txt).
-
-This table has two columns separated by '\t', species name and number of KOs (sorted by descending order) assigned to this species.
-```
-species                     number_of_KOs
-Nipponia_nippon             1470
-Egretta_garzetta            1200
-Pygoscelis_adeliae          1187
-Columba_livia               1057
-Athene_cunicularia          1048
-Apteryx_mantelli_mantelli   840
-Empidonax_traillii          820
-Falco_cherrug               779
-Gallus_gallus               658
-Anas_platyrhynchos          564
-Anser_cygnoides_domesticus  542
-Falco_peregrinus            510
-...                     ...
-```
 #### 4. Reads KO table (A1.CE2-S1_reads_ko.txt).
-This table has three columns separated by '\t', reads_id, KO_id (which homology KO assigned) and KO_name.
+This table has three columns separated by '\t', s2f_id/ortholog, reads_count(how many reads mapped to the s2f_id) and annotation.
 ```
-reads_id                                KO_id	KO_name
-A00266:275:HLFTWDSXX:2:1101:10013:26537	K14736	TF; transferrin
-A00266:275:HLFTWDSXX:2:1101:10122:16235	K14736	TF; transferrin
-A00266:275:HLFTWDSXX:2:1101:10122:17174	K03883	ND5; NADH-ubiquinone oxidoreductase chain 5 [EC:7.1.1.2]
-A00266:275:HLFTWDSXX:2:1101:10122:2174	K00602	purH; phosphoribosylaminoimidazolecarboxamide formyltransferase / IMP cyclohydrolase [EC:2.1.2.3 3.5.4.10]
-A00266:275:HLFTWDSXX:2:1101:10140:28510	K00799	GST, gst; glutathione S-transferase [EC:2.5.1.18]
-A00266:275:HLFTWDSXX:2:1101:10149:34225	K06238	COL6A; collagen, type VI, alpha
-A00266:275:HLFTWDSXX:2:1101:10185:19382	K03883	ND5; NADH-ubiquinone oxidoreductase chain 5 [EC:7.1.1.2]
-A00266:275:HLFTWDSXX:2:1101:10212:16423	K11188	PRDX6; peroxiredoxin 6, 1-Cys peroxiredoxin [EC:1.11.1.7 1.11.1.15 3.1.1.-]
-A00266:275:HLFTWDSXX:2:1101:10212:36777	K08737	MSH6; DNA mismatch repair protein MSH6
-A00266:275:HLFTWDSXX:2:1101:10294:9236	K02938	RP-L8e, RPL8; large subunit ribosomal protein L8e
-A00266:275:HLFTWDSXX:2:1101:10321:31735	K14736	TF; transferrin
-A00266:275:HLFTWDSXX:2:1101:10339:16297	K06171	NCSTN; nicastrin
-A00266:275:HLFTWDSXX:2:1101:10375:24972	K04660	DCN; decorin
-A00266:275:HLFTWDSXX:2:1101:10402:14121	K02132	ATPeF1A, ATP5A1, ATP1; F-type H+-transporting ATPase subunit alpha
-A00266:275:HLFTWDSXX:2:1101:10420:21198	K03231	EEF1A; elongation factor 1-alpha
-A00266:275:HLFTWDSXX:2:1101:10438:27179	K00149	ALDH9A1; aldehyde dehydrogenase family 9 member A1 [EC:1.2.1.47 1.2.1.3]
-A00266:275:HLFTWDSXX:2:1101:1045:22498	K00255	ACADL; long-chain-acyl-CoA dehydrogenase [EC:1.3.8.8]
-A00266:275:HLFTWDSXX:2:1101:1045:33144	K00134	GAPDH, gapA; glyceraldehyde 3-phosphate dehydrogenase [EC:1.2.1.12]
-A00266:275:HLFTWDSXX:2:1101:10465:27508	K05692	ACTB_G1; actin beta/gamma 1
+#s2f_id	Reads_cout	annotation
+s2f_10	596	K13524|GO:0003824;GO:0003867;GO:0005739;GO:0008483;GO:0009448;GO:0009450;GO:0016740;GO:0030170;GO:0032144;GO:0034386;GO:0042135;GO:0042802;GO:0047298;GO:0048148;|ABAT|4-aminobutyrate aminotransferase
+s2f_100	6	K04137|GO:0004930;GO:0004935;GO:0004937;GO:0005886;GO:0007165;GO:0007186;GO:0016020;GO:0016021;GO:0071875;|ADRA1D|adrenoceptor alpha 1d
+s2f_1000	164	K00344|GO:0008270;GO:0016491|CRYZ|crystallin zeta
+s2f_10000	39	K10105|GO:0006464;GO:0009249|LIPT1|lipoyltransferase 1
+s2f_10001	156	K14565|GO:0001094;GO:0001650;GO:0005634;GO:0005654;GO:0005730;GO:0005732;GO:0005829;GO:0015030;GO:0030515;GO:0031428;GO:0032040;GO:0042254;GO:0048254;GO:0051117;GO:0070761;|NOP58|nop58 ribonucleoprotein
+s2f_10002	46	K25166|GO:0008168;GO:0016740;GO:0032259;|METTL13|methyltransferase 13, eef1a lysine and n-terminal methyltransferase
+s2f_10003	53	K05292|GO:0005737;GO:0016255;GO:0030182;GO:0031410;GO:0042765;GO:0051402;|PIGT|phosphatidylinositol glycan anchor biosynthesis class t
+s2f_10004	43	K03256|GO:0005634;GO:0008033;GO:0030488;GO:0031515;GO:0080009;|TRMT6|trna methyltransferase 6 non-catalytic subunit
+s2f_10005	58	K02144|GO:0000221;GO:0006811;GO:0046961;GO:1902600;|ATP6V1H|atpase h+ transporting v1 subunit h
+s2f_10006	123	K23387|GO:0045048|GET4|guided entry of tail-anchored proteins factor 4
 ...                                     ...     ...
 ```
 
