@@ -37,6 +37,7 @@ make
 For most non-model organisms, biological understanding of study outcomes is limited to protein-coding genes with functional annotations such as KEGG pathways, Gene Ontology or PANTHER classification system. Therefore, developing Seq2Fun version 2 database to focus on functionally annotated genes such as orthologs largely meets the preferred needs of most scientists studying non-model organisms.
 
 We provide dozens of pre-built databases that can be downloaded here based on [NCBI ortholog](https://ftp.ncbi.nlm.nih.gov/gene/DATA/gene_orthologs.gz).
+
 We are also building more databases such as, plants, fungi... using [JustOrthologs](https://academic.oup.com/bioinformatics/article/35/4/546/5063405).
 
 | Group | Species | Proteins*	| ortholog | Filename*	|
