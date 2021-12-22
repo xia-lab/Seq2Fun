@@ -39,6 +39,20 @@ Options::Options(){
     samples.clear();
 }
 
+Options::~Options(){
+//    for(const auto it : mHomoSearchOptions.idDbMap){
+//        if(it.second){
+//            delete it.second;
+//        }
+//    }
+//    mHomoSearchOptions.idDbMap.clear();
+    
+//    if(mHomoSearchOptions != NULL) {
+//        delete mHomoSearchOptions; 
+//        mHomoSearchOptions = NULL;
+//    }
+}
+
 void Options::init() {
 }
 
@@ -535,78 +549,153 @@ string Options::getAdapter2(){
 
 void Options::readDB() {
     //read gene ko species map;
-    if(!mHomoSearchOptions.genemap.empty()) {
-        if (verbose) {
-            std::string msg = "Reading gene GO KO species map from file " + mHomoSearchOptions.genemap;
-            loginfo(msg);
-        }
-        std::unordered_set<std::string> KUSet;
-        std::unordered_set<std::string> orgUSet;
-        std::unordered_set<std::string> GOUSet;
-        std::unordered_set<std::string> IdUSet;
-        mHomoSearchOptions.filein.open(mHomoSearchOptions.genemap.c_str());
-        if(!mHomoSearchOptions.filein.is_open()) error_exit("Can not open gene KO GO species map file : " + mHomoSearchOptions.genemap);        
-        const int maxLine = 10000;
-        char line[maxLine];
-        int readed = 0;
-        vector<string> splVec;
-        splVec.reserve(4);
-        geneKoGoComb gkg;
+    if(mHomoSearchOptions.genemap.empty())  error_exit("Gene KO GO species map file is empty : " + mHomoSearchOptions.genemap);
+    if (verbose) {
+        std::string msg = "Reading gene GO KO species map from file " + mHomoSearchOptions.genemap;
+        loginfo(msg);
+    }
+    std::set<std::string> KUSet;
+    std::set<std::string> orgUSet;
+    std::set<std::string> GOUSet;
 
-        while (mHomoSearchOptions.filein.getline(line, maxLine)) {
-            readed = strlen(line);
-            if (readed >= 2) {
-                if (line[readed - 1] == '\n' || line[readed - 1] == '\r') {
-                    line[readed - 1] = '\0';
-                    if (line[readed - 2] == '\r') {
-                        line[readed - 2] = '\0';
-                    }
-                }
-
-                string lineStr(line);
-                splVec.clear();
-                splitStr(lineStr, splVec, "\t");
-                if (splVec.size() == 6) {
-                    //gkg.gid = splVec[0];
-                    auto ko = splVec[1];
-                    gkg.ko = ko;
-                    if (ko != "UNASSIGNED") {
-                        KUSet.insert(ko);
-                        gkg.nKos = 0;
-                    } else {
-                        gkg.nKos = 1;
-                    }
-                    auto go = splVec[2];
-                    gkg.go = go;
-                    if(go != "UNASSIGNED"){
-                        GOUSet.insert(go);
-                        gkg.nGos = countFreq(go, "GO:");
-                    } else {
-                        gkg.nGos = 0;
-                    }
-                    gkg.spec = splVec[3];
-                    orgUSet.insert(splVec[3]);
-                    gkg.org = splVec[4];
-                    gkg.id = splVec[5];
-                    IdUSet.insert(splVec[5]);
-                    mHomoSearchOptions.fullDbMap[splVec[0]] = gkg;
-                    mHomoSearchOptions.idDbMap[splVec[5]] = splVec[1] + ";" + splVec[2];
+    mHomoSearchOptions.filein.open(mHomoSearchOptions.genemap.c_str());
+    if (!mHomoSearchOptions.filein.is_open()) error_exit("Can not open gene KO GO species map file : " + mHomoSearchOptions.genemap);
+    const int maxLine = 10000;
+    char line[maxLine];
+    int readed = 0;
+    vector<string> splVec;
+    splVec.reserve(7);
+    geneKoGoComb gkg;
+    std::multimap<const uint32, const geneKoGoComb> fullidDbMMap;
+    transSearch.orthIdSet.clear();
+    std::map<const std::string, const uint32> tmpIdMap;
+    while (mHomoSearchOptions.filein.getline(line, maxLine)) {
+        readed = strlen(line);
+        if (readed >= 2) {
+            if (line[readed - 1] == '\n' || line[readed - 1] == '\r') {
+                line[readed - 1] = '\0';
+                if (line[readed - 2] == '\r') {
+                    line[readed - 2] = '\0';
                 }
             }
+            string lineStr(line);
+            splVec.clear();
+            splitStr(lineStr, splVec, "\t");
+            if (splVec.size() == 7) {
+                uint32 id = (uint32) stoi(removeStr(splVec[1], "s2f_"));
+                transSearch.orthIdSet.insert(id);
+                tmpIdMap.insert(std::make_pair(splVec[0], id));
+                auto ko = splVec[2];
+                gkg.ko = ko;
+                if (ko != "U") {
+                    KUSet.insert(ko);
+                    //gkg.nKos = 0;
+                } else {
+                    //gkg.nKos = 1;
+                }
+                auto go = splVec[3];
+                gkg.go = go;
+                if (go != "U") {
+                    GOUSet.insert(go);
+                    //gkg.nGos = countFreq(go, "GO:");
+                } else {
+                    //gkg.nGos = 0;
+                }
+                gkg.symbol = splVec[4];
+                gkg.gene = splVec[5];
+                gkg.spec = splVec[6];
+                orgUSet.insert(splVec[6]);
+                fullidDbMMap.insert(std::make_pair(id, gkg));
+            }
         }
-        mHomoSearchOptions.filein.close(); 
-        mHomoSearchOptions.filein.clear();
-        transSearch.nKODB = KUSet.size();
-        transSearch.nGODB = GOUSet.size();
-        transSearch.nOrgsDB = orgUSet.size();
-        transSearch.nIdDB = IdUSet.size();
-        KUSet.clear();
-        GOUSet.clear();
-        orgUSet.clear();
-        IdUSet.clear();
-    } else {
-        error_exit("Gene KO GO species map file is empty : " + mHomoSearchOptions.genemap);
     }
+
+    if (transSearch.orthIdSet.empty()) error_exit("No ortholog id was detected in map file : " + mHomoSearchOptions.genemap);
+
+//    while (mHomoSearchOptions.filein.getline(line, maxLine)) {
+//        readed = strlen(line);
+//        if (readed >= 2) {
+//            if (line[readed - 1] == '\n' || line[readed - 1] == '\r') {
+//                line[readed - 1] = '\0';
+//                if (line[readed - 2] == '\r') {
+//                    line[readed - 2] = '\0';
+//                }
+//            }
+//
+//            string lineStr(line);
+//            splVec.clear();
+//            splitStr(lineStr, splVec, "\t");
+//            if (splVec.size() == 7) {
+//                uint32 id = (uint32) stoi(splVec[1]);
+//                auto itr = transSearch.orthIdSet.find(id);
+//                mHomoSearchOptions.idDbMap.insert(std::make_pair(splVec[0], &(*itr)));
+//            }
+//        }
+//    }
+    
+    mHomoSearchOptions.filein.close();
+    mHomoSearchOptions.filein.clear();
+    transSearch.nKODB = KUSet.size();
+    transSearch.nGODB = GOUSet.size();
+    transSearch.nOrgsDB = orgUSet.size();
+    transSearch.nIdDB = transSearch.orthIdSet.size();
+    KUSet.clear();
+    GOUSet.clear();
+    orgUSet.clear();
+
+    for (const auto & it : tmpIdMap) {
+        auto itr = transSearch.orthIdSet.find(it.second);
+        if (itr != transSearch.orthIdSet.end()) {
+            mHomoSearchOptions.idDbMap.insert(std::make_pair(it.first, &(*itr)));
+        }
+    }
+    tmpIdMap.clear();
+
+    std::vector<std::string> tmpKO;
+    std::vector<std::string> tmpGO;
+    std::vector<std::string> tmpSymbol;
+    std::vector<std::string> tmpGene;
+
+    for (const auto & it : transSearch.orthIdSet) {
+        auto itr = fullidDbMMap.equal_range(it);
+
+        for (auto & itt = itr.first; itt != itr.second; itt++) {
+            auto iKO = itt->second.ko;
+            if (iKO != "U") {
+                tmpKO.emplace_back(iKO);
+            }
+
+            auto iGO = itt->second.go;
+            if (iGO != "U") {
+                tmpGO.emplace_back(iGO);
+            }
+
+            auto iSbo = itt->second.symbol;
+            if (iSbo != "U") {
+                tmpSymbol.emplace_back(iSbo);
+            }
+
+            auto iGen = itt->second.gene;
+            if (iGen != "U") {
+                tmpGene.emplace_back(iGen);
+            }
+        }
+
+        gkg.ko = tmpKO.empty() ? "U" : getMostFreqStrFromVec(tmpKO);
+        gkg.go = tmpGO.empty() ? "U" : getMostFreqStrFromVec(tmpGO);
+        gkg.symbol = tmpSymbol.empty() ? "U" : getMostFreqStrFromVec(tmpSymbol);
+        gkg.gene = tmpGene.empty() ? "U" : getMostFreqStrFromVec(tmpGene);
+        tmpKO.clear();
+        tmpGO.clear();
+        tmpSymbol.clear();
+        tmpGene.clear();
+        mHomoSearchOptions.fullDbMap.insert(std::make_pair(&it, gkg));
+    }
+    tmpKO.clear();
+    tmpGO.clear();
+    tmpSymbol.clear();
+    tmpGene.clear();
+    fullidDbMMap.clear();
     
     //read ko full name file;
     mHomoSearchOptions.fileName.clear();
@@ -963,11 +1052,12 @@ void Options::readSampleExtraction(){
             mSeqExtractions.targetGenesVec.emplace_back(lineStr);
             if(starts_with(lineStr, "s2f_")){
                 s2fid4Strct = true;
-            } else if(starts_with(lineStr, "K")){
-                s2fid4Strct = false;
-            } else {
-                s2fid4Strct = true;
             }
+//            } else if(starts_with(lineStr, "K")){
+//                s2fid4Strct = false;
+//            } else {
+//                s2fid4Strct = true;
+//            }
         }
     }
     file.close();

@@ -1,6 +1,6 @@
 #include "bwtfmiDB.h"
 
-BwtFmiDB::BwtFmiDB(Options * opt) {
+BwtFmiDB::BwtFmiDB(Options * & opt) {
     mOptions = opt;
     init();
 }

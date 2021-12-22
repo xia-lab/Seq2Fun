@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
     cmdline::parser cmd;
 
     cmd.add<string>("sampleTable", 0, "input table for fastq.gz files with annotation from Seq2Fun output, eg: one column for SE samples or two columns (separated by '\t') of samples for PE sample", true, "");
-    cmd.add<string>("geneTable", 0, "input table of target genes for sequences extraction, eg: one columns of s2f ids or KO ids", true, "");
+    cmd.add<string>("geneTable", 0, "input table of target genes for sequences extraction, eg: one columns of s2f ids", true, "");
     cmd.add<string>("outputDir", 0, "output folder for extract fastq.gz files, default is current working dir", false, ".");
     //cmd.add<string>("suffix", 0, "the suffix appended to the file name", false, "");
     cmd.add<string>("undetermined", 0, "the file name of undetermined data, default is Undetermined", false, "Undetermined");

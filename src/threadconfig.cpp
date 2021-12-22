@@ -1,7 +1,7 @@
 #include "threadconfig.h"
 #include "util.h"
 
-ThreadConfig::ThreadConfig(Options* opt, BwtFmiDB* tbwtfmiDB, int threadId, bool paired){
+ThreadConfig::ThreadConfig(Options* & opt, BwtFmiDB* & tbwtfmiDB, int threadId, bool paired){
     mOptions = opt;
     mThreadId = threadId;
     mWorkingSplit = threadId;
@@ -20,13 +20,13 @@ ThreadConfig::ThreadConfig(Options* opt, BwtFmiDB* tbwtfmiDB, int threadId, bool
 
     mFilterResult = new FilterResult(opt, paired);
     mCanBeStopped = false;
-    mBwtfmiDB = tbwtfmiDB;
-    mTransSearcher = new TransSearcher(mOptions, mBwtfmiDB);
+    //mBwtfmiDB = tbwtfmiDB;
+    mTransSearcher = new TransSearcher(mOptions, tbwtfmiDB);
 }
 
 ThreadConfig::~ThreadConfig() {
     cleanup();
-    if(mTransSearcher){
+    if(mTransSearcher != NULL){
         delete mTransSearcher;
         mTransSearcher = NULL;
     }

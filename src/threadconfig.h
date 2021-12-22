@@ -16,7 +16,7 @@ using namespace std;
 
 class ThreadConfig{
 public:
-    ThreadConfig(Options* opt, BwtFmiDB* tbwtfmiDB, int threadId, bool paired = false);
+    ThreadConfig(Options* & opt, BwtFmiDB* & tbwtfmiDB, int threadId, bool paired = false);
     ~ThreadConfig();
     inline Stats* getPreStats1() {return mPreStats1;}
     inline Stats* getPostStats1() {return mPostStats1;}
@@ -66,7 +66,7 @@ private:
     bool mCanBeStopped;
     
     TransSearcher* mTransSearcher;
-    BwtFmiDB* mBwtfmiDB;
+    //BwtFmiDB* mBwtfmiDB;
 };
 
 #endif

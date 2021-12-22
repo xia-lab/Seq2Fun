@@ -14,7 +14,7 @@ using namespace std;
 
 class WriterThread{
 public:
-    WriterThread(Options* opt, string filename);
+    WriterThread(Options* & opt, string filename);
     ~WriterThread();
 
     void initWriter(string filename1);

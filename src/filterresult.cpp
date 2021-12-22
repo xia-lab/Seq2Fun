@@ -4,7 +4,7 @@
 #include "htmlreporter.h"
 #include <memory.h>
 
-FilterResult::FilterResult(Options* opt, bool paired){
+FilterResult::FilterResult(Options* & opt, bool paired){
     mOptions = opt;
     mPaired = paired;
     mTrimmedAdapterRead = 0;

@@ -23,7 +23,7 @@ using namespace std;
 
 class BwtFmiDB {
 public:
-    BwtFmiDB(Options * opt);
+    BwtFmiDB(Options * & opt);
     ~BwtFmiDB();
 
     //for trans search

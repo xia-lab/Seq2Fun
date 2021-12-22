@@ -12,7 +12,7 @@ using namespace std;
 
 class Duplicate{
 public:
-    Duplicate(Options* opt);
+    Duplicate(Options* & opt);
     ~Duplicate();
 
     void statRead(Read* r1);

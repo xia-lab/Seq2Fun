@@ -169,133 +169,133 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
-    Options opt;
+    Options * opt = new Options();
 
-    opt.seq2funProgPath = string(argv[0]);
-    opt.seq2funDir = removeStr(opt.seq2funProgPath, "bin/seq2fun");
-    opt.internalDBDir = cmd.get<string>("dbDir") == "" ? opt.seq2funDir + "database" : cmd.get<string>("dbDir");
-    opt.internalDBDir = checkDirEnd(opt.internalDBDir);
+    opt->seq2funProgPath = string(argv[0]);
+    opt->seq2funDir = removeStr(opt->seq2funProgPath, "bin/seq2fun");
+    opt->internalDBDir = cmd.get<string>("dbDir") == "" ? opt->seq2funDir + "database" : cmd.get<string>("dbDir");
+    opt->internalDBDir = checkDirEnd(opt->internalDBDir);
 
     // threading
-    opt.thread = cmd.get<int>("thread");
+    opt->thread = cmd.get<int>("thread");
     int n_t = std::thread::hardware_concurrency();
-    opt.thread = std::min(std::min(opt.thread, 32), n_t);
+    opt->thread = std::min(std::min(opt->thread, 32), n_t);
 
-    opt.compression = 4;
-    opt.readsToProcess = cmd.get<int>("reads_to_process");
+    opt->compression = 4;
+    opt->readsToProcess = cmd.get<int>("reads_to_process");
     if(cmd.get<int>("reads_buffer") < 1) {
         error_exit("reads_buffer should be greater or equal to 1MB.");
     }
-    opt.phred64 = cmd.exist("phred64");
-    opt.verbose = cmd.exist("verbose");
-    opt.debug = cmd.exist("debug");
-    opt.fixMGI = cmd.exist("fix_mgi_id");
+    opt->phred64 = cmd.exist("phred64");
+    opt->verbose = cmd.exist("verbose");
+    opt->debug = cmd.exist("debug");
+    opt->fixMGI = cmd.exist("fix_mgi_id");
 
     // adapter cutting
-    opt.adapter.enabled = !cmd.exist("disable_adapter_trimming");
-    opt.adapter.detectAdapterForPE = cmd.exist("detect_adapter_for_pe");
-    opt.adapter.sequence = cmd.get<string>("adapter_sequence");
-    opt.adapter.sequenceR2 = cmd.get<string>("adapter_sequence_r2");
-    opt.adapter.fastaFile = cmd.get<string>("adapter_fasta");
-    if (opt.adapter.sequenceR2 == "auto" && !opt.adapter.detectAdapterForPE && opt.adapter.sequence != "auto") {
-        opt.adapter.sequenceR2 = opt.adapter.sequence;
+    opt->adapter.enabled = !cmd.exist("disable_adapter_trimming");
+    opt->adapter.detectAdapterForPE = cmd.exist("detect_adapter_for_pe");
+    opt->adapter.sequence = cmd.get<string>("adapter_sequence");
+    opt->adapter.sequenceR2 = cmd.get<string>("adapter_sequence_r2");
+    opt->adapter.fastaFile = cmd.get<string>("adapter_fasta");
+    if (opt->adapter.sequenceR2 == "auto" && !opt->adapter.detectAdapterForPE && opt->adapter.sequence != "auto") {
+        opt->adapter.sequenceR2 = opt->adapter.sequence;
     }
-    if (!opt.adapter.fastaFile.empty()) {
-        opt.loadFastaAdapters();
+    if (!opt->adapter.fastaFile.empty()) {
+        opt->loadFastaAdapters();
     }
     //polyA tail trimming
-    opt.adapter.polyA = !cmd.exist("no_trim_polyA");
+    opt->adapter.polyA = !cmd.exist("no_trim_polyA");
 
     // trimming
-    opt.trim.front1 = cmd.get<int>("trim_front1");
-    opt.trim.tail1 = cmd.get<int>("trim_tail1");
-    opt.trim.maxLen1 = cmd.get<int>("max_len1");
+    opt->trim.front1 = cmd.get<int>("trim_front1");
+    opt->trim.tail1 = cmd.get<int>("trim_tail1");
+    opt->trim.maxLen1 = cmd.get<int>("max_len1");
     // read2 settings follows read1 if it's not specified
     if (cmd.exist("trim_front2"))
-        opt.trim.front2 = cmd.get<int>("trim_front2");
+        opt->trim.front2 = cmd.get<int>("trim_front2");
     else
-        opt.trim.front2 = opt.trim.front1;
+        opt->trim.front2 = opt->trim.front1;
     if (cmd.exist("trim_tail2"))
-        opt.trim.tail2 = cmd.get<int>("trim_tail2");
+        opt->trim.tail2 = cmd.get<int>("trim_tail2");
     else
-        opt.trim.tail2 = opt.trim.tail1;
+        opt->trim.tail2 = opt->trim.tail1;
     if (cmd.exist("max_len2"))
-        opt.trim.maxLen2 = cmd.get<int>("max_len2");
+        opt->trim.maxLen2 = cmd.get<int>("max_len2");
     else
-        opt.trim.maxLen2 = opt.trim.maxLen1;
+        opt->trim.maxLen2 = opt->trim.maxLen1;
 
     // polyG tail trimming
     if (cmd.exist("trim_poly_g") && cmd.exist("disable_trim_poly_g")) {
         error_exit("You cannot enabled both trim_poly_g and disable_trim_poly_g");
     } else if (cmd.exist("trim_poly_g")) {
-        opt.polyGTrim.enabled = true;
+        opt->polyGTrim.enabled = true;
     } else if (cmd.exist("disable_trim_poly_g")) {
-        opt.polyGTrim.enabled = false;
+        opt->polyGTrim.enabled = false;
     }
-    opt.polyGTrim.minLen = cmd.get<int>("poly_g_min_len");
+    opt->polyGTrim.minLen = cmd.get<int>("poly_g_min_len");
 
     // polyX tail trimming
     if (cmd.exist("trim_poly_x")) {
-        opt.polyXTrim.enabled = true;
+        opt->polyXTrim.enabled = true;
     }
-    opt.polyXTrim.minLen = cmd.get<int>("poly_x_min_len");
+    opt->polyXTrim.minLen = cmd.get<int>("poly_x_min_len");
 
 
     // sliding window cutting by quality
-    opt.qualityCut.enabledFront = cmd.exist("cut_front");
+    opt->qualityCut.enabledFront = cmd.exist("cut_front");
     // back compatible with old versions
-    if (!opt.qualityCut.enabledFront) {
-        opt.qualityCut.enabledFront = cmd.exist("cut_by_quality5");
-        if (opt.qualityCut.enabledFront)
+    if (!opt->qualityCut.enabledFront) {
+        opt->qualityCut.enabledFront = cmd.exist("cut_by_quality5");
+        if (opt->qualityCut.enabledFront)
             cerr << "WARNING: cut_by_quality5 is deprecated, please use cut_front instead." << endl;
     }
-    opt.qualityCut.enabledTail = cmd.exist("cut_tail");
+    opt->qualityCut.enabledTail = cmd.exist("cut_tail");
     // back compatible with old versions
-    if (!opt.qualityCut.enabledFront) {
-        opt.qualityCut.enabledFront = cmd.exist("cut_by_quality3");
-        if (opt.qualityCut.enabledFront)
+    if (!opt->qualityCut.enabledFront) {
+        opt->qualityCut.enabledFront = cmd.exist("cut_by_quality3");
+        if (opt->qualityCut.enabledFront)
             cerr << "WARNING: cut_by_quality3 is deprecated, please use cut_tail instead." << endl;
     }
-    opt.qualityCut.enabledRight = cmd.exist("cut_right");
+    opt->qualityCut.enabledRight = cmd.exist("cut_right");
     // back compatible with old versions
-    if (!opt.qualityCut.enabledRight) {
-        opt.qualityCut.enabledRight = cmd.exist("cut_by_quality_aggressive");
-        if (opt.qualityCut.enabledRight)
+    if (!opt->qualityCut.enabledRight) {
+        opt->qualityCut.enabledRight = cmd.exist("cut_by_quality_aggressive");
+        if (opt->qualityCut.enabledRight)
             cerr << "WARNING: cut_by_quality_aggressive is deprecated, please use cut_right instead." << endl;
     }
 
-    opt.qualityCut.windowSizeShared = cmd.get<int>("cut_window_size");
-    opt.qualityCut.qualityShared = cmd.get<int>("cut_mean_quality");
+    opt->qualityCut.windowSizeShared = cmd.get<int>("cut_window_size");
+    opt->qualityCut.qualityShared = cmd.get<int>("cut_mean_quality");
 
     if (cmd.exist("cut_front_window_size"))
-        opt.qualityCut.windowSizeFront = cmd.get<int>("cut_front_window_size");
+        opt->qualityCut.windowSizeFront = cmd.get<int>("cut_front_window_size");
     else
-        opt.qualityCut.windowSizeFront = opt.qualityCut.windowSizeShared;
+        opt->qualityCut.windowSizeFront = opt->qualityCut.windowSizeShared;
     if (cmd.exist("cut_front_mean_quality"))
-        opt.qualityCut.qualityFront = cmd.get<int>("cut_front_mean_quality");
+        opt->qualityCut.qualityFront = cmd.get<int>("cut_front_mean_quality");
     else
-        opt.qualityCut.qualityFront = opt.qualityCut.qualityShared;
+        opt->qualityCut.qualityFront = opt->qualityCut.qualityShared;
 
     if (cmd.exist("cut_tail_window_size"))
-        opt.qualityCut.windowSizeTail = cmd.get<int>("cut_tail_window_size");
+        opt->qualityCut.windowSizeTail = cmd.get<int>("cut_tail_window_size");
     else
-        opt.qualityCut.windowSizeTail = opt.qualityCut.windowSizeShared;
+        opt->qualityCut.windowSizeTail = opt->qualityCut.windowSizeShared;
     if (cmd.exist("cut_tail_mean_quality"))
-        opt.qualityCut.qualityTail = cmd.get<int>("cut_tail_mean_quality");
+        opt->qualityCut.qualityTail = cmd.get<int>("cut_tail_mean_quality");
     else
-        opt.qualityCut.qualityTail = opt.qualityCut.qualityShared;
+        opt->qualityCut.qualityTail = opt->qualityCut.qualityShared;
 
     if (cmd.exist("cut_right_window_size"))
-        opt.qualityCut.windowSizeRight = cmd.get<int>("cut_right_window_size");
+        opt->qualityCut.windowSizeRight = cmd.get<int>("cut_right_window_size");
     else
-        opt.qualityCut.windowSizeRight = opt.qualityCut.windowSizeShared;
+        opt->qualityCut.windowSizeRight = opt->qualityCut.windowSizeShared;
     if (cmd.exist("cut_right_mean_quality"))
-        opt.qualityCut.qualityRight = cmd.get<int>("cut_right_mean_quality");
+        opt->qualityCut.qualityRight = cmd.get<int>("cut_right_mean_quality");
     else
-        opt.qualityCut.qualityRight = opt.qualityCut.qualityShared;
+        opt->qualityCut.qualityRight = opt->qualityCut.qualityShared;
 
     // raise a warning if cutting option is not enabled but -W/-M is enabled
-    if (!opt.qualityCut.enabledFront && !opt.qualityCut.enabledTail && !opt.qualityCut.enabledRight) {
+    if (!opt->qualityCut.enabledFront && !opt->qualityCut.enabledTail && !opt->qualityCut.enabledRight) {
         if (cmd.exist("cut_window_size") || cmd.exist("cut_mean_quality")
                 || cmd.exist("cut_front_window_size") || cmd.exist("cut_front_mean_quality")
                 || cmd.exist("cut_tail_window_size") || cmd.exist("cut_tail_mean_quality")
@@ -304,45 +304,56 @@ int main(int argc, char* argv[]) {
     }
 
     // quality filtering
-    opt.qualfilter.enabled = !cmd.exist("disable_quality_filtering");
-    opt.qualfilter.qualifiedQual = num2qual(cmd.get<int>("qualified_quality_phred"));
-    opt.qualfilter.unqualifiedPercentLimit = cmd.get<int>("unqualified_percent_limit");
-    opt.qualfilter.avgQualReq = cmd.get<int>("average_qual");
-    opt.qualfilter.nBaseLimit = cmd.get<int>("n_base_limit");
+    opt->qualfilter.enabled = !cmd.exist("disable_quality_filtering");
+    opt->qualfilter.qualifiedQual = num2qual(cmd.get<int>("qualified_quality_phred"));
+    opt->qualfilter.unqualifiedPercentLimit = cmd.get<int>("unqualified_percent_limit");
+    opt->qualfilter.avgQualReq = cmd.get<int>("average_qual");
+    opt->qualfilter.nBaseLimit = cmd.get<int>("n_base_limit");
 
     // length filtering
-    opt.lengthFilter.enabled = !cmd.exist("disable_length_filtering");
-    opt.lengthFilter.requiredLength = cmd.get<int>("length_required");
+    opt->lengthFilter.enabled = !cmd.exist("disable_length_filtering");
+    opt->lengthFilter.requiredLength = cmd.get<int>("length_required");
 
+
+    //get trans mode first;
+    opt->transSearch.tmode = cmd.get<string>("mode");
+    if (opt->transSearch.tmode == "tGREEDY") {
+        opt->transSearch.mode = tGREEDY;
+    } else if (opt->transSearch.tmode == "tMEM") {
+        opt->transSearch.mode = tMEM;
+    } else {
+        error_exit("you must be use either tGREEDY or tMEM mode");
+    }
+        
     if (cmd.get<int>("minlength") == 0) {
-        if (opt.transSearch.mode == tGREEDY) {
-            opt.transSearch.minAAFragLength = 19;
+        if (opt->transSearch.mode == tGREEDY) {
+            opt->transSearch.minAAFragLength = 19;
         } else {
-            opt.transSearch.minAAFragLength = 13;
+            opt->transSearch.minAAFragLength = 13;
         }
     } else {
-        opt.transSearch.minAAFragLength = cmd.get<int>("minlength");
+        opt->transSearch.minAAFragLength = cmd.get<int>("minlength");
     }
     
-    opt.lengthFilter.requiredLength = max(opt.lengthFilter.requiredLength, static_cast<int> (opt.transSearch.minAAFragLength) * 3);
-    opt.lengthFilter.maxLength = cmd.get<int>("length_limit");
+    opt->lengthFilter.requiredLength = max(opt->lengthFilter.requiredLength, static_cast<int> (opt->transSearch.minAAFragLength) * 3);
+    opt->lengthFilter.maxLength = cmd.get<int>("length_limit");
 
     // low complexity filter
-    opt.complexityFilter.enabled = !cmd.exist("no_low_complexity_filter");
-    opt.complexityFilter.threshold = (min(100, max(0, cmd.get<int>("complexity_threshold")))) / 100.0;
+    opt->complexityFilter.enabled = !cmd.exist("no_low_complexity_filter");
+    opt->complexityFilter.threshold = (min(100, max(0, cmd.get<int>("complexity_threshold")))) / 100.0;
 
     // overlap correction
-    opt.correction.enabled = !cmd.exist("disable_correction");
-    opt.overlapRequire = cmd.get<int>("overlap_len_require");
-    opt.overlapDiffLimit = cmd.get<int>("overlap_diff_limit");
-    opt.overlapDiffPercentLimit = cmd.get<int>("overlap_diff_percent_limit");
+    opt->correction.enabled = !cmd.exist("disable_correction");
+    opt->overlapRequire = cmd.get<int>("overlap_len_require");
+    opt->overlapDiffLimit = cmd.get<int>("overlap_diff_limit");
+    opt->overlapDiffPercentLimit = cmd.get<int>("overlap_diff_percent_limit");
 
     // umi
-    opt.umi.enabled = cmd.exist("umi");
-    opt.umi.length = cmd.get<int>("umi_len");
-    opt.umi.prefix = cmd.get<string>("umi_prefix");
-    opt.umi.skip = cmd.get<int>("umi_skip");
-    if (opt.umi.enabled) {
+    opt->umi.enabled = cmd.exist("umi");
+    opt->umi.length = cmd.get<int>("umi_len");
+    opt->umi.prefix = cmd.get<string>("umi_prefix");
+    opt->umi.skip = cmd.get<int>("umi_skip");
+    if (opt->umi.enabled) {
         string umiLoc = cmd.get<string>("umi_loc");
         str2lower(umiLoc);
         if (umiLoc.empty())
@@ -350,179 +361,172 @@ int main(int argc, char* argv[]) {
         if (umiLoc != "index1" && umiLoc != "index2" && umiLoc != "read1" && umiLoc != "read2" && umiLoc != "per_index" && umiLoc != "per_read") {
             error_exit("UMI location can only be index1/index2/read1/read2/per_index/per_read");
         }
-        if (!opt.isPaired() && (umiLoc == "index2" || umiLoc == "read2"))
+        if (!opt->isPaired() && (umiLoc == "index2" || umiLoc == "read2"))
             error_exit("You specified the UMI location as " + umiLoc + ", but the input data is not paired end.");
-        if (opt.umi.length == 0 && (umiLoc == "read1" || umiLoc == "read2" || umiLoc == "per_read"))
+        if (opt->umi.length == 0 && (umiLoc == "read1" || umiLoc == "read2" || umiLoc == "per_read"))
             error_exit("You specified the UMI location as " + umiLoc + ", but the length is not specified (--umi_len).");
         if (umiLoc == "index1") {
-            opt.umi.location = UMI_LOC_INDEX1;
+            opt->umi.location = UMI_LOC_INDEX1;
         } else if (umiLoc == "index2") {
-            opt.umi.location = UMI_LOC_INDEX2;
+            opt->umi.location = UMI_LOC_INDEX2;
         } else if (umiLoc == "read1") {
-            opt.umi.location = UMI_LOC_READ1;
+            opt->umi.location = UMI_LOC_READ1;
         } else if (umiLoc == "read2") {
-            opt.umi.location = UMI_LOC_READ2;
+            opt->umi.location = UMI_LOC_READ2;
         } else if (umiLoc == "per_index") {
-            opt.umi.location = UMI_LOC_PER_INDEX;
+            opt->umi.location = UMI_LOC_PER_INDEX;
         } else if (umiLoc == "per_read") {
-            opt.umi.location = UMI_LOC_PER_READ;
+            opt->umi.location = UMI_LOC_PER_READ;
         }
     }
 
     // overrepresented sequence analysis
-    opt.overRepAnalysis.enabled = cmd.exist("overrepresentation_analysis");
-    opt.overRepAnalysis.sampling = cmd.get<int>("overrepresentation_sampling");
+    opt->overRepAnalysis.enabled = cmd.exist("overrepresentation_analysis");
+    opt->overRepAnalysis.sampling = cmd.get<int>("overrepresentation_sampling");
 
     // filtering by index
     string blacklist1 = cmd.get<string>("filter_by_index1");
     string blacklist2 = cmd.get<string>("filter_by_index2");
     int indexFilterThreshold = cmd.get<int>("filter_by_index_threshold");
-    opt.initIndexFiltering(blacklist1, blacklist2, indexFilterThreshold);
+    opt->initIndexFiltering(blacklist1, blacklist2, indexFilterThreshold);
 
     //homology search
-    opt.mHomoSearchOptions.genemap = cmd.get<string>("genemap");
-    opt.mHomoSearchOptions.profiling = cmd.exist("profiling");
+    opt->mHomoSearchOptions.genemap = cmd.get<string>("genemap");
+    opt->mHomoSearchOptions.profiling = cmd.exist("profiling");
 
     //translated search
-    opt.transSearch.tmode = cmd.get<string>("mode");
-    if (opt.transSearch.tmode == "tGREEDY") {
-        opt.transSearch.mode = tGREEDY;
-    } else if (opt.transSearch.tmode == "tMEM") {
-        opt.transSearch.mode = tMEM;
-    } else {
-        error_exit("you must be use either tGREEDY or tMEM mode");
-    }
 
-    opt.transSearch.tCodonTable = cmd.get<string>("codontable");
-    if (opt.transSearch.tCodonTable == "codontable1") {
-        opt.transSearch.codonTable = codontable1;
-    } else if (opt.transSearch.tCodonTable == "codontable2") {
-        opt.transSearch.codonTable = codontable2;
-    } else if (opt.transSearch.tCodonTable == "codontable3") {
-        opt.transSearch.codonTable = codontable3;
-    } else if (opt.transSearch.tCodonTable == "codontable4") {
-        opt.transSearch.codonTable = codontable4;
-    } else if (opt.transSearch.tCodonTable == "codontable5") {
-        opt.transSearch.codonTable = codontable5;
-    } else if (opt.transSearch.tCodonTable == "codontable6") {
-        opt.transSearch.codonTable = codontable6;
-    } else if (opt.transSearch.tCodonTable == "codontable9") {
-        opt.transSearch.codonTable = codontable9;
-    } else if (opt.transSearch.tCodonTable == "codontable10") {
-        opt.transSearch.codonTable = codontable10;
-    } else if (opt.transSearch.tCodonTable == "codontable12") {
-        opt.transSearch.codonTable = codontable12;
-    } else if (opt.transSearch.tCodonTable == "codontable13") {
-        opt.transSearch.codonTable = codontable13;
-    } else if (opt.transSearch.tCodonTable == "codontable14") {
-        opt.transSearch.codonTable = codontable14;
-    } else if (opt.transSearch.tCodonTable == "codontable16") {
-        opt.transSearch.codonTable = codontable16;
-    } else if (opt.transSearch.tCodonTable == "codontable26") {
-        opt.transSearch.codonTable = codontable26;
-    } else if (opt.transSearch.tCodonTable == "codontable21") {
-        opt.transSearch.codonTable = codontable21;
-    } else if (opt.transSearch.tCodonTable == "codontable22") {
-        opt.transSearch.codonTable = codontable22;
-    } else if (opt.transSearch.tCodonTable == "codontable24") {
-        opt.transSearch.codonTable = codontable24;
-    } else if (opt.transSearch.tCodonTable == "codontable27") {
-        opt.transSearch.codonTable = codontable27;
-    } else if (opt.transSearch.tCodonTable == "codontable29") {
-        opt.transSearch.codonTable = codontable29;
-    } else if (opt.transSearch.tCodonTable == "codontable30") {
-        opt.transSearch.codonTable = codontable30;
-    } else if (opt.transSearch.tCodonTable == "codontable31") {
-        opt.transSearch.codonTable = codontable31;
-    } else if (opt.transSearch.tCodonTable == "codontable33") {
-        opt.transSearch.codonTable = codontable33;
+    opt->transSearch.tCodonTable = cmd.get<string>("codontable");
+    if (opt->transSearch.tCodonTable == "codontable1") {
+        opt->transSearch.codonTable = codontable1;
+    } else if (opt->transSearch.tCodonTable == "codontable2") {
+        opt->transSearch.codonTable = codontable2;
+    } else if (opt->transSearch.tCodonTable == "codontable3") {
+        opt->transSearch.codonTable = codontable3;
+    } else if (opt->transSearch.tCodonTable == "codontable4") {
+        opt->transSearch.codonTable = codontable4;
+    } else if (opt->transSearch.tCodonTable == "codontable5") {
+        opt->transSearch.codonTable = codontable5;
+    } else if (opt->transSearch.tCodonTable == "codontable6") {
+        opt->transSearch.codonTable = codontable6;
+    } else if (opt->transSearch.tCodonTable == "codontable9") {
+        opt->transSearch.codonTable = codontable9;
+    } else if (opt->transSearch.tCodonTable == "codontable10") {
+        opt->transSearch.codonTable = codontable10;
+    } else if (opt->transSearch.tCodonTable == "codontable12") {
+        opt->transSearch.codonTable = codontable12;
+    } else if (opt->transSearch.tCodonTable == "codontable13") {
+        opt->transSearch.codonTable = codontable13;
+    } else if (opt->transSearch.tCodonTable == "codontable14") {
+        opt->transSearch.codonTable = codontable14;
+    } else if (opt->transSearch.tCodonTable == "codontable16") {
+        opt->transSearch.codonTable = codontable16;
+    } else if (opt->transSearch.tCodonTable == "codontable26") {
+        opt->transSearch.codonTable = codontable26;
+    } else if (opt->transSearch.tCodonTable == "codontable21") {
+        opt->transSearch.codonTable = codontable21;
+    } else if (opt->transSearch.tCodonTable == "codontable22") {
+        opt->transSearch.codonTable = codontable22;
+    } else if (opt->transSearch.tCodonTable == "codontable24") {
+        opt->transSearch.codonTable = codontable24;
+    } else if (opt->transSearch.tCodonTable == "codontable27") {
+        opt->transSearch.codonTable = codontable27;
+    } else if (opt->transSearch.tCodonTable == "codontable29") {
+        opt->transSearch.codonTable = codontable29;
+    } else if (opt->transSearch.tCodonTable == "codontable30") {
+        opt->transSearch.codonTable = codontable30;
+    } else if (opt->transSearch.tCodonTable == "codontable31") {
+        opt->transSearch.codonTable = codontable31;
+    } else if (opt->transSearch.tCodonTable == "codontable33") {
+        opt->transSearch.codonTable = codontable33;
     } else {
         error_exit("you must select one codon table");
     }
 
-    if (opt.verbose) {
-        std::cout << "Codon table of " << opt.transSearch.tCodonTable << " is selected" << std::endl;
+    if (opt->verbose) {
+        std::cout << "Codon table of " << opt->transSearch.tCodonTable << " is selected" << std::endl;
     }
 
-    opt.transSearch.misMatches = cmd.get<int>("mismatch");
-    opt.transSearch.minScore = cmd.get<int>("minscore");
+    opt->transSearch.misMatches = cmd.get<int>("mismatch");
+    opt->transSearch.minScore = cmd.get<int>("minscore");
 
-    opt.transSearch.maxTransLength = cmd.get<int>("maxtranslength");
-    opt.transSearch.maxTransLength = max(opt.transSearch.maxTransLength, opt.transSearch.minAAFragLength);
-    opt.transSearch.maxTransLength = min((unsigned) 60, opt.transSearch.maxTransLength);
-    opt.transSearch.allFragments = cmd.exist("allFragments");
-    opt.transSearch.tfmi = cmd.get<string>("tfmi");
+    opt->transSearch.maxTransLength = cmd.get<int>("maxtranslength");
+    opt->transSearch.maxTransLength = max(opt->transSearch.maxTransLength, opt->transSearch.minAAFragLength);
+    opt->transSearch.maxTransLength = min((unsigned) 60, opt->transSearch.maxTransLength);
+    opt->transSearch.allFragments = cmd.exist("allFragments");
+    opt->transSearch.tfmi = cmd.get<string>("tfmi");
 
     //read all database tables, maps;
-    opt.readDB();
+    opt->readDB();
 
     // for selected pathway and customized database
-    opt.mHomoSearchOptions.pathway = cmd.get<string>("pathway");
-    opt.mHomoSearchOptions.genefa = cmd.get<string>("genefa");
+    opt->mHomoSearchOptions.pathway = cmd.get<string>("pathway");
+    opt->mHomoSearchOptions.genefa = cmd.get<string>("genefa");
 
-    if (!opt.mHomoSearchOptions.pathway.empty() && !opt.mHomoSearchOptions.genefa.empty()) {
-        if (!opt.transSearch.tfmi.empty()) {
+    if (!opt->mHomoSearchOptions.pathway.empty() && !opt->mHomoSearchOptions.genefa.empty()) {
+        if (!opt->transSearch.tfmi.empty()) {
             cerr << "you used selected pathway, will ignored the --tfmi file you provided";
         }
-        opt.mkSelectedPathwayDB();
+        opt->mkSelectedPathwayDB();
     }
 
-    if (opt.transSearch.tfmi.empty()) {
+    if (opt->transSearch.tfmi.empty()) {
         error_exit("you must provide BWTFMI file using --tfmi file or using --pathway and --genefa");
     } else {
-        check_file_valid(opt.transSearch.tfmi);
+        check_file_valid(opt->transSearch.tfmi);
     }
 
-    BwtFmiDB * tbwtfmiDB = new BwtFmiDB(& opt);
+    BwtFmiDB * tbwtfmiDB = new BwtFmiDB(opt);
 
     // I/O
-    opt.mHomoSearchOptions.sampleTable = cmd.get<string>("sampletable");
-    opt.mHomoSearchOptions.prefix = cmd.get<string>("prefix");
-    opt.outputMappedCleanReads = cmd.exist("outputMappedCleanReads");
-    opt.outputReadsKOMap = cmd.exist("outputReadsKOMap");
+    opt->mHomoSearchOptions.sampleTable = cmd.get<string>("sampletable");
+    opt->mHomoSearchOptions.prefix = cmd.get<string>("prefix");
+    opt->outputMappedCleanReads = cmd.exist("outputMappedCleanReads");
+    opt->outputReadsKOMap = cmd.exist("outputReadsKOMap");
 
-    if (opt.mHomoSearchOptions.prefix.empty() && opt.mHomoSearchOptions.sampleTable.empty()) {
+    if (opt->mHomoSearchOptions.prefix.empty() && opt->mHomoSearchOptions.sampleTable.empty()) {
         error_exit("You must specify output file using --prefix or using --sampletable, which contains prefix string");
-    } else if (!opt.mHomoSearchOptions.prefix.empty() && !opt.mHomoSearchOptions.sampleTable.empty()) {
+    } else if (!opt->mHomoSearchOptions.prefix.empty() && !opt->mHomoSearchOptions.sampleTable.empty()) {
         error_exit("You must specify output file using either --prefix or --sampletable");
     }
 
     //for single file;
-    if (!opt.mHomoSearchOptions.prefix.empty()) {
-        opt.transSearch.startTime = t_begin;
-        opt.in1 = cmd.get<string>("in1");
-        opt.in2 = cmd.get<string>("in2");
+    if (!opt->mHomoSearchOptions.prefix.empty()) {
+        opt->transSearch.startTime = t_begin;
+        opt->in1 = cmd.get<string>("in1");
+        opt->in2 = cmd.get<string>("in2");
         std::string outFName;
-        opt.htmlFile = opt.mHomoSearchOptions.prefix + "_report.html";
-        opt.jsonFile = opt.mHomoSearchOptions.prefix + "_report.json";
-        if (opt.outputMappedCleanReads) {
-            opt.out1 = opt.mHomoSearchOptions.prefix + "_mapped_R1.fastq.gz";
-            if (opt.isPaired()) opt.out2 = opt.mHomoSearchOptions.prefix + "_mapped_R2.fastq.gz";
+        opt->htmlFile = opt->mHomoSearchOptions.prefix + "_report.html";
+        opt->jsonFile = opt->mHomoSearchOptions.prefix + "_report.json";
+        if (opt->outputMappedCleanReads) {
+            opt->out1 = opt->mHomoSearchOptions.prefix + "_mapped_R1.fastq.gz";
+            if (opt->isPaired()) opt->out2 = opt->mHomoSearchOptions.prefix + "_mapped_R2.fastq.gz";
         }
 
-        if (opt.outputReadsKOMap) {
-            opt.outReadsKOMap = opt.mHomoSearchOptions.prefix + "_readsMap.txt.gz";
+        if (opt->outputReadsKOMap) {
+            opt->outReadsKOMap = opt->mHomoSearchOptions.prefix + "_readsMap.txt.gz";
         }
 
         stringstream ss;
         for (int i = 0; i < argc; i++) {
             ss << argv[i] << " ";
         }
+        std::cout << "opt->lengthFilter.requiredLength: " << opt->lengthFilter.requiredLength << "; tmode: " << opt->transSearch.tmode << "; minAAFragLength: " << opt->transSearch.minAAFragLength << "; misMathces: " << opt->transSearch.misMatches << "; minScore: " << opt->transSearch.minScore << "; maxTransLength: " << opt->transSearch.maxTransLength << "\n"; 
         command = ss.str();
-        opt.mHomoSearchOptions.commandStr = command;
+        opt->mHomoSearchOptions.commandStr = command;
 
-        bool supportEvaluation = !opt.inputFromSTDIN && opt.in1 != "/dev/stdin";
-        Evaluator eva(&opt);
+        bool supportEvaluation = !opt->inputFromSTDIN && opt->in1 != "/dev/stdin";
+        Evaluator eva(opt);
         if (supportEvaluation) {
             eva.evaluateSeqLen();
-            if (opt.overRepAnalysis.enabled)
+            if (opt->overRepAnalysis.enabled)
                 eva.evaluateOverRepSeqs();
         }
 
         long readNum = 0;
 
         // using evaluator to guess how many reads in total
-        if (opt.shallDetectAdapter(false)) {
+        if (opt->shallDetectAdapter(false)) {
             if (!supportEvaluation)
                 cerr << "Adapter auto-detection is disabled for STDIN mode" << endl;
             else {
@@ -531,16 +535,16 @@ int main(int argc, char* argv[]) {
                 if (adapt.length() > 60)
                     adapt.resize(0, 60);
                 if (adapt.length() > 0) {
-                    opt.adapter.sequence = adapt;
-                    opt.adapter.detectedAdapter1 = adapt;
+                    opt->adapter.sequence = adapt;
+                    opt->adapter.detectedAdapter1 = adapt;
                 } else {
                     cerr << "No adapter detected for read1" << endl;
-                    opt.adapter.sequence = "";
+                    opt->adapter.sequence = "";
                 }
                 cerr << endl;
             }
         }
-        if (opt.shallDetectAdapter(true)) {
+        if (opt->shallDetectAdapter(true)) {
             if (!supportEvaluation)
                 cerr << "Adapter auto-detection is disabled for STDIN mode" << endl;
             else {
@@ -549,28 +553,28 @@ int main(int argc, char* argv[]) {
                 if (adapt.length() > 60)
                     adapt.resize(0, 60);
                 if (adapt.length() > 0) {
-                    opt.adapter.sequenceR2 = adapt;
-                    opt.adapter.detectedAdapter2 = adapt;
+                    opt->adapter.sequenceR2 = adapt;
+                    opt->adapter.detectedAdapter2 = adapt;
                 } else {
                     cerr << "No adapter detected for read2" << endl;
-                    opt.adapter.sequenceR2 = "";
+                    opt->adapter.sequenceR2 = "";
                 }
                 cerr << endl;
             }
         }
 
-        opt.validate();
+        opt->validate();
 
         // using evaluator to guess how many reads in total
-        if (opt.split.needEvaluation && supportEvaluation) {
+        if (opt->split.needEvaluation && supportEvaluation) {
             // if readNum is not 0, means it is already evaluated by other functions
             if (readNum == 0) {
                 eva.evaluateReadNum(readNum);
             }
-            opt.split.size = readNum / opt.split.number;
+            opt->split.size = readNum / opt->split.number;
             // one record per file at least
-            if (opt.split.size <= 0) {
-                opt.split.size = 1;
+            if (opt->split.size <= 0) {
+                opt->split.size = 1;
                 cerr << "WARNING: the input file has less reads than the number of files to split" << endl;
             }
         }
@@ -579,78 +583,81 @@ int main(int argc, char* argv[]) {
         if (!cmd.exist("trim_poly_g") && !cmd.exist("disable_trim_poly_g") && supportEvaluation) {
             bool twoColorSystem = eva.isTwoColorSystem();
             if (twoColorSystem) {
-                opt.polyGTrim.enabled = true;
+                opt->polyGTrim.enabled = true;
             }
         }
 
-        Processor p(&opt);
+        Processor p(opt);
         p.process(tbwtfmiDB);
 
         cerr << endl << command << endl;
-        cerr << endl << "Seq2Fun v" << SEQ2FUNR_VER << ", time used: " << convertSeconds(opt.transSearch.timeLapse) << ", mapping " <<
-                opt.transSearch.nTransMappedKOReads << " reads out of " <<
-                opt.mHomoSearchOptions.nTotalReads << " (" <<
-                getPercentage(long(opt.transSearch.nTransMappedKOReads), opt.mHomoSearchOptions.nTotalReads) << " %); " <<
-                "mapped " << opt.transSearch.nTransMappedKOs << " KOs out of " <<
-                opt.transSearch.nKODB << " KOs (" <<
-                getPercentage(opt.transSearch.nTransMappedKOs, opt.transSearch.nKODB) <<
-                " %)" << 
-                "mapped " << opt.transSearch.nTransMappedGOs << " GO sets out of " <<
-                opt.transSearch.nGODB << " GO sets (" <<
-                getPercentage(opt.transSearch.nTransMappedGOs, opt.transSearch.nGODB) <<
-                " %); " << 
-                "mapped " << opt.transSearch.nTransMappedIds << " S2f ids out of " <<
-                opt.transSearch.nIdDB << " S2f ids (" <<
-                getPercentage(opt.transSearch.nTransMappedIds, opt.transSearch.nIdDB) <<
+        cerr << endl << "Seq2Fun v" << SEQ2FUNR_VER << ", time used: " << convertSeconds(opt->transSearch.timeLapse) << ", mapping " <<
+                opt->transSearch.nTransMappedIdReads << " reads out of " <<
+                opt->mHomoSearchOptions.nTotalReads << " (" <<
+                getPercentage(long(opt->transSearch.nTransMappedIdReads), opt->mHomoSearchOptions.nTotalReads) << " %); " <<
+//                "mapped " << opt->transSearch.nTransMappedKOs << " KOs out of " <<
+//                opt->transSearch.nKODB << " KOs (" <<
+//                getPercentage(opt->transSearch.nTransMappedKOs, opt->transSearch.nKODB) <<
+//                " %)" << 
+//                "mapped " << opt->transSearch.nTransMappedGOs << " GO sets out of " <<
+//                opt->transSearch.nGODB << " GO sets (" <<
+//                getPercentage(opt->transSearch.nTransMappedGOs, opt->transSearch.nGODB) <<
+//                " %); " << 
+                "mapped " << opt->transSearch.nTransMappedIds << " S2f ids out of " <<
+                opt->transSearch.nIdDB << " S2f ids (" <<
+                getPercentage(opt->transSearch.nTransMappedIds, opt->transSearch.nIdDB) <<
                 " %)" << endl << endl;
         
-        opt.transSearch.reset2Default();
-        opt.mHomoSearchOptions.reset2Default();
+        opt->transSearch.reset2Default();
+        opt->mHomoSearchOptions.reset2Default();
     } else {
-        opt.parseSampleTable();
+        opt->parseSampleTable();
         //std::vector< std::pair<std::string, std::unordered_map<std::string, int> > > sampleKOTableVec;
         int count = 0;
-        for (auto & it : opt.samples) {
+        for (const auto & it : opt->samples) {
             time_t t_cycleBegin = time(NULL);
-            opt.transSearch.startTime = t_cycleBegin;
+            opt->transSearch.startTime = t_cycleBegin;
             count++;
             std::stringstream msgSS;
-            msgSS << "processing sample: " << it.prefix << ", " << count << " out of " << opt.samples.size() << " samples" << "\n";
+            msgSS << "processing sample: " << it.prefix << ", " << count << " out of " << opt->samples.size() << " samples" << "\n";
             loginfo(msgSS.str());
-            opt.mHomoSearchOptions.prefix = it.prefix;
-            opt.in1 = it.in1;
-            opt.in2 = it.in2;
-            opt.htmlFile = it.prefix + "_report.html";
-            opt.jsonFile = it.prefix + "_report.json";
+            opt->mHomoSearchOptions.prefix = it.prefix;
+            opt->in1 = it.in1;
+            opt->in2 = it.in2;
+            opt->htmlFile = it.prefix + "_report.html";
+            opt->jsonFile = it.prefix + "_report.json";
 
-            if (opt.outputMappedCleanReads) {
-                opt.out1 = it.prefix + "_mapped_R1.fastq.gz";
-                if (opt.isPaired()) opt.out2 = it.prefix + "_mapped_R2.fastq.gz";
+            if (opt->outputMappedCleanReads) {
+                opt->out1 = it.prefix + "_mapped_R1.fastq.gz";
+                if (opt->isPaired()) opt->out2 = it.prefix + "_mapped_R2.fastq.gz";
             }
 
-            if (opt.outputReadsKOMap) {
-                opt.outReadsKOMap = opt.mHomoSearchOptions.prefix + "_readsMap.txt.gz";
+            if (opt->outputReadsKOMap) {
+                opt->outReadsKOMap = opt->mHomoSearchOptions.prefix + "_readsMap.txt.gz";
             }
 
             std::stringstream ss;
             for (int i = 0; i < argc; i++) {
                 ss << argv[i] << " ";
             }
+            
+            ss << "opt->lengthFilter.requiredLength: " << opt->lengthFilter.requiredLength << "; tmode: " << opt->transSearch.tmode << "; minAAFragLength: " << opt->transSearch.minAAFragLength << "; misMathces: " << opt->transSearch.misMatches << "; minScore: " << opt->transSearch.minScore << "; maxTransLength: " << opt->transSearch.maxTransLength << " "; 
+            
             command = ss.str();
-            opt.mHomoSearchOptions.commandStr = command;
+            opt->mHomoSearchOptions.commandStr = command;
 
-            bool supportEvaluation = !opt.inputFromSTDIN && opt.in1 != "/dev/stdin";
-            Evaluator eva(&opt);
+            bool supportEvaluation = !opt->inputFromSTDIN && opt->in1 != "/dev/stdin";
+            Evaluator eva(opt);
             if (supportEvaluation) {
                 eva.evaluateSeqLen();
-                if (opt.overRepAnalysis.enabled)
+                if (opt->overRepAnalysis.enabled)
                     eva.evaluateOverRepSeqs();
             }
 
             long readNum = 0;
 
             // using evaluator to guess how many reads in total
-            if (opt.shallDetectAdapter(false)) {
+            if (opt->shallDetectAdapter(false)) {
                 if (!supportEvaluation)
                     cerr << "Adapter auto-detection is disabled for STDIN mode" << endl;
                 else {
@@ -659,16 +666,16 @@ int main(int argc, char* argv[]) {
                     if (adapt.length() > 60)
                         adapt.resize(0, 60);
                     if (adapt.length() > 0) {
-                        opt.adapter.sequence = adapt;
-                        opt.adapter.detectedAdapter1 = adapt;
+                        opt->adapter.sequence = adapt;
+                        opt->adapter.detectedAdapter1 = adapt;
                     } else {
                         cerr << "No adapter detected for read1" << endl;
-                        opt.adapter.sequence = "";
+                        opt->adapter.sequence = "";
                     }
                     cerr << endl;
                 }
             }
-            if (opt.shallDetectAdapter(true)) {
+            if (opt->shallDetectAdapter(true)) {
                 if (!supportEvaluation)
                     cerr << "Adapter auto-detection is disabled for STDIN mode" << endl;
                 else {
@@ -677,28 +684,28 @@ int main(int argc, char* argv[]) {
                     if (adapt.length() > 60)
                         adapt.resize(0, 60);
                     if (adapt.length() > 0) {
-                        opt.adapter.sequenceR2 = adapt;
-                        opt.adapter.detectedAdapter2 = adapt;
+                        opt->adapter.sequenceR2 = adapt;
+                        opt->adapter.detectedAdapter2 = adapt;
                     } else {
                         cerr << "No adapter detected for read2" << endl;
-                        opt.adapter.sequenceR2 = "";
+                        opt->adapter.sequenceR2 = "";
                     }
                     cerr << endl;
                 }
             }
 
-            opt.validate();
+            opt->validate();
 
             // using evaluator to guess how many reads in total
-            if (opt.split.needEvaluation && supportEvaluation) {
+            if (opt->split.needEvaluation && supportEvaluation) {
                 // if readNum is not 0, means it is already evaluated by other functions
                 if (readNum == 0) {
                     eva.evaluateReadNum(readNum);
                 }
-                opt.split.size = readNum / opt.split.number;
+                opt->split.size = readNum / opt->split.number;
                 // one record per file at least
-                if (opt.split.size <= 0) {
-                    opt.split.size = 1;
+                if (opt->split.size <= 0) {
+                    opt->split.size = 1;
                     cerr << "WARNING: the input file has less reads than the number of files to split" << endl;
                 }
             }
@@ -707,41 +714,49 @@ int main(int argc, char* argv[]) {
             if (!cmd.exist("trim_poly_g") && !cmd.exist("disable_trim_poly_g") && supportEvaluation) {
                 bool twoColorSystem = eva.isTwoColorSystem();
                 if (twoColorSystem) {
-                    opt.polyGTrim.enabled = true;
+                    opt->polyGTrim.enabled = true;
                 }
             }
             
-            Processor p(&opt);
+            Processor p(opt);
             p.process(tbwtfmiDB);
             cerr << endl << command << endl;
-            cerr << endl << "Seq2Fun v" << SEQ2FUNR_VER << ", time used: " << convertSeconds(opt.transSearch.timeLapse) <<
-                    ", mapping " << opt.transSearch.nTransMappedKOReads << " reads out of " <<
-                    opt.mHomoSearchOptions.nTotalReads << " (" <<
-                    getPercentage(long(opt.transSearch.nTransMappedKOReads), opt.mHomoSearchOptions.nTotalReads) << " %); " <<
-                    "mapped " << opt.transSearch.nTransMappedKOs << " KOs out of " <<
-                    opt.transSearch.nKODB << " KOs (" <<
-                    getPercentage(opt.transSearch.nTransMappedKOs, opt.transSearch.nKODB) <<
-                    " %); " << 
-                    "mapped " << opt.transSearch.nTransMappedGOs << " GO sets out of " <<
-                    opt.transSearch.nGODB << " GO sets (" <<
-                    getPercentage(opt.transSearch.nTransMappedGOs, opt.transSearch.nGODB) <<
-                    " %); " << 
-                    "mapped " << opt.transSearch.nTransMappedIds << " S2f ids out of " <<
-                    opt.transSearch.nIdDB << " S2f ids (" <<
-                    getPercentage(opt.transSearch.nTransMappedIds, opt.transSearch.nIdDB) <<
+            cerr << endl << "Seq2Fun v" << SEQ2FUNR_VER << ", time used: " << convertSeconds(opt->transSearch.timeLapse) <<
+                    ", mapping " << opt->transSearch.nTransMappedIdReads << " reads out of " <<
+                    opt->mHomoSearchOptions.nTotalReads << " (" <<
+                    getPercentage(long(opt->transSearch.nTransMappedIdReads), opt->mHomoSearchOptions.nTotalReads) << " %); " <<
+//                    "mapped " << opt->transSearch.nTransMappedKOs << " KOs out of " <<
+//                    opt->transSearch.nKODB << " KOs (" <<
+//                    getPercentage(opt->transSearch.nTransMappedKOs, opt->transSearch.nKODB) <<
+//                    " %); " << 
+//                    "mapped " << opt->transSearch.nTransMappedGOs << " GO sets out of " <<
+//                    opt->transSearch.nGODB << " GO sets (" <<
+//                    getPercentage(opt->transSearch.nTransMappedGOs, opt->transSearch.nGODB) <<
+//                    " %); " << 
+                    "mapped " << opt->transSearch.nTransMappedIds << " S2f ids out of " <<
+                    opt->transSearch.nIdDB << " S2f ids (" <<
+                    getPercentage(opt->transSearch.nTransMappedIds, opt->transSearch.nIdDB) <<
                     " %)" << endl << endl;
-            opt.transSearch.reset2Default();
-            opt.mHomoSearchOptions.reset2Default();
+            opt->transSearch.reset2Default();
+            opt->mHomoSearchOptions.reset2Default();
+            
         }
 
-        HtmlReporterAll hra(&opt);
+        HtmlReporterAll hra(opt);
         hra.report();
         time_t t_total = time(NULL);
         auto timeUsed = difftime(t_total, t_begin);
-        cerr << endl << "Seq2Fun v" << SEQ2FUNR_VER << ", time used: " << convertSeconds(timeUsed) << ", processed " << opt.samples.size() << " samples" << endl << endl;
-        opt.samples.clear();
-        opt.samples.shrink_to_fit();
+        cerr << endl << "Seq2Fun v" << SEQ2FUNR_VER << ", time used: " << convertSeconds(timeUsed) << ", processed " << opt->samples.size() << " samples" << endl << endl;
+        opt->samples.clear();
+        opt->samples.shrink_to_fit();
     }
-    if (tbwtfmiDB) delete tbwtfmiDB;
+    if (tbwtfmiDB != NULL) {
+        delete tbwtfmiDB;
+        tbwtfmiDB = NULL;
+    }
+    if(opt != NULL){
+        delete opt;
+        opt = NULL;
+    }
     return 0;
 }

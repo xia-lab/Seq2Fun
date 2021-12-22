@@ -3,7 +3,7 @@
 #include <memory.h>
 #include <unistd.h>
 
-ThreadsConfig2::ThreadsConfig2(Options* opt, int threadId) {
+ThreadsConfig2::ThreadsConfig2(Options* & opt, int threadId) {
     mOptions = opt;
     mThreadId = threadId;
     mWriter1 = NULL;

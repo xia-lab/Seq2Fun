@@ -408,7 +408,7 @@ public:
     CodonTable tCodonTable;
     std::unordered_map<std::string, uint32 > totalKoFreqUMapResults;
     std::unordered_map<std::string, uint32 > totalGoFreqUMapResults;
-    std::unordered_map<std::string, uint32 > totalIdFreqUMapResults;
+    std::map<const uint32 *, uint32 > totalIdFreqUMapResults;
     std::map<long, int> rarefactionMap;
     std::map<long, int> rarefactionIdMap;
     std::unordered_map<std::string, int> totalPathwayMap;
@@ -431,8 +431,8 @@ public:
         seedLength = 7;
         allFragments = false;
 
-        size_t max_matches_SI = 10000;
-        size_t max_match_ids = 10000;
+        max_matches_SI = 10000;
+        max_match_ids = 10000;
 
         transSearchFinished = false;
         sampleKOAbunUMap.clear();
@@ -458,6 +458,7 @@ public:
         nOrgsDB = 0;
         nMappedOrgs = 0;
         timeLapse = 0;
+        orthIdSet.clear();
     }
 
     void reset2Default() {
@@ -506,7 +507,7 @@ public:
     CodonTable codonTable;
     std::unordered_set<std::string> koUSet;
     std::unordered_set<std::string> goUSet;
-    std::unordered_set<std::string> idUSet;
+    std::unordered_set<uint32> idUSet;
     atomic_long nTransMappedKOReads;
     atomic_long nTransMappedGOReads;
     atomic_long nTransMappedIdReads;
@@ -520,6 +521,7 @@ public:
     int nPathwaysDB;
     int nOrgsDB;
     int nMappedOrgs;
+    std::map<const uint32 *, uint32 > totalIdFreqUMapResults;
     std::vector< std::tuple <std::string, uint32, std::string> > sortedKOFreqTupleVector;
     std::vector< std::tuple <std::string, uint32, std::string> > sortedIdFreqTupleVector;
     std::vector<std::tuple<std::string, double, std::string, int, int> > sortedPathwayFreqTupleVector;
@@ -528,6 +530,7 @@ public:
     std::vector<std::pair<std::string, int> > sortedOrgFreqVec;
     std::unordered_map<std::string, int> sampleKOAbunUMap;
     bool transSearchFinished;
+    std::set< uint32> orthIdSet;
 };
 
 class geneKoGoComb{
@@ -535,26 +538,27 @@ public:
     std::string ko;
     std::string go;
     std::string spec;
-    std::string org;
-    std::string id;
+    std::string symbol;
+    std::string gene;
+//    uint32 id;
     //std::string gid;
-    unsigned short int nGos;
-    unsigned short int nKos;
-    std::string getKo(){ return ko;};
-    std::string getGo(){ return go;};
-    std::string getSpec(){ return spec;};
-    std::string getOrg(){ return org;};
-    std::string getId(){ return id;};
+//    unsigned short int nGos;
+//    unsigned short int nKos;
+//    std::string getKo(){ return ko;};
+//    std::string getGo(){ return go;};
+//    std::string getSpec(){ return spec;};
+//    std::string getSymbol(){ return symbol;};
+//    std::string getGene(){ return gene;};
+//    std::string getFull(){return (ko + "\t" + go + "\t" + symbol + "\t" + gene);};
+//    uint32 getId(){ return id;};
 public:
     geneKoGoComb(){
-        ko = "UNASSIGNED";
-        go = "UNASSIGNED";
-        spec = "UNASSIGNED";
-        org = "UNASSIGNED";
-        id = "UNASSIGNED";
-        //gid = "UNASSIGNED";
-        nGos = 0;
-        nKos = 0;
+        ko = "U";
+        go = "U";
+        spec = "U";
+//        id = 0;
+        symbol = "U";
+        gene = "U";
     }
 };
 
@@ -588,8 +592,9 @@ public:
     long nCleanReads;
     long nTotalReads;
 
-    std::map<std::string, geneKoGoComb> fullDbMap;
-    std::map<std::string, std::string> idDbMap;
+    std::map<const uint32*, const geneKoGoComb> fullDbMap;
+    std::map<const std::string, const uint32*> idDbMap;
+    //std::multimap<uint32, geneKoGoComb> fullidDbMMap;
     //std::map<std::string, std::string> db_map;
     //std::map<std::string, std::string> org_map;
     std::multimap<std::string, std::string> pathway_ko_multimap;
@@ -648,6 +653,7 @@ public:
 class Options {
 public:
     Options();
+    ~Options();
     void init();
     bool isPaired();
     bool validate();

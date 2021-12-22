@@ -144,6 +144,10 @@ string Read::toStringWithTag(string tag) {
 	return mName + "\t" + tag + "\n" + mSeq.mStr + "\n" + mStrand + "\n" + mQuality + "\n";
 }
 
+string Read::toStringWithTag(uint32 * tag) {
+	return mName + "\t" + "s2f_" + std::to_string(*tag) + "\n" + mSeq.mStr + "\n" + mStrand + "\n" + mQuality + "\n";
+}
+
 string Read::toStringWithTagRm() {
 	return removeStrs(mName) + "\n" + mSeq.mStr + "\n" + mStrand + "\n" + mQuality + "\n";
 }

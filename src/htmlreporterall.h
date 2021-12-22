@@ -20,7 +20,7 @@ using namespace std;
 
 class HtmlReporterAll {
 public:
-    HtmlReporterAll(Options* opt);
+    HtmlReporterAll(Options* & opt);
     ~HtmlReporterAll();
     void report();
     static void outputRow(ofstream& ofs, string key, long value);
@@ -53,7 +53,7 @@ private:
     static string list2string2(std::vector<string> & x_vec, int top);
     std::vector<std::string> smNmVec;
     std::vector<std::vector<std::string> > koFreqVec;
-    std::vector<std::vector<std::string> > idFreqVec;
+    std::vector<std::pair<const uint32*, std::vector<uint32> > > idFreqVec;
     std::vector<std::vector<std::string> > pathwayFreqVec;
     std::vector<std::vector<std::string> > orgFreqVec;
     

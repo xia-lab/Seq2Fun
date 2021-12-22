@@ -17,7 +17,7 @@ using namespace std;
 
 class JsonReporter{
 public:
-    JsonReporter(Options* opt);
+    JsonReporter(Options* & opt);
     ~JsonReporter();
 
     void setDupHist(int* dupHist, double* dupMeanGC, double dupRate);

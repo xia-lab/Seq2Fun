@@ -3,7 +3,7 @@
 #include <memory.h>
 #include <math.h>
 
-Duplicate::Duplicate(Options* opt) {
+Duplicate::Duplicate(Options* & opt) {
     mOptions = opt;
     mKeyLenInBase = mOptions->duplicate.keylen;
     mKeyLenInBit = 1<<(2*mKeyLenInBase);

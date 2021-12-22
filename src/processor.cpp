@@ -2,14 +2,14 @@
 #include "peprocessor.h"
 #include "seprocessor.h"
 
-Processor::Processor(Options* opt){
+Processor::Processor(Options* & opt){
     mOptions = opt;
 }
 
 Processor::~Processor(){
 }
 
-bool Processor::process(BwtFmiDB * tbwtfmiDB) {
+bool Processor::process(BwtFmiDB * & tbwtfmiDB) {
     if(mOptions->isPaired()) {
         PairEndProcessor p(mOptions, tbwtfmiDB);
         p.process();

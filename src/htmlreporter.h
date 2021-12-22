@@ -18,7 +18,7 @@ using namespace std;
 
 class HtmlReporter{
 public:
-    HtmlReporter(Options* opt);
+    HtmlReporter(Options* & opt);
     ~HtmlReporter();
     void setDupHist(int* dupHist, double* dupMeanGC, double dupRate);
     void setInsertHist(atomic_long* insertHist, int insertSizePeak);

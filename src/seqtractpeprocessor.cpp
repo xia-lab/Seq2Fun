@@ -79,24 +79,25 @@ bool SeqTractPeProcessor::processReads(ReadPack* pack){
                         }
                     }
                 }
-            } else if (vec.size() > 2 && !mOptions->s2fid4Strct) {
-                auto feature = vec[2];
-                if (starts_with(feature, "K")) {
-                    auto sample = getVecIndex(mOptions->mSeqExtractions.targetGenesSubVec, feature);
-                    if (sample != -1) {
-                        featureUSet.insert(feature);
-                        mOptions->mSeqExtractions.numFeaturesProcessedUSet.insert(feature);
-                        outputs[sample] += r->toStringWithTagRm();
-                    } else {
-                        if (getVecIndex(mOptions->mSeqExtractions.targetGenesVec, feature) != -1) {
-                            sample = mSampleSize;
-                            outputs[sample] += r->toString();
-                        }
-                    }
-                }
-            } else {
-                
-            }
+            } 
+//            else if (vec.size() > 2 && !mOptions->s2fid4Strct) {
+//                auto feature = vec[2];
+//                if (starts_with(feature, "K")) {
+//                    auto sample = getVecIndex(mOptions->mSeqExtractions.targetGenesSubVec, feature);
+//                    if (sample != -1) {
+//                        featureUSet.insert(feature);
+//                        mOptions->mSeqExtractions.numFeaturesProcessedUSet.insert(feature);
+//                        outputs[sample] += r->toStringWithTagRm();
+//                    } else {
+//                        if (getVecIndex(mOptions->mSeqExtractions.targetGenesVec, feature) != -1) {
+//                            sample = mSampleSize;
+//                            outputs[sample] += r->toString();
+//                        }
+//                    }
+//                }
+//            } else {
+//                
+//            }
         }
         delete r;
     }

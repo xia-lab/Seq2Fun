@@ -2,22 +2,25 @@
 
 #include "transsearcher.hpp"
 
-TransSearcher::TransSearcher(Options * opt, BwtFmiDB * tbwtfmiDB) {
+TransSearcher::TransSearcher(Options * & opt, BwtFmiDB * & mBwtfmiDB) {
     mOptions = opt;
-    this->tbwtfmiDB = tbwtfmiDB;
-    subKoFreqUMap.clear();
-    subOrgKOAbunUMMap.clear();
-    orgSet.clear();
-    koUSet.clear();
-    subGoFreqUMap.clear();
-    goUSet.clear();
-    tmpGoVec.clear();
-    tmpGoVec.reserve(100);
-    idUSet.clear();
-    subIdFreqUMap.clear();
-    tmpGeneKGI.clear();
-    tmpGeneKGIGo.clear();
-    tmpGeneKGIKo.clear();
+    tbwtfmiDB = mBwtfmiDB;
+    //matched_genids.clear();
+    idFreqSubMap.clear();
+    tmpIdFreqMap.clear();
+//    subKoFreqUMap.clear();
+//    subOrgKOAbunUMMap.clear();
+//    orgSet.clear();
+//    koUSet.clear();
+//    subGoFreqUMap.clear();
+//    goUSet.clear();
+//    tmpGoVec.clear();
+//    tmpGoVec.reserve(100);
+//    idUSet.clear();
+//    subIdFreqUMap.clear();
+//    tmpGeneKGI.clear();
+//    tmpGeneKGIGo.clear();
+//    tmpGeneKGIKo.clear();
     blosum_subst = {
         {'A',
             {'S', 'V', 'T', 'G', 'C', 'P', 'M', 'K', 'L', 'I', 'E', 'Q', 'R', 'Y', 'F', 'H', 'D', 'N', 'W'}},
@@ -878,7 +881,7 @@ void TransSearcher::getLongestFragmentsBits(const std::string &line) {
     }
 
     min_len_cutoff = min(mOptions->transSearch.maxTransLength, max(min_len_cutoff, mOptions->transSearch.minAAFragLength));
-
+    
     for (unsigned int i = 0; i <= 2; i++) {
         translations[i].clear();
     }
@@ -1094,13 +1097,13 @@ void TransSearcher::flush_output(){
     static std::mutex m;
     {
         std::lock_guard<std::mutex> out_lock(m);
-        mOptions->transSearch.koUSet.insert(koUSet.begin(), koUSet.end());
-        mOptions->transSearch.goUSet.insert(goUSet.begin(), goUSet.end());
-        mOptions->transSearch.idUSet.insert(idUSet.begin(), idUSet.end());
+//        mOptions->transSearch.koUSet.insert(koUSet.begin(), koUSet.end());
+//        mOptions->transSearch.goUSet.insert(goUSet.begin(), goUSet.end());
+//        mOptions->transSearch.idUSet.insert(idUSet.begin(), idUSet.end());
     }
-    koUSet.clear();
-    goUSet.clear();
-    idUSet.clear();
+//    koUSet.clear();
+//    goUSet.clear();
+//    idUSet.clear();
 }
 
 void TransSearcher::clearFragments() {
@@ -1201,7 +1204,7 @@ void TransSearcher::classify_greedyblosum() {
     if (best_matches_SI.empty()) {
         return;
     }
-
+ 
     if (mOptions->transSearch.useEvalue) {
         //calc e-value and only return match if > cutoff
 
@@ -1227,7 +1230,7 @@ void TransSearcher::classify_greedyblosum() {
         //recursive_free_SI(itm);
         free(itm);
     }
-    doProcess();
+    //doProcess();
 }
 
 void TransSearcher::classify_length() {
@@ -1299,10 +1302,10 @@ void TransSearcher::classify_length() {
         recursive_free_SI(itm);
     }
     
-    doProcess();
+    //doProcess();
 }
 
-void TransSearcher::preProcess(){
+ void TransSearcher::preProcess(){
      if (mOptions->mHomoSearchOptions.profiling || mOptions->verbose) {
         read_count++;
         if (read_count > 10000) {
@@ -1310,33 +1313,33 @@ void TransSearcher::preProcess(){
                flush_output(); 
             }
             if (mOptions->mHomoSearchOptions.profiling) {
-                priOrgKOAbunUMap.clear();
-                for (const auto & org : orgSet) {
-                    auto it = tmpOrgKOAbunUMMap.equal_range(org);
-                    tmpKOFreqMMap.clear();
-                    for (auto & itr = it.first; itr != it.second; itr++) {
-                        tmpKOFreqMMap.insert(itr->second); //get the same org's ko freq map;
-                    }
-                    tmpKOFreqUMap.clear();
-                    for (auto itt = tmpKOFreqMMap.begin(), end = tmpKOFreqMMap.end();
-                            itt != end;
-                            itt = tmpKOFreqMMap.upper_bound(itt->first)) {//get the unique ko
-                        auto ko = itt->first; //itt->first is the ko;
-                        auto itk = tmpKOFreqMMap.equal_range(ko); // unique ko range; 
-                        double koFreq = 0;
-                        for (auto & itko = itk.first; itko != itk.second; itko++) {//get each ko's freq;
-                            //tmpKOFreqUMap[itko->first] += itko->second;
-                            koFreq += itko->second;
-                        }
-                        tmpKOFreqUMap[ko] = koFreq;
-                    }
-                    tmpKOFreqMMap.clear();
-                    priOrgKOAbunUMap[org] = tmpKOFreqUMap;
-                    tmpKOFreqUMap.clear();
-                }
-                tmpOrgKOAbunUMMap.clear();
-                subOrgKOAbunUMMap.insert(priOrgKOAbunUMap.begin(), priOrgKOAbunUMap.end());
-                priOrgKOAbunUMap.clear();
+//                priOrgKOAbunUMap.clear();
+//                for (const auto & org : orgSet) {
+//                    auto it = tmpOrgKOAbunUMMap.equal_range(org);
+//                    tmpKOFreqMMap.clear();
+//                    for (auto & itr = it.first; itr != it.second; itr++) {
+//                        tmpKOFreqMMap.insert(itr->second); //get the same org's ko freq map;
+//                    }
+//                    tmpKOFreqUMap.clear();
+//                    for (auto itt = tmpKOFreqMMap.begin(), end = tmpKOFreqMMap.end();
+//                            itt != end;
+//                            itt = tmpKOFreqMMap.upper_bound(itt->first)) {//get the unique ko
+//                        auto ko = itt->first; //itt->first is the ko;
+//                        auto itk = tmpKOFreqMMap.equal_range(ko); // unique ko range; 
+//                        double koFreq = 0;
+//                        for (auto & itko = itk.first; itko != itk.second; itko++) {//get each ko's freq;
+//                            //tmpKOFreqUMap[itko->first] += itko->second;
+//                            koFreq += itko->second;
+//                        }
+//                        tmpKOFreqUMap[ko] = koFreq;
+//                    }
+//                    tmpKOFreqMMap.clear();
+//                    priOrgKOAbunUMap[org] = tmpKOFreqUMap;
+//                    tmpKOFreqUMap.clear();
+//                }
+//                tmpOrgKOAbunUMMap.clear();
+//                subOrgKOAbunUMMap.insert(priOrgKOAbunUMap.begin(), priOrgKOAbunUMap.end());
+//                priOrgKOAbunUMap.clear();
             }
             read_count = 0;
         }
@@ -1344,163 +1347,212 @@ void TransSearcher::preProcess(){
 }
 
 void TransSearcher::doProcess(){
-    tmpKOVec.clear();
-    tmpKOVec.reserve(match_ids.size());
-    tmpKOProteinUMMap.clear();
-    tmpGOVec.clear();//could use the sampe tmpKOVec;
-    tmpGOVec.reserve(match_ids.size());
-    tmpIdVec.clear();//could use the sampe tmpKOVec;
-    tmpIdVec.reserve(match_ids.size());
-    tmpGeneKGI.clear();
-    tmpGeneKGI.reserve(match_ids.size());
-    tmpGeneKGIGo.clear();
-    tmpGeneKGIGo.reserve(match_ids.size());
-    tmpGeneKGIKo.clear();
-    tmpGeneKGIKo.reserve(match_ids.size());
-    colorCout(match_ids.size(), "green");
-    for (const auto & it : match_ids) {
-        auto gokoit = mOptions->mHomoSearchOptions.fullDbMap.find(it);
-        if (gokoit != mOptions->mHomoSearchOptions.fullDbMap.end()) {
-            tmpGKG = gokoit->second;
-            if (tmpGKG.ko != "UNASSIGNED") {
-                tmpKOVec.emplace_back(tmpGKG.ko);
-                if (mOptions->mHomoSearchOptions.profiling) {
-                    tmpKOProteinUMMap.insert(std::pair<std::string, std::string> (tmpGKG.ko, gokoit->first)); //ko protein;
-                }
-            }
-            
-            if(tmpGKG.go != "UNASSIGNED"){
-                tmpGOVec.emplace_back(tmpGKG.go);
-            }
-            
-//            if(tmpGKG.id != "UNASSIGNED"){
-//                tmpIdVec.emplace_back(tmpGKG.id);
+//    tmpKOVec.clear();
+//    tmpKOVec.reserve(match_ids.size());
+//    tmpKOProteinUMMap.clear();
+//    tmpGOVec.clear();//could use the sampe tmpKOVec;
+//    tmpGOVec.reserve(match_ids.size());
+//    tmpIdVec.clear();//could use the sampe tmpKOVec;
+//    tmpIdVec.reserve(match_ids.size());
+//    tmpGeneKGI.clear();
+//    tmpGeneKGI.reserve(match_ids.size());
+//    tmpGeneKGIGo.clear();
+//    tmpGeneKGIGo.reserve(match_ids.size());
+//    tmpGeneKGIKo.clear();
+//    tmpGeneKGIKo.reserve(match_ids.size());
+    
+    //colorCout(match_ids.size());
+//    for(const auto & it : match_ids){
+//        //std::cout << it << " ";
+//        auto itd = mOptions->mHomoSearchOptions.idDbMap.find(it);
+//        if(itd != mOptions->mHomoSearchOptions.idDbMap.end()){
+//            matched_genids.insert(&(itd->second));
+//            //std::cout << itd->second << " ";
+//        }
+//    }
+    
+//    for (const auto & it : match_ids) {
+//        auto gokoit = mOptions->mHomoSearchOptions.fullDbMap.find(it);
+//        if (gokoit != mOptions->mHomoSearchOptions.fullDbMap.end()) {
+//            tmpGKG = gokoit->second;
+//            if (tmpGKG.ko != "U") {
+//                tmpKOVec.emplace_back(tmpGKG.ko);
+//                if (mOptions->mHomoSearchOptions.profiling) {
+//                    tmpKOProteinUMMap.insert(std::pair<std::string, std::string> (tmpGKG.ko, gokoit->first)); //ko protein;
+//                }
 //            }
-            
-            if(tmpGKG.nGos != 0 && tmpGKG.nKos != 0){
-                tmpGeneKGI.emplace_back(tmpGKG);
-            } else {
-                if(tmpGKG.nGos != 0){
-                    tmpGeneKGIGo.emplace_back(tmpGKG);
-                } else {
-                    tmpGeneKGIKo.emplace_back(tmpGKG);
-                    //tmpKOVec.emplace_back(it);//attention
-                }
-            }
-        }
-    }
+//            
+//            if(tmpGKG.go != "U"){
+//                tmpGOVec.emplace_back(tmpGKG.go);
+//            }
+//            
+//            if(tmpGKG.nGos != 0 && tmpGKG.nKos != 0){
+//                tmpGeneKGI.emplace_back(tmpGKG);
+//            } else {
+//                if(tmpGKG.nGos != 0){
+//                    tmpGeneKGIGo.emplace_back(tmpGKG);
+//                } else {
+//                    tmpGeneKGIKo.emplace_back(tmpGKG);
+//                    //tmpKOVec.emplace_back(it);//attention
+//                }
+//            }
+//        }
+//    }
     
-    if(!tmpGeneKGI.empty()){
-        sort(tmpGeneKGI.begin(), tmpGeneKGI.end(), 
-            [](const geneKoGoComb & l, const geneKoGoComb & r){
-                return l.nGos > r.nGos || (l.nGos == r.nGos && l.nKos > r.nKos);
-            });
-        int nGs = tmpGeneKGI.at(0).nGos;
-        for (const geneKoGoComb & igk : tmpGeneKGI) {
-            if (igk.nGos == nGs) {
-                tmpIdVec.emplace_back(igk.id);
-            }
-        }
-    } else {
-        
-        if(!tmpGeneKGIGo.empty()){
-            sort(tmpGeneKGIGo.begin(), tmpGeneKGIGo.end(), 
-            [](const geneKoGoComb & l, const geneKoGoComb & r){
-                return l.nGos > r.nGos;
-            });
-            
-            int nGs = tmpGeneKGIGo.at(0).nGos;
-            
-            for(const geneKoGoComb & igk : tmpGeneKGIGo){
-                if(igk.nGos == nGs){
-                    tmpIdVec.emplace_back(igk.id);
-                }
-            }
-            
-        } else {
-            for (const geneKoGoComb & igk : tmpGeneKGIKo) {
-                 tmpIdVec.emplace_back(igk.id);
-            }
-        }
-    }
+//    if(!tmpGeneKGI.empty()){
+//        sort(tmpGeneKGI.begin(), tmpGeneKGI.end(), 
+//            [](const geneKoGoComb & l, const geneKoGoComb & r){
+//                return l.nGos > r.nGos || (l.nGos == r.nGos && l.nKos > r.nKos);
+//            });
+//        int nGs = tmpGeneKGI.at(0).nGos;
+//        for (const geneKoGoComb & igk : tmpGeneKGI) {
+//            if (igk.nGos == nGs) {
+//                tmpIdVec.emplace_back(igk.id);
+//            }
+//        }
+//    } else {
+//        
+//        if(!tmpGeneKGIGo.empty()){
+//            sort(tmpGeneKGIGo.begin(), tmpGeneKGIGo.end(), 
+//            [](const geneKoGoComb & l, const geneKoGoComb & r){
+//                return l.nGos > r.nGos;
+//            });
+//            
+//            int nGs = tmpGeneKGIGo.at(0).nGos;
+//            
+//            for(const geneKoGoComb & igk : tmpGeneKGIGo){
+//                if(igk.nGos == nGs){
+//                    tmpIdVec.emplace_back(igk.id);
+//                }
+//            }
+//            
+//        } else {
+//            for (const geneKoGoComb & igk : tmpGeneKGIKo) {
+//                 tmpIdVec.emplace_back(igk.id);
+//            }
+//        }
+//    }
     
-    tmpGeneKGI.clear();
-    tmpGeneKGI.shrink_to_fit();
-    tmpGeneKGIGo.clear();
-    tmpGeneKGIGo.shrink_to_fit();
-    tmpGeneKGIKo.clear();
-    tmpGeneKGIKo.shrink_to_fit();
-    extraoutput = tmpKOVec.empty() ? "" : getMostFreqStrFromVec(tmpKOVec);
-    extraoutputGO = tmpGOVec.empty() ? "" : getMostFreqStrFromVec(tmpGOVec);
-    extraoutputId = tmpIdVec.empty() ? "" : getMostFreqStrFromVec(tmpIdVec);
-    tmpKOVec.clear();
-    tmpKOVec.shrink_to_fit();
-    tmpGOVec.clear();
-    tmpGOVec.shrink_to_fit();
-    tmpIdVec.clear();
-    tmpIdVec.shrink_to_fit();
+//    tmpGeneKGI.clear();
+//    tmpGeneKGI.shrink_to_fit();
+//    tmpGeneKGIGo.clear();
+//    tmpGeneKGIGo.shrink_to_fit();
+//    tmpGeneKGIKo.clear();
+//    tmpGeneKGIKo.shrink_to_fit();
+//    extraoutput = tmpKOVec.empty() ? "" : getMostFreqStrFromVec(tmpKOVec);
+//    extraoutputGO = tmpGOVec.empty() ? "" : getMostFreqStrFromVec(tmpGOVec);
+//    extraoutputId = tmpIdVec.empty() ? 0 : getMostFreqStrFromVec(tmpIdVec);
+//    tmpKOVec.clear();
+//    tmpKOVec.shrink_to_fit();
+//    tmpGOVec.clear();
+//    tmpGOVec.shrink_to_fit();
+//    tmpIdVec.clear();
+//    tmpIdVec.shrink_to_fit();
 }
 
-void TransSearcher::postProcess() {
-    if (extraoutputId.length() > 0) {
-        outputStr = extraoutputId;
-        subIdFreqUMap[extraoutputId]++;
-        if (mOptions->verbose) {
-            idUSet.insert(extraoutputId);
-        }
+uint32 * TransSearcher::postProcess() {
 
-        if (extraoutput.length() > 0) {
-            outputStr += "\t" + extraoutput;
-            subKoFreqUMap[extraoutput]++;
-            if (mOptions->verbose) {
-                koUSet.insert(extraoutput);
-            }
-            if (mOptions->mHomoSearchOptions.profiling) {
-                if (tmpKOProteinUMMap.size() == 1) {
-                    auto proteinID = tmpKOProteinUMMap.begin()->second;
-                    //auto org = mOptions->mHomoSearchOptions.org_map.find(proteinID)->second;
-                    auto org = mOptions->mHomoSearchOptions.fullDbMap.find(proteinID)->second.spec;
-                    orgSet.insert(org);
-                    auto KOAbunPair = std::make_pair(tmpKOProteinUMMap.begin()->first, (double) 1);
-                    tmpOrgKOAbunUMMap.insert(std::pair<std::string, std::pair < std::string, double> >(org, KOAbunPair));
-                } else {
-                    auto count = tmpKOProteinUMMap.count(extraoutput);
-                    double doubleNum = (double) 1 / count;
-                    auto it = tmpKOProteinUMMap.equal_range(extraoutput);
-                    for (auto itr = it.first; itr != it.second; ++itr) {
-                        auto org = mOptions->mHomoSearchOptions.fullDbMap.find(itr->second)->second.spec;
-                        //auto org = mOptions->mHomoSearchOptions.org_map.find(itr->second)->second;
-                        orgSet.insert(org);
-                        auto KOAbunPair = std::make_pair(it.first->first, doubleNum);
-                        tmpOrgKOAbunUMMap.insert(std::pair<std::string, std::pair < std::string, double > >(org, KOAbunPair));
-                    }
-                }
-            }
-        } else {
-            outputStr += "\tUNASSIGNED";
+    for (const auto & it : match_ids) {
+        //std::cout << it << " ";
+        auto itd = mOptions->mHomoSearchOptions.idDbMap.find(it);
+        if (itd != mOptions->mHomoSearchOptions.idDbMap.end()){
+            //matched_genids.insert(itd->second);
+            //std::cout << *itd->second << "\t";
+            tmpIdFreqMap[itd->second]++;
         }
-
-        if (extraoutputGO.length() > 0) {
-            outputStr += "\t" + extraoutputGO;
-            subGoFreqUMap[extraoutputGO]++;
-            if (mOptions->verbose) {
-                tmpGoVec.clear();
-                splitStr(extraoutputGO, tmpGoVec, ";");
-                goUSet.insert(tmpGoVec.begin(), tmpGoVec.end());
-            }
-        } else {
-            outputStr += "\tUNASSIGNED";
-        }
-
     }
+    match_ids.clear();
+    auto tmpId = std::max_element(tmpIdFreqMap.begin(), tmpIdFreqMap.end(), 
+            [](const std::pair<const uint32 *, uint32> & p1, const std::pair<const uint32 *, uint32> & p2){
+                return p1.second < p2.second;
+            });
+    
+    idFreqSubMap[tmpId->first]++;
+    tmpIdFreqMap.clear();
+    return const_cast<uint32 *>(tmpId->first);
+//    if (!matched_genids.empty()) {
+//
+//        if (matched_genids.size() == 1) {
+//            idFreqSubMap[*matched_genids.begin()]++;
+//        }
+//        
+//        
+////        if (matched_genids.size() == 1) {
+////            idFreqSubMap[*matched_genids.begin()]++;
+////            //std::cout << matched_genids.size() << " ";
+////            for (const auto & it : matched_genids) {
+////                //std::cout << "\033[1;32m" << *it << "\033[0m\t";
+////            }
+////        } else {
+////            //std::cout << matched_genids.size() << " ";
+////            for (const auto & it : matched_genids) {
+////                //std::cout << "\033[1;31m" << *it << "\033[0m\t";
+////            }
+////        }
+//        //std::cout << "\n";
+//    }
+       
+//    if (extraoutputId > 0) {
+//        outputStr = std::to_string(extraoutputId);
+//        subIdFreqUMap[extraoutputId]++;
+//        if (mOptions->verbose) {
+//            idUSet.insert(extraoutputId);
+//        }
+//
+//        if (extraoutput.length() > 0) {
+//            outputStr += "\t" + extraoutput;
+//            subKoFreqUMap[extraoutput]++;
+//            if (mOptions->verbose) {
+//                koUSet.insert(extraoutput);
+//            }
+//            if (mOptions->mHomoSearchOptions.profiling) {
+//                if (tmpKOProteinUMMap.size() == 1) {
+//                    auto proteinID = tmpKOProteinUMMap.begin()->second;
+//                    //auto org = mOptions->mHomoSearchOptions.org_map.find(proteinID)->second;
+//                    auto org = mOptions->mHomoSearchOptions.fullDbMap.find(proteinID)->second.spec;
+//                    orgSet.insert(org);
+//                    auto KOAbunPair = std::make_pair(tmpKOProteinUMMap.begin()->first, (double) 1);
+//                    tmpOrgKOAbunUMMap.insert(std::pair<std::string, std::pair < std::string, double> >(org, KOAbunPair));
+//                } else {
+//                    auto count = tmpKOProteinUMMap.count(extraoutput);
+//                    double doubleNum = (double) 1 / count;
+//                    auto it = tmpKOProteinUMMap.equal_range(extraoutput);
+//                    for (auto itr = it.first; itr != it.second; ++itr) {
+//                        auto org = mOptions->mHomoSearchOptions.fullDbMap.find(itr->second)->second.spec;
+//                        //auto org = mOptions->mHomoSearchOptions.org_map.find(itr->second)->second;
+//                        orgSet.insert(org);
+//                        auto KOAbunPair = std::make_pair(it.first->first, doubleNum);
+//                        tmpOrgKOAbunUMMap.insert(std::pair<std::string, std::pair < std::string, double > >(org, KOAbunPair));
+//                    }
+//                }
+//            }
+//        } else {
+//            outputStr += "\tU";
+//        }
+
+//        if (extraoutputGO.length() > 0) {
+//            outputStr += "\t" + extraoutputGO;
+//            subGoFreqUMap[extraoutputGO]++;
+//            if (mOptions->verbose) {
+//                tmpGoVec.clear();
+//                splitStr(extraoutputGO, tmpGoVec, ";");
+//                goUSet.insert(tmpGoVec.begin(), tmpGoVec.end());
+//            }
+//        } else {
+//            outputStr += "\tU";
+//        }
+//
+//    }
 }
 
-std::string TransSearcher::transSearch(Read *item) {
-    preProcess();
-    outputStr = "";
-    extraoutput = "";
-    extraoutputGO = "";
-    extraoutputId = "";
+void TransSearcher::transSearch(Read *item, uint32* & orthId) {
+    //matched_genids.clear();
+    tmpIdFreqMap.clear();
+    //preProcess();
+//    outputStr = "";
+//    extraoutput = "";
+//    extraoutputGO = "";
+    //extraoutputId = 0;
     query_len = static_cast<double> (item->length()) / 3.0;
     if (item->mSeq.length() >= mOptions->transSearch.minAAFragLength * 3) {
         if (mOptions->debug)
@@ -1525,16 +1577,23 @@ std::string TransSearcher::transSearch(Read *item) {
     }
 
     clearFragments();
-    postProcess();
-    return outputStr;
+    if(!match_ids.empty()){
+      orthId = postProcess(); 
+    }
+    //return matched_genids.size() == 1 ? &(**matched_genids.begin()) : dummyPointer;
+//    if(matched_genids.size() == 1) {
+//        orthId = const_cast<uint32 *>(*matched_genids.begin());
+//    }
 }
 
-std::string TransSearcher::transSearch(Read *item1, Read *item2) {
-    preProcess();
-    outputStr = "";
-    extraoutput = "";
-    extraoutputGO = "";
-    extraoutputId = "";
+void TransSearcher::transSearch(Read *item1, Read *item2, uint32* & orthId) {
+     //matched_genids.clear();
+    tmpIdFreqMap.clear();
+    //preProcess();
+//    outputStr = "";
+//    extraoutput = "";
+//    extraoutputGO = "";
+    //extraoutputId = 0;
     query_len = static_cast<double> (item1->length()) / 3.0;
     if (item1->length() >= mOptions->transSearch.minAAFragLength * 3) {
         if (mOptions->debug)
@@ -1569,8 +1628,15 @@ std::string TransSearcher::transSearch(Read *item1, Read *item2) {
         assert(false);
     }
     clearFragments();
-    postProcess();
-    return outputStr;
+    
+    if (!match_ids.empty()) {
+        orthId = postProcess();
+    }
+ 
+    //return matched_genids.size() == 1 ? &(**matched_genids.begin()) : dummyPointer;
+//    if (matched_genids.size() == 1) {
+//        orthId = const_cast<uint32 *> (*matched_genids.begin());
+//    }
 }
 
 void TransSearcher::ids_from_SI(SI *si) {
@@ -1601,30 +1667,50 @@ void TransSearcher::ids_from_SI_recursive(SI *si) {
     } // end while all SI with same length
 }
 
-std::unordered_map<std::string, std::unordered_map<std::string, double> > TransSearcher::getSubOrgKOAbunUMap() {
-    priOrgKOAbunUMap.clear();
-    for (const auto & org : orgSet) {
-        auto it = subOrgKOAbunUMMap.equal_range(org);
-        tmpKOFreqMMap.clear();
-        for(auto & itr = it.first; itr != it.second; itr++){
-            tmpKOFreqMMap.insert(itr->second.begin(), itr->second.end());
-        }
-        tmpKOFreqUMap.clear();
-        for(auto itt = tmpKOFreqMMap.begin(), end = tmpKOFreqMMap.end(); 
-                itt != end;
-                itt = tmpKOFreqMMap.upper_bound(itt->first)){
-            auto ko = itt->first;
-            auto itk = tmpKOFreqMMap.equal_range(ko);
-            double koFreq = 0;
-            for(auto & itko = itk.first; itko != itk.second; itko++){
-                koFreq += itko->second;
+std::map<const uint32 *, uint32> TransSearcher::merge(std::vector<std::map<const uint32 *, uint32>> & list){
+    std::map<const uint32*, uint32> idFreqMap;
+    std::map<const uint32*, uint32>::iterator itt;
+    for(const auto & it : list){
+        for(const auto & itr : it){
+            if (idFreqMap.empty()) {
+                idFreqMap.insert(std::pair<const uint32*, uint32>(itr.first, itr.second));
+            } else {
+                itt = idFreqMap.find(itr.first);
+                if (itt == idFreqMap.end()) {
+                    idFreqMap.insert(std::pair<const uint32*, uint32>(itr.first, itr.second));
+                } else {
+                    itt->second += itr.second;
+                }
             }
-            tmpKOFreqUMap[ko] = koFreq;
         }
-        tmpKOFreqMMap.clear();
-        priOrgKOAbunUMap[org] = tmpKOFreqUMap;
-        tmpKOFreqUMap.clear();
     }
-    subOrgKOAbunUMMap.clear();
-    return(priOrgKOAbunUMap);
+    return idFreqMap; 
 }
+
+//std::unordered_map<std::string, std::unordered_map<std::string, double> > TransSearcher::getSubOrgKOAbunUMap() {
+//    priOrgKOAbunUMap.clear();
+//    for (const auto & org : orgSet) {
+//        auto it = subOrgKOAbunUMMap.equal_range(org);
+//        tmpKOFreqMMap.clear();
+//        for(auto & itr = it.first; itr != it.second; itr++){
+//            tmpKOFreqMMap.insert(itr->second.begin(), itr->second.end());
+//        }
+//        tmpKOFreqUMap.clear();
+//        for(auto itt = tmpKOFreqMMap.begin(), end = tmpKOFreqMMap.end(); 
+//                itt != end;
+//                itt = tmpKOFreqMMap.upper_bound(itt->first)){
+//            auto ko = itt->first;
+//            auto itk = tmpKOFreqMMap.equal_range(ko);
+//            double koFreq = 0;
+//            for(auto & itko = itk.first; itko != itk.second; itko++){
+//                koFreq += itko->second;
+//            }
+//            tmpKOFreqUMap[ko] = koFreq;
+//        }
+//        tmpKOFreqMMap.clear();
+//        priOrgKOAbunUMap[org] = tmpKOFreqUMap;
+//        tmpKOFreqUMap.clear();
+//    }
+//    subOrgKOAbunUMMap.clear();
+//    return(priOrgKOAbunUMap);
+//}

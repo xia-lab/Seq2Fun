@@ -5,7 +5,7 @@
 
 extern string command;
 
-HtmlReporter::HtmlReporter(Options* opt){
+HtmlReporter::HtmlReporter(Options* & opt){
     mOptions = opt;
     mDupHist = NULL;
     mDupRate = 0.0;
@@ -467,60 +467,93 @@ void HtmlReporter::reportRarefactionId(ofstream& ofs){
 }
 
 void HtmlReporter::reportBarPlotId(ofstream& ofs){
-    std::vector<std::string> x_vec;
-    std::vector<double> y_vec;
-    std::vector<std::string> y_lable_vec;
-    
-    int total = mOptions->transSearch.sortedIdFreqTupleVector.size();
-    int top = 50;
-    top = min(top, total);
-
-    for (int i = 0; i < total; i++) {
-        auto it = mOptions->transSearch.sortedIdFreqTupleVector.at(i);
-        x_vec.push_back(get<0>(it));
-        y_vec.push_back((double) get<1>(it));
-        y_lable_vec.push_back(get<2>(it));
-    }
-    
-    mOptions->transSearch.sortedIdFreqTupleVector.clear();
-    mOptions->transSearch.sortedIdFreqTupleVector.shrink_to_fit();
-
-    ofs << "<div class='subsection_title' onclick=showOrHide('plot_id_hits')><a name='summary'>Top-hit s2f id bar plot<font color='#88CCFF' > (click to show/hide) </font></a></div>\n";
-    ofs << "<div class='figure' id='plot_id_hits' style='height:400px;'></div>\n";
-
-    ofs << "\n<script type=\"text/javascript\">" << endl;
-    string json_str = "var data=[";
-
-    json_str += "{";
-    json_str += "x:[" + Stats::list2string(x_vec, top) + "],";
-    json_str += "y:[" + Stats::list2string(y_vec, top) + "],";
-    json_str += "name: 'Number of hitted s2f ids  ',";
-    json_str += "type:'bar',";
-    json_str += "line:{color:'rgba(128,0,128,1.0)', width:1}\n";
-    json_str += "}";
-    json_str += "];\n";
-    json_str += "var layout={title:'Top " + to_string(top) + " abundant s2f ids ', xaxis:{title:'s2f id', automargin: true}, yaxis:{title:'Number of reads hits', automargin: true}};\n";
-    json_str += "Plotly.newPlot('plot_id_hits', data, layout);\n";
-    ofs << json_str;
-    ofs << "</script>" << endl;
+//    std::vector<std::string> x_vec;
+//    std::vector<double> y_vec;
+//    std::vector<std::string> y_lable_vec;
+//    
+//    int total = mOptions->transSearch.sortedIdFreqTupleVector.size();
+//    int top = 50;
+//    top = min(top, total);
+//
+//    for (int i = 0; i < total; i++) {
+//        auto it = mOptions->transSearch.sortedIdFreqTupleVector.at(i);
+//        x_vec.push_back(get<0>(it));
+//        y_vec.push_back((double) get<1>(it));
+//        y_lable_vec.push_back(get<2>(it));
+//    }
+//    
+//    mOptions->transSearch.sortedIdFreqTupleVector.clear();
+//    mOptions->transSearch.sortedIdFreqTupleVector.shrink_to_fit();
+//
+//    ofs << "<div class='subsection_title' onclick=showOrHide('plot_id_hits')><a name='summary'>Top-hit s2f id bar plot<font color='#88CCFF' > (click to show/hide) </font></a></div>\n";
+//    ofs << "<div class='figure' id='plot_id_hits' style='height:400px;'></div>\n";
+//
+//    ofs << "\n<script type=\"text/javascript\">" << endl;
+//    string json_str = "var data=[";
+//
+//    json_str += "{";
+//    json_str += "x:[" + Stats::list2string(x_vec, top) + "],";
+//    json_str += "y:[" + Stats::list2string(y_vec, top) + "],";
+//    json_str += "name: 'Number of hitted s2f ids  ',";
+//    json_str += "type:'bar',";
+//    json_str += "line:{color:'rgba(128,0,128,1.0)', width:1}\n";
+//    json_str += "}";
+//    json_str += "];\n";
+//    json_str += "var layout={title:'Top " + to_string(top) + " abundant s2f ids ', xaxis:{title:'s2f id', automargin: true}, yaxis:{title:'Number of reads hits', automargin: true}};\n";
+//    json_str += "Plotly.newPlot('plot_id_hits', data, layout);\n";
+//    ofs << json_str;
+//    ofs << "</script>" << endl;
     
     ofs << "<div class='subsection_title' onclick=showOrHide('top_id_table')><a name='summary'>S2f ids Table (full list)<font color='#88CCFF' > (click to show/hide) </font></a></div>\n";
     ofs << "<div id='top_id_table' style='overflow-y:auto; height: 400px;'>\n";
     ofs << "<table class='summary_table'>\n";
-    ofs << "<tr><td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "KO ID" << "</td><td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "Number" << "</td><td class='collarge' style='font-size:14px;color:#ffffff;background:#008000'>" << "Name" << "</td></tr>\n";
-    for (int i = 0; i < total; i++) {
-        ofs << "<tr><td class='ko_col'>" << x_vec[i] << "</td><td class='ko_col'>" << y_vec[i] << "</td><td class='collarge'>" << y_lable_vec[i] << "</td></tr>\n";
+    ofs << "<tr><td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "s2f_id" 
+            << "</td><td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "Number" 
+            << "</td><td class='collarge' style='font-size:14px;color:#ffffff;background:#008000'>" << "KO" 
+            << "</td><td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "GO" 
+            << "</td><td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "Symbol" 
+            << "</td><td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "Gene" 
+            << "</td></tr>\n";
+    
+    std::string ko, go, symbol, gene;
+    uint32 count;
+    for(const auto & it : mOptions->transSearch.totalIdFreqUMapResults){
+        auto itt = mOptions->mHomoSearchOptions.fullDbMap.find(it.first);
+        if(itt == mOptions->mHomoSearchOptions.fullDbMap.end()){
+            count = 0; ko = "U"; go = "U"; symbol = "U"; gene = "U";
+        } else {
+            count = it.second;
+            ko = itt->second.ko;
+            go = itt->second.go;
+            symbol = itt->second.symbol;
+            gene = itt->second.gene;
+        }
+        ofs << "<tr><td class='ko_col'>" << "s2f_" << *it.first 
+                << "</td><td class='ko_col'>" << count 
+                << "</td><td class='ko_col'>" << ko 
+                << "</td><td class='collarge'>" << go 
+                << "</td><td class='ko_col'>" << symbol 
+                << "</td><td class='ko_col'>" << gene 
+                << "</td></tr>\n";
     }
+    ko = ""; go = ""; symbol = ""; gene = "";
+    mOptions->transSearch.totalIdFreqUMapResults.clear();
+//    for (int i = 0; i < total; i++) {
+//        ofs << "<tr><td class='ko_col'>" << x_vec[i] 
+//                << "</td><td class='ko_col'>" << y_vec[i] 
+//                << "</td><td class='collarge'>" << y_lable_vec[i] 
+//                << "</td></tr>\n";
+//    }
     
     ofs << "</table>\n";
     ofs << "</div>\n";
     
-    x_vec.clear();
-    x_vec.shrink_to_fit();
-    y_vec.clear();
-    y_vec.shrink_to_fit();
-    y_lable_vec.clear();
-    y_lable_vec.shrink_to_fit();
+//    x_vec.clear();
+//    x_vec.shrink_to_fit();
+//    y_vec.clear();
+//    y_vec.shrink_to_fit();
+//    y_lable_vec.clear();
+//    y_lable_vec.shrink_to_fit();
 }
 
 void HtmlReporter::reportPathway(ofstream& ofs){
@@ -674,22 +707,22 @@ void HtmlReporter::printAnnotationResults(ofstream& ofs) {
     
     outputLongRow(ofs, "Number of s2f id mapped / total s2f ids in database", rStrResultId);
     
-    double ratio = (mOptions->transSearch.nTransMappedKOs * 100) / mOptions->transSearch.nKODB;
-    std::string rStrResult = to_string(mOptions->transSearch.nTransMappedKOs) + " / " +  to_string(mOptions->transSearch.nKODB) + " (" + to_string(ratio) +  "%)";
+//    double ratio = (mOptions->transSearch.nTransMappedKOs * 100) / mOptions->transSearch.nKODB;
+//    std::string rStrResult = to_string(mOptions->transSearch.nTransMappedKOs) + " / " +  to_string(mOptions->transSearch.nKODB) + " (" + to_string(ratio) +  "%)";
+//    
+//    outputLongRow(ofs, "Number of KOs annotated / total KOs in database", rStrResult);
+//
+//    if (mOptions->mHomoSearchOptions.profiling) {
+//        outputLongRow(ofs, "Number of hit species", to_string(mOptions->transSearch.nMappedOrgs));
+//        outputLongRow(ofs, "Number of hit pathways", to_string(mOptions->transSearch.nMappedPathways));
+//    }
     
-    outputLongRow(ofs, "Number of KOs annotated / total KOs in database", rStrResult);
-
-    if (mOptions->mHomoSearchOptions.profiling) {
-        outputLongRow(ofs, "Number of hit species", to_string(mOptions->transSearch.nMappedOrgs));
-        outputLongRow(ofs, "Number of hit pathways", to_string(mOptions->transSearch.nMappedPathways));
-    }
+//    ratio = (mOptions->transSearch.nTransMappedKOReads * 100) / mOptions->mHomoSearchOptions.nTotalReads;
+//    rStrResult = to_string(mOptions->transSearch.nTransMappedKOReads) + " / " +  to_string(mOptions->mHomoSearchOptions.nTotalReads) + " (" + to_string(ratio) +  "%)";
+//    outputLongRow(ofs, "Number of annotated reads / total raw reads", rStrResult);
     
-    ratio = (mOptions->transSearch.nTransMappedKOReads * 100) / mOptions->mHomoSearchOptions.nTotalReads;
-    rStrResult = to_string(mOptions->transSearch.nTransMappedKOReads) + " / " +  to_string(mOptions->mHomoSearchOptions.nTotalReads) + " (" + to_string(ratio) +  "%)";
-    outputLongRow(ofs, "Number of annotated reads / total raw reads", rStrResult);
-    
-    ratio = (mOptions->mHomoSearchOptions.nCleanReads * 100) / mOptions->mHomoSearchOptions.nTotalReads;
-    rStrResult = to_string(mOptions->mHomoSearchOptions.nCleanReads) + " / " +  to_string(mOptions->mHomoSearchOptions.nTotalReads) + " (" + to_string(ratio) +  "%)";
+    double ratio = (mOptions->mHomoSearchOptions.nCleanReads * 100) / mOptions->mHomoSearchOptions.nTotalReads;
+    std::string rStrResult = to_string(mOptions->mHomoSearchOptions.nCleanReads) + " / " +  to_string(mOptions->mHomoSearchOptions.nTotalReads) + " (" + to_string(ratio) +  "%)";
     outputLongRow(ofs, "Number of clean reads / total raw reads", rStrResult);
 
     auto sTime = ctime(& mOptions->transSearch.startTime);
@@ -714,48 +747,48 @@ void HtmlReporter::printAnnotationResults(ofstream& ofs) {
         ofs << "</div>\n";
 
         ofs << "<div class='section_div'>\n";
-        ofs << "<div class='section_title' onclick=showOrHide('top_ids')><a name='summary'>Top abundant s2f ids</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
+        ofs << "<div class='section_title' onclick=showOrHide('top_ids')><a name='summary'>Abundance of s2f ids</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
         ofs << "<div id='top_ids'>\n";
         reportBarPlotId(ofs);
         ofs << "</div>\n";
         ofs << "</div>\n";
         
-        ofs << "<div class='section_div'>\n";
-        ofs << "<div class='section_title' onclick=showOrHide('rarefaction')><a name='summary'>Rarefaction curve</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
-        ofs << "<div id='rarefaction'>\n";
-        reportRarefaction(ofs);
-        ofs << "</div>\n";
-        ofs << "</div>\n";
-
-        ofs << "<div class='section_div'>\n";
-        ofs << "<div class='section_title' onclick=showOrHide('top_kos')><a name='summary'>Top abundant KOs</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
-        ofs << "<div id='top_kos'>\n";
-        reportKOBarPlot(ofs);
-        ofs << "</div>\n";
-        ofs << "</div>\n";
+//        ofs << "<div class='section_div'>\n";
+//        ofs << "<div class='section_title' onclick=showOrHide('rarefaction')><a name='summary'>Rarefaction curve</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
+//        ofs << "<div id='rarefaction'>\n";
+//        reportRarefaction(ofs);
+//        ofs << "</div>\n";
+//        ofs << "</div>\n";
+//
+//        ofs << "<div class='section_div'>\n";
+//        ofs << "<div class='section_title' onclick=showOrHide('top_kos')><a name='summary'>Top abundant KOs</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
+//        ofs << "<div id='top_kos'>\n";
+//        reportKOBarPlot(ofs);
+//        ofs << "</div>\n";
+//        ofs << "</div>\n";
         
-        ofs << "<div class='section_div'>\n";
-        ofs << "<div class='section_title' onclick=showOrHide('top_pathways')><a name='summary'>Top-hit pathways</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
-        ofs << "<div id='top_pathways'>\n";
-
-        reportPathway(ofs);
-
-        ofs << "</div>\n";
-        ofs << "</div>\n";
-
-        ofs << "<div class='section_div'>\n";
-        ofs << "<div class='section_title' onclick=showOrHide('hitted_species')><a name='summary'>Top-hit species</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
-        ofs << "<div id='hitted_species'>\n";
-
-        reportSpecies(ofs);
-
-        ofs << "</div>\n";
-        ofs << "</div>\n";
+//        ofs << "<div class='section_div'>\n";
+//        ofs << "<div class='section_title' onclick=showOrHide('top_pathways')><a name='summary'>Top-hit pathways</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
+//        ofs << "<div id='top_pathways'>\n";
+//
+//        reportPathway(ofs);
+//
+//        ofs << "</div>\n";
+//        ofs << "</div>\n";
+//
+//        ofs << "<div class='section_div'>\n";
+//        ofs << "<div class='section_title' onclick=showOrHide('hitted_species')><a name='summary'>Top-hit species</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
+//        ofs << "<div id='hitted_species'>\n";
+//
+//        reportSpecies(ofs);
+//
+//        ofs << "</div>\n";
+//        ofs << "</div>\n";
     } else {
         ofs << "<div class='section_div'>\n";
-        ofs << "<div class='section_title' onclick=showOrHide('top_kos')><a name='summary'>Top abundant KOs</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
-        ofs << "<div id='top_kos'>\n";
-        reportKOBarPlot(ofs);
+        ofs << "<div class='section_title' onclick=showOrHide('top_ids')><a name='summary'>Top abundant s2f ids</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
+        ofs << "<div id='top_ids'>\n";
+        reportBarPlotId(ofs);
         ofs << "</div>\n";
         ofs << "</div>\n";
     }

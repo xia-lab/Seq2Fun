@@ -24,7 +24,7 @@ public:
 
 class NucleotideTree{
 public:
-    NucleotideTree(Options* opt);
+    NucleotideTree(Options* & opt);
     ~NucleotideTree();
     void addSeq(string seq);
     string getDominantPath(bool& reachedLeaf);

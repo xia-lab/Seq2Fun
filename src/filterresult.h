@@ -26,7 +26,7 @@ using namespace std;
 
 class FilterResult{
 public:
-    FilterResult(Options* opt, bool paired = false);
+    FilterResult(Options* & opt, bool paired = false);
     ~FilterResult();
     inline long* getFilterReadStats() {return mFilterReadStats;}
     void addFilterResult(int result, int readNum=1);

@@ -31,6 +31,7 @@ public:
     string toFastaR1();
     string toFastaR2();
     string toStringWithTag(string tag);
+    string toStringWithTag(uint32* tag);
     string toStringWithTagRm();
     void resize(int len);
     void convertPhred64To33();

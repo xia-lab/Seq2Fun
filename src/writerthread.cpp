@@ -3,7 +3,7 @@
 #include <memory.h>
 #include <unistd.h>
 
-WriterThread::WriterThread(Options* opt, string filename){
+WriterThread::WriterThread(Options* & opt, string filename){
     mOptions = opt;
 
     mWriter1 = NULL;

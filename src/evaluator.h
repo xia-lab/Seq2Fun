@@ -12,7 +12,7 @@ using namespace std;
 
 class Evaluator{
 public:
-    Evaluator(Options* opt);
+    Evaluator(Options* & opt);
     ~Evaluator();
     // evaluate how many reads are stored in the input file
     void evaluateReadNum(long& readNum);

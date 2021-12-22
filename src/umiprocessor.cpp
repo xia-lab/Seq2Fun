@@ -1,6 +1,6 @@
 #include "umiprocessor.h"
 
-UmiProcessor::UmiProcessor(Options* opt){
+UmiProcessor::UmiProcessor(Options* & opt){
     mOptions = opt;
 }
 

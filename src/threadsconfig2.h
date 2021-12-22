@@ -13,7 +13,7 @@ using namespace std;
 
 class ThreadsConfig2 {
 public:
-    ThreadsConfig2(Options* opt, int threadId);
+    ThreadsConfig2(Options* & opt, int threadId);
     ~ThreadsConfig2();
     
     void initWriter(string filename1);

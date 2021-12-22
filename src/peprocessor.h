@@ -62,7 +62,7 @@ typedef struct ReadPairRepository ReadPairRepository;
 
 class PairEndProcessor{
 public:
-    PairEndProcessor(Options* opt, BwtFmiDB * tbwtfmiDB);
+    PairEndProcessor(Options* & opt, BwtFmiDB * & tbwtfmiDB);
     ~PairEndProcessor();
     bool process();
 
@@ -81,10 +81,11 @@ private:
     void statInsertSize(Read* r1, Read* r2, OverlapResult& ov, int frontTrimmed1 = 0, int frontTrimmed2 = 0);
     int getPeakInsertSize();
     void writeTask(WriterThread* config);
-    void prepareResults(std::vector< std::unordered_map<std::string, uint32 > > & totalKoFreqVecResults,
-                        std::vector< std::unordered_map<std::string, std::unordered_map<std::string, double> > > & totalOrgKOFreqVecResults,
-                        std::vector< std::unordered_map<std::string, uint32 > > & totalGoFreqVecResults,
-                        std::vector< std::unordered_map<std::string, uint32 > > & totalIdFreqVecResults);
+    void prepareResults();
+//    void prepareResults(std::vector< std::unordered_map<std::string, uint32 > > & totalKoFreqVecResults,
+//                        std::vector< std::unordered_map<std::string, std::unordered_map<std::string, double> > > & totalOrgKOFreqVecResults,
+//                        std::vector< std::unordered_map<std::string, uint32 > > & totalGoFreqVecResults,
+//                        std::vector< std::map<const uint32 *, uint32 > > & totalIdFreqVecResults);
 
 private:
     ReadPairRepository mRepo;

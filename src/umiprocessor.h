@@ -11,7 +11,7 @@ using namespace std;
 
 class UmiProcessor{
 public:
-    UmiProcessor(Options* opt);
+    UmiProcessor(Options* & opt);
     ~UmiProcessor();
     void process(Read* r1, Read* r2 = NULL);
     void addUmiToName(Read* r, string umi);

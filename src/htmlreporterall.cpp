@@ -1,9 +1,8 @@
-
 #include "htmlreporterall.h"
 
 extern string command;
 
-HtmlReporterAll::HtmlReporterAll(Options * opt) {
+HtmlReporterAll::HtmlReporterAll(Options * & opt) {
     mOptions = opt;
     smNmVec.clear();
 }
@@ -90,11 +89,11 @@ void HtmlReporterAll::outputRow(ofstream& ofs, std::vector<Sample> & samplesVec)
             "<td class='col1'> n. S2F ids(db) </td>" <<
             "<td class='col1'> n. reads (S2F id) </td>" <<
             "<td class='col1'> S2F id reads rate(%) </td>" <<
-            "<td class='col1'> n. KOs </td>" <<
-            "<td class='col1'> KO rate(%) </td>" <<
-            "<td class='col1'> n. KOs(db) </td>" <<
-            "<td class='col1'> n. reads (KO) </td>" <<
-            "<td class='col1'> KO reads rate(%) </td>" <<
+//            "<td class='col1'> n. KOs </td>" <<
+//            "<td class='col1'> KO rate(%) </td>" <<
+//            "<td class='col1'> n. KOs(db) </td>" <<
+//            "<td class='col1'> n. reads (KO) </td>" <<
+//            "<td class='col1'> KO reads rate(%) </td>" <<
             "<td class='col1'> n. clean reads </td>" <<
             "<td class='col1'> clean reads rate(%) </td>" <<
             "<td class='col1'> n. raw reads </td>" <<
@@ -114,11 +113,11 @@ void HtmlReporterAll::outputRow(ofstream& ofs, std::vector<Sample> & samplesVec)
                 "<td class='col1'>" + to_string(it.nIdDb) + "</td>" <<
                 "<td class='col1'>" + to_string(it.transSearchMappedIdReads) << "</td>" <<
                 "<td class='col1'>" + to_string(it.mappedIdReadsRate) << "</td>" <<
-                "<td class='col1'>" + to_string(it.nKO) + "</td>" <<
-                "<td class='col1'>" + to_string(it.koRate) << "</td>" <<
-                "<td class='col1'>" + to_string(it.nKODb) + "</td>" <<
-                "<td class='col1'>" + to_string(it.transSearchMappedKOReads) << "</td>" <<
-                "<td class='col1'>" + to_string(it.mappedKOReadsRate) << "</td>" <<
+//                "<td class='col1'>" + to_string(it.nKO) + "</td>" <<
+//                "<td class='col1'>" + to_string(it.koRate) << "</td>" <<
+//                "<td class='col1'>" + to_string(it.nKODb) + "</td>" <<
+//                "<td class='col1'>" + to_string(it.transSearchMappedKOReads) << "</td>" <<
+//                "<td class='col1'>" + to_string(it.mappedKOReadsRate) << "</td>" <<
                 "<td class='col1'>" + to_string(it.totalCleanReads) << "</td>" <<
                 "<td class='col1'>" + to_string(it.cleanReadsRate) << "</td>" <<
                 "<td class='col1'>" + to_string(it.totalRawReads) << "</td>" << 
@@ -130,76 +129,78 @@ void HtmlReporterAll::outputRow(ofstream& ofs, std::vector<Sample> & samplesVec)
 
 void HtmlReporterAll::reportAllTables() {
     
-    std::set<std::string> koSet, orgSet, pathwaySet, goSet, idSet;
+    //std::set<std::string> koSet, orgSet, pathwaySet, goSet;
+    std::set<const uint32 * > idSet;
     for (const Sample & sample : mOptions->samples) {
         smNmVec.push_back(basename(sample.prefix));
-        for(const auto & it : sample.totalKoFreqUMapResults){
-            koSet.insert(it.first);
-        }
-        for(const auto & it : sample.totalPathwayMap){
-            pathwaySet.insert(it.first);
-        }
-        for(const auto & it : sample.totalOrgKOUMap){
-            orgSet.insert(it.first);
-        }
-        for(const auto & it : sample.totalGoFreqUMapResults){
-            goSet.insert(it.first);
-        }
+//        for(const auto & it : sample.totalKoFreqUMapResults){
+//            koSet.insert(it.first);
+//        }
+//        for(const auto & it : sample.totalPathwayMap){
+//            pathwaySet.insert(it.first);
+//        }
+//        for(const auto & it : sample.totalOrgKOUMap){
+//            orgSet.insert(it.first);
+//        }
+//        for(const auto & it : sample.totalGoFreqUMapResults){
+//            goSet.insert(it.first);
+//        }
         for(const auto & it : sample.totalIdFreqUMapResults){
+            //idSet.insert(const_cast<uint32 *> (it.first));
             idSet.insert(it.first);
         }
     }
     
     //1. for first ko freq;
-    std::string fOutNm = joinpath(mOptions->samples.front().path, "All_sample_KO_abundance_table.txt");
-    std::ofstream * fOut = NULL;
-    fOut = new std::ofstream();
-    fOut->open(fOutNm.c_str(), std::ofstream::out);
-    if(!fOut->is_open()) error_exit("Can not open all_all_sample_KO_abundance_table.txt");
-    if (mOptions->verbose) loginfo("Starting to write all samples KO abundance table");
-    
-    *fOut << "#NAME\t";
-    for(const auto & it : smNmVec){
-        *fOut << it << "\t";
-    }
-    *fOut << "KO_name\n";
-    
-    *fOut << "#CLASS\t";
-    for(const auto & it : mOptions->samples){
-        *fOut << it.feature  << "\t";
-    }
-    *fOut << "class_info\n";
-    
-    koFreqVec.reserve(koSet.size());
-    std::vector<std::string> tmpVec;
-    tmpVec.reserve(smNmVec.size() + 2);
-    for(const auto & it : koSet){
-        *fOut << it << "\t";
-        tmpVec.clear();
-        tmpVec.push_back(it);
-        for (Sample & sample : mOptions->samples) {
-            auto itkf = sample.totalKoFreqUMapResults.find(it);
-            if(itkf == sample.totalKoFreqUMapResults.end()){
-                *fOut << 0 << "\t";
-                tmpVec.push_back(to_string(0));
-            } else {
-                *fOut << itkf->second << "\t";
-                tmpVec.push_back(to_string(itkf->second));
-            }
-        }
-        auto itko = mOptions->mHomoSearchOptions.ko_fullname_map.find(it);
-        if(itko == mOptions->mHomoSearchOptions.ko_fullname_map.end()){
-            *fOut << "UNASSIGNED\n";
-            tmpVec.push_back("UNASSIGNED");
-        } else {
-            *fOut << itko->second << "\n";
-            tmpVec.push_back(itko->second);
-        }
-        koFreqVec.push_back(tmpVec);
-        tmpVec.clear();
-    }
-    fOut->flush();
-    fOut->close();
+//    std::string fOutNm = joinpath(mOptions->samples.front().path, "All_sample_KO_abundance_table.txt");
+//    std::ofstream * fOut = NULL;
+//    fOut = new std::ofstream();
+//    fOut->open(fOutNm.c_str(), std::ofstream::out);
+//    if(!fOut->is_open()) error_exit("Can not open all_all_sample_KO_abundance_table.txt");
+//    if (mOptions->verbose) loginfo("Starting to write all samples KO abundance table");
+//    
+//    *fOut << "#NAME\t";
+//    for(const auto & it : smNmVec){
+//        *fOut << it << "\t";
+//    }
+//    *fOut << "KO_name\n";
+//    
+//    *fOut << "#CLASS\t";
+//    for(const auto & it : mOptions->samples){
+//        *fOut << it.feature  << "\t";
+//    }
+//    *fOut << "class_info\n";
+//    
+//    koFreqVec.reserve(koSet.size());
+//    std::vector<std::string> tmpVec;
+//    tmpVec.reserve(smNmVec.size() + 2);
+//    for(const auto & it : koSet){
+//        *fOut << it << "\t";
+//        tmpVec.clear();
+//        tmpVec.push_back(it);
+//        for (Sample & sample : mOptions->samples) {
+//            auto itkf = sample.totalKoFreqUMapResults.find(it);
+//            if(itkf == sample.totalKoFreqUMapResults.end()){
+//                *fOut << 0 << "\t";
+//                tmpVec.push_back(std::to_string(0));
+//            } else {
+//                *fOut << itkf->second << "\t";
+//                tmpVec.push_back(to_string(itkf->second));
+//            }
+//        }
+//        auto itko = mOptions->mHomoSearchOptions.ko_fullname_map.find(it);
+//        if(itko == mOptions->mHomoSearchOptions.ko_fullname_map.end()){
+//            *fOut << "U\n";
+//            tmpVec.push_back("U");
+//        } else {
+//            *fOut << itko->second << "\n";
+//            tmpVec.push_back(itko->second);
+//        }
+//        koFreqVec.push_back(tmpVec);
+//        tmpVec.clear();
+//    }
+//    fOut->flush();
+//    fOut->close();
     
 //    fOutNm = joinpath(mOptions->samples.front().path, "All_sample_KO_abundance_table_submit2networkanalyst.txt");
 //    fOut->open(fOutNm.c_str(), std::ofstream::out);
@@ -246,279 +247,313 @@ void HtmlReporterAll::reportAllTables() {
 //    fOut->flush();
 //    fOut->close();
     
-    if (mOptions->verbose) loginfo("Finish to write KO abundance table for all samples");
+//    if (mOptions->verbose) loginfo("Finish to write KO abundance table for all samples");
     
     //for s2fid abundance table
-    fOutNm = joinpath(mOptions->samples.front().path, "All_sample_s2fid_abundance_table.txt");
+    std::string fOutNm = joinpath(mOptions->samples.front().path, "All_sample_s2fid_abundance_table.txt");
+    std::ofstream * fOut = new std::ofstream();
     fOut->open(fOutNm.c_str(), std::ofstream::out);
     if(!fOut->is_open()) error_exit("Can not open All_sample_s2fid_abundance_table.txt");
     if (mOptions->verbose) loginfo("Starting to write all samples s2fid abundance table");
-    
     *fOut << "#NAME\t";
     for(const auto & it : smNmVec){
-        //if(it != smNmVec.back()){
             *fOut << it << "\t";
-        //} else {
-            //*fOut << it << "\t";
-        //}
     }
-    *fOut << "s2f_gene\n";
+    *fOut << "annotation\n";
     *fOut << "#CLASS:XX\t";
     for(const auto & it : mOptions->samples){
-        //if(it.prefix != mOptions->samples.back().prefix){
             *fOut << it.feature  << "\t";
-       // } else {
-            //*fOut << it.feature  << "\n";
-        //}
     }
-    *fOut << "s2f_gene\n";
+    *fOut << "-\n";
     idFreqVec.reserve(idSet.size());
-    tmpVec.reserve(smNmVec.size() + 2);
+    std::vector<uint32> tmpIdVec;
+    tmpIdVec.reserve(smNmVec.size() + 1);
     for (const auto & it : idSet) {
-        *fOut << it << "\t";
-        tmpVec.clear();
-        tmpVec.push_back(it);
-        for (const Sample & sample : mOptions->samples) {
-            auto itkf = sample.totalIdFreqUMapResults.find(it);
-            if (itkf == sample.totalIdFreqUMapResults.end()){
-                //if (sample.prefix != mOptions->samples.back().prefix) {
-                    *fOut << 0 << "\t";
-                //} else {
-                    //*fOut << 0 << "\t";
-                //}
-                tmpVec.push_back("0");
-            } else {
-                //if (sample.prefix != mOptions->samples.back().prefix) {
-                    *fOut << itkf->second << "\t";
-                //} else {
-                    //*fOut << itkf->second << "\t";
-                //}
-                tmpVec.push_back(to_string(itkf->second));
-            }
-        }
-
-        auto ita = mOptions->mHomoSearchOptions.idDbMap.find(it);
-        if (ita != mOptions->mHomoSearchOptions.idDbMap.end()) {
-            *fOut << ita->second << "\n";
-            tmpVec.push_back(ita->second);
-        } else {
-            *fOut << "UNASSIGNED" << "\n";
-            tmpVec.push_back("UNASSIGNED");
-        }
-
-        idFreqVec.push_back(tmpVec);
-        tmpVec.clear();
-    }
-    fOut->flush();
-    fOut->close();
-    
-    fOutNm = joinpath(mOptions->samples.front().path, "All_sample_s2fid_abundance_table_submit2networkanalyst.txt");
-    fOut->open(fOutNm.c_str(), std::ofstream::out);
-    if(!fOut->is_open()) error_exit("Can not open All_sample_s2fid_abundance_table_submit2networkanalyst.txt");
-    if (mOptions->verbose) loginfo("Starting to write all samples s2fid abundance table (submit2networkanalyst)");
-    
-    *fOut << "#NAME\t";
-    for(const auto & it : smNmVec){
-        if(it != smNmVec.back()){
-            *fOut << it << "\t";
-        } else {
-            *fOut << it << "\n";
-        }
-    }
-    *fOut << "#CLASS:XX\t";
-    for(const auto & it : mOptions->samples){
-        if(it.prefix != mOptions->samples.back().prefix){
-            *fOut << it.feature  << "\t";
-        } else {
-            *fOut << it.feature  << "\n";
-        }
-    }
-
-    idFreqVec.reserve(idSet.size());
-    for (const auto & it : idSet) {
-        *fOut << it << "\t";
-        tmpVec.clear();
-        tmpVec.push_back(it);
+        *fOut << "s2f_" << *it << "\t";
+        tmpIdVec.clear();
         for (const Sample & sample : mOptions->samples) {
             auto itkf = sample.totalIdFreqUMapResults.find(it);
             if (itkf == sample.totalIdFreqUMapResults.end()) {
-                if (sample.prefix != mOptions->samples.back().prefix) {
-                    *fOut << 0 << "\t";
-                } else {
-                    *fOut << 0 << "\n";
-                }
-                tmpVec.push_back("0");
+                *fOut << 0 << "\t";
+                tmpIdVec.push_back(0);
             } else {
-                if (sample.prefix != mOptions->samples.back().prefix) {
-                    *fOut << itkf->second << "\t";
-                } else {
-                    *fOut << itkf->second << "\n";
-                }
-                tmpVec.push_back(to_string(itkf->second));
+                *fOut << itkf->second << "\t";
+                tmpIdVec.push_back(itkf->second);
             }
         }
-        idFreqVec.push_back(tmpVec);
-        tmpVec.clear();
+        idFreqVec.push_back(std::pair<const uint32 *, std::vector<uint32> >(it, tmpIdVec));
+
+        auto itid = mOptions->mHomoSearchOptions.fullDbMap.find(it);
+        if (itid == mOptions->mHomoSearchOptions.fullDbMap.end()) {
+            *fOut << "U\n";
+        } else {
+            *fOut << itid->second.ko << "|" << itid->second.go << "|" << itid->second.symbol << "|" << itid->second.gene << "\n";
+        }
     }
     fOut->flush();
     fOut->close();
-    
+
     if (mOptions->verbose) loginfo("Finish to write s2fid abundance table for all samples");
     
-    fOutNm = joinpath(mOptions->samples.front().path, "All_sample_GO_abundance_table.txt");
-    fOut->open(fOutNm.c_str(), std::ofstream::out);
-    if(!fOut->is_open()) error_exit("Can not open All_sample_GO_abundance_table.txt");
-    if (mOptions->verbose) loginfo("Starting to write all samples GO abundance table");
     
+    fOutNm = joinpath(mOptions->samples.front().path, "All_sample_s2fid_abundance_table_submit_2_networkanalyst.txt");
+    fOut->open(fOutNm.c_str(), std::ofstream::out);
+    if(!fOut->is_open()) error_exit("Can not open All_sample_s2fid_abundance_table_submit_2_networkanalystv.txt");
+    if (mOptions->verbose) loginfo("Starting to write all samples s2fid abundance table");
     *fOut << "#NAME\t";
     for(const auto & it : smNmVec){
-        if(it != smNmVec.back()){
             *fOut << it << "\t";
-        } else {
-            *fOut << it << "\n";
-        }
     }
-    
+    *fOut << "\n";
     *fOut << "#CLASS:XX\t";
     for(const auto & it : mOptions->samples){
-        if(it.prefix != mOptions->samples.back().prefix){
             *fOut << it.feature  << "\t";
-        } else {
-            *fOut << it.feature  << "\n";
-        }
     }
-
-    for(const auto & it : goSet){
-        *fOut << it << "\t";
-        for (Sample & sample : mOptions->samples) {
-            auto itkf = sample.totalGoFreqUMapResults.find(it);
-            if (itkf == sample.totalGoFreqUMapResults.end()) {
-                if (sample.prefix != mOptions->samples.back().prefix) {
-                    *fOut << 0 << "\t";
-                } else {
-                    *fOut << 0 << "\n";
-                }
+    *fOut << "\n";
+    for (const auto & it : idSet) {
+        *fOut << "s2f_" << *it << "\t";
+        for (const Sample & sample : mOptions->samples) {
+            auto itkf = sample.totalIdFreqUMapResults.find(it);
+            if (itkf == sample.totalIdFreqUMapResults.end()) {
+                *fOut << 0 << "\t";
+                tmpIdVec.push_back(0);
             } else {
-                if (sample.prefix != mOptions->samples.back().prefix) {
-                    *fOut << itkf->second << "\t";
-                } else {
-                    *fOut << itkf->second << "\n";
-                }
+                *fOut << itkf->second << "\t";
+                tmpIdVec.push_back(itkf->second);
             }
+        }
+        *fOut << "\n";
+    }
+    fOut->flush();
+    fOut->close();
+    
+    fOutNm = joinpath(mOptions->samples.front().path, "All_annotation_submit_2_networkanalyst.txt");
+    fOut->open(fOutNm.c_str(), std::ofstream::out);
+    if(!fOut->is_open()) error_exit("Can not open All_annotation_submit_2_networkanalyst.txt");
+    if (mOptions->verbose) loginfo("Starting to write all s2f id annotation table");
+    *fOut << "s2f_id\tKO\tGO\tSymbol\tGene\n";
+    for (const auto & it : idSet) {
+        *fOut << "s2f_" << *it << "\t";
+        auto itid = mOptions->mHomoSearchOptions.fullDbMap.find(it);
+        if (itid == mOptions->mHomoSearchOptions.fullDbMap.end()) {
+            *fOut << "U\tU\tU\tU\n";
+        } else {
+            *fOut << itid->second.ko << "\t" << itid->second.go << "\t" << itid->second.symbol << "\t" << itid->second.gene << "\n";
         }
     }
     fOut->flush();
     fOut->close();
     
-    if (mOptions->verbose) loginfo("Finish to write GO abundance table for all samples");
+    idSet.clear();
+    if (fOut) delete fOut;
+    fOut = NULL;
     
-    if (mOptions->mHomoSearchOptions.profiling) {
-        //2. for pathway
-        std::string fOutNm = joinpath(mOptions->samples.front().path, "All_sample_pathway_table.txt");
-        //std::ofstream * fOut = new std::ofstream();
-        fOut->open(fOutNm, std::ofstream::out);
-        if(!fOut->is_open()) error_exit("Can not open All_sample_pathway_table.txt");
-        if (mOptions->verbose) loginfo("Starting to write all samples pathway abundance table");
-
-        *fOut << "#Name\t";
-        for (auto & it : smNmVec) {
-            *fOut << it << "\t";
-        }
-        *fOut << "n_total_KOs\n";
-
-        *fOut << "#Class\t";
-        for (auto & it : mOptions->samples) {
-            *fOut << it.feature << "\t";
-        }
-        *fOut << "class_info\n";
-        
-        pathwayFreqVec.reserve(pathwaySet.size());
-        for (auto & it : pathwaySet) {
-            int tmpInt = 0;
-            auto itt = mOptions->mHomoSearchOptions.pathway_ko_stats_umap.find(it);
-            if (itt == mOptions->mHomoSearchOptions.pathway_ko_stats_umap.end()) {
-               tmpInt = 0;
-            } else {
-               tmpInt = itt->second;
-            }
-            
-            tmpVec.clear();
-            *fOut << it << "\t";
-            tmpVec.push_back(it);
-            
-            for (Sample & sample : mOptions->samples) {
-                auto itkf = sample.totalPathwayMap.find(it);
-                if (itkf == sample.totalPathwayMap.end()) {
-                    *fOut << 0 << "\t";
-                    tmpVec.push_back("0 (0%)");
-                } else {
-                    *fOut << itkf->second << "\t";
-                    auto str = unkown2Str(itkf->second) + " (" + unkown2Str(double(itkf->second * 100) / double(tmpInt)) + " %)";
-                    tmpVec.push_back(str);
-                }
-            }
-            *fOut << tmpInt << "\n";
-            tmpVec.push_back(to_string(tmpInt));
-//            auto itt = mOptions->mHomoSearchOptions.pathway_ko_stats_umap.find(it);
-//            if(itt == mOptions->mHomoSearchOptions.pathway_ko_stats_umap.end()){
-//                *fOut << "0\n";
-//                tmpVec.push_back("0");
+//    fOutNm = joinpath(mOptions->samples.front().path, "All_sample_s2fid_abundance_table_submit2networkanalyst.txt");
+//    fOut->open(fOutNm.c_str(), std::ofstream::out);
+//    if(!fOut->is_open()) error_exit("Can not open All_sample_s2fid_abundance_table_submit2networkanalyst.txt");
+//    if (mOptions->verbose) loginfo("Starting to write all samples s2fid abundance table (submit2networkanalyst)");
+//    
+//    *fOut << "#NAME\t";
+//    for(const auto & it : smNmVec){
+//        if(it != smNmVec.back()){
+//            *fOut << it << "\t";
+//        } else {
+//            *fOut << it << "\n";
+//        }
+//    }
+//    *fOut << "#CLASS:XX\t";
+//    for(const auto & it : mOptions->samples){
+//        if(it.prefix != mOptions->samples.back().prefix){
+//            *fOut << it.feature  << "\t";
+//        } else {
+//            *fOut << it.feature  << "\n";
+//        }
+//    }
+//
+//    idFreqVec.reserve(idSet.size());
+////    for (const auto & it : idSet) {
+////        *fOut << it << "\t";
+////        tmpVec.clear();
+////        tmpVec.push_back(it);
+////        for (const Sample & sample : mOptions->samples) {
+////            auto itkf = sample.totalIdFreqUMapResults.find(it);
+////            if (itkf == sample.totalIdFreqUMapResults.end()) {
+////                if (sample.prefix != mOptions->samples.back().prefix) {
+////                    *fOut << 0 << "\t";
+////                } else {
+////                    *fOut << 0 << "\n";
+////                }
+////                tmpVec.push_back("0");
+////            } else {
+////                if (sample.prefix != mOptions->samples.back().prefix) {
+////                    *fOut << itkf->second << "\t";
+////                } else {
+////                    *fOut << itkf->second << "\n";
+////                }
+////                tmpVec.push_back(to_string(itkf->second));
+////            }
+////        }
+////        idFreqVec.push_back(tmpVec);
+////        tmpVec.clear();
+////    }
+//    fOut->flush();
+//    fOut->close();
+    
+    
+//    fOutNm = joinpath(mOptions->samples.front().path, "All_sample_GO_abundance_table.txt");
+//    fOut->open(fOutNm.c_str(), std::ofstream::out);
+//    if(!fOut->is_open()) error_exit("Can not open All_sample_GO_abundance_table.txt");
+//    if (mOptions->verbose) loginfo("Starting to write all samples GO abundance table");
+//    
+//    *fOut << "#NAME\t";
+//    for(const auto & it : smNmVec){
+//        if(it != smNmVec.back()){
+//            *fOut << it << "\t";
+//        } else {
+//            *fOut << it << "\n";
+//        }
+//    }
+//    
+//    *fOut << "#CLASS:XX\t";
+//    for(const auto & it : mOptions->samples){
+//        if(it.prefix != mOptions->samples.back().prefix){
+//            *fOut << it.feature  << "\t";
+//        } else {
+//            *fOut << it.feature  << "\n";
+//        }
+//    }
+//
+//    for(const auto & it : goSet){
+//        *fOut << it << "\t";
+//        for (Sample & sample : mOptions->samples) {
+//            auto itkf = sample.totalGoFreqUMapResults.find(it);
+//            if (itkf == sample.totalGoFreqUMapResults.end()) {
+//                if (sample.prefix != mOptions->samples.back().prefix) {
+//                    *fOut << 0 << "\t";
+//                } else {
+//                    *fOut << 0 << "\n";
+//                }
 //            } else {
-//                *fOut << itt->second << "\n";
-//                tmpVec.push_back(to_string(itt->second));
+//                if (sample.prefix != mOptions->samples.back().prefix) {
+//                    *fOut << itkf->second << "\t";
+//                } else {
+//                    *fOut << itkf->second << "\n";
+//                }
 //            }
-            pathwayFreqVec.push_back(tmpVec);
-            tmpVec.clear();
-        }
-        fOut->flush();
-        fOut->close();
-        if (mOptions->verbose) loginfo("Finish to write KO abundance table for all samples");
-
-        //3. for species
-        fOutNm.clear();
-        fOutNm = joinpath(mOptions->samples.front().path, "All_sample_species_table.txt");
-        //std::ofstream * fOut = new std::ofstream();
-        fOut->open(fOutNm.c_str(), std::ofstream::out);
-        if (!fOut->is_open()) error_exit("Can not open All_sample_species_table.txt");
-        if (mOptions->verbose) loginfo("Starting to write all samples species abundance table");
-
-        *fOut << "#Name\t";
-        for (auto & it : smNmVec) {
-            *fOut << it << "\t";
-        }
-        *fOut << "\n";
-
-        *fOut << "#Class\t";
-        for (auto & it : mOptions->samples) {
-            *fOut << it.feature << "\t";
-        }
-        *fOut << "\n";
-        
-        orgFreqVec.reserve(orgSet.size());
-        for (auto & it : orgSet) {
-            tmpVec.clear();
-            *fOut << it << "\t";
-            tmpVec.push_back(it);
-            for (Sample & sample : mOptions->samples) {
-                auto itkf = sample.totalOrgKOUMap.find(it);
-                if (itkf == sample.totalOrgKOUMap.end()) {
-                    *fOut << 0 << "\t";
-                    tmpVec.push_back("0");
-                } else {
-                    *fOut << itkf->second << "\t";
-                    tmpVec.push_back(to_string(itkf->second));
-                }
-            }
-            *fOut << "\n";
-            orgFreqVec.push_back(tmpVec);
-            tmpVec.clear();
-        }
-        fOut->flush();
-        fOut->close();
-        if (fOut) delete fOut;
-        fOut = NULL;
-        if (mOptions->verbose) loginfo("Finish to write spcies table for all samples");
-    }
+//        }
+//    }
+//    fOut->flush();
+//    fOut->close();
+//    
+//    if (mOptions->verbose) loginfo("Finish to write GO abundance table for all samples");
+//    
+//    if (mOptions->mHomoSearchOptions.profiling) {
+//        //2. for pathway
+//        std::string fOutNm = joinpath(mOptions->samples.front().path, "All_sample_pathway_table.txt");
+//        //std::ofstream * fOut = new std::ofstream();
+//        fOut->open(fOutNm, std::ofstream::out);
+//        if(!fOut->is_open()) error_exit("Can not open All_sample_pathway_table.txt");
+//        if (mOptions->verbose) loginfo("Starting to write all samples pathway abundance table");
+//
+//        *fOut << "#Name\t";
+//        for (auto & it : smNmVec) {
+//            *fOut << it << "\t";
+//        }
+//        *fOut << "n_total_KOs\n";
+//
+//        *fOut << "#Class\t";
+//        for (auto & it : mOptions->samples) {
+//            *fOut << it.feature << "\t";
+//        }
+//        *fOut << "class_info\n";
+//        
+//        pathwayFreqVec.reserve(pathwaySet.size());
+//        for (auto & it : pathwaySet) {
+//            int tmpInt = 0;
+//            auto itt = mOptions->mHomoSearchOptions.pathway_ko_stats_umap.find(it);
+//            if (itt == mOptions->mHomoSearchOptions.pathway_ko_stats_umap.end()) {
+//               tmpInt = 0;
+//            } else {
+//               tmpInt = itt->second;
+//            }
+//            
+//            tmpVec.clear();
+//            *fOut << it << "\t";
+//            tmpVec.push_back(it);
+//            
+//            for (Sample & sample : mOptions->samples) {
+//                auto itkf = sample.totalPathwayMap.find(it);
+//                if (itkf == sample.totalPathwayMap.end()) {
+//                    *fOut << 0 << "\t";
+//                    tmpVec.push_back("0 (0%)");
+//                } else {
+//                    *fOut << itkf->second << "\t";
+//                    auto str = unkown2Str(itkf->second) + " (" + unkown2Str(double(itkf->second * 100) / double(tmpInt)) + " %)";
+//                    tmpVec.push_back(str);
+//                }
+//            }
+//            *fOut << tmpInt << "\n";
+//            tmpVec.push_back(to_string(tmpInt));
+////            auto itt = mOptions->mHomoSearchOptions.pathway_ko_stats_umap.find(it);
+////            if(itt == mOptions->mHomoSearchOptions.pathway_ko_stats_umap.end()){
+////                *fOut << "0\n";
+////                tmpVec.push_back("0");
+////            } else {
+////                *fOut << itt->second << "\n";
+////                tmpVec.push_back(to_string(itt->second));
+////            }
+//            pathwayFreqVec.push_back(tmpVec);
+//            tmpVec.clear();
+//        }
+//        fOut->flush();
+//        fOut->close();
+//        if (mOptions->verbose) loginfo("Finish to write KO abundance table for all samples");
+//
+//        //3. for species
+//        fOutNm.clear();
+//        fOutNm = joinpath(mOptions->samples.front().path, "All_sample_species_table.txt");
+//        //std::ofstream * fOut = new std::ofstream();
+//        fOut->open(fOutNm.c_str(), std::ofstream::out);
+//        if (!fOut->is_open()) error_exit("Can not open All_sample_species_table.txt");
+//        if (mOptions->verbose) loginfo("Starting to write all samples species abundance table");
+//
+//        *fOut << "#Name\t";
+//        for (auto & it : smNmVec) {
+//            *fOut << it << "\t";
+//        }
+//        *fOut << "\n";
+//
+//        *fOut << "#Class\t";
+//        for (auto & it : mOptions->samples) {
+//            *fOut << it.feature << "\t";
+//        }
+//        *fOut << "\n";
+//        
+//        orgFreqVec.reserve(orgSet.size());
+//        for (auto & it : orgSet) {
+//            tmpVec.clear();
+//            *fOut << it << "\t";
+//            tmpVec.push_back(it);
+//            for (Sample & sample : mOptions->samples) {
+//                auto itkf = sample.totalOrgKOUMap.find(it);
+//                if (itkf == sample.totalOrgKOUMap.end()) {
+//                    *fOut << 0 << "\t";
+//                    tmpVec.push_back("0");
+//                } else {
+//                    *fOut << itkf->second << "\t";
+//                    tmpVec.push_back(to_string(itkf->second));
+//                }
+//            }
+//            *fOut << "\n";
+//            orgFreqVec.push_back(tmpVec);
+//            tmpVec.clear();
+//        }
+//        fOut->flush();
+//        fOut->close();
+//        if (fOut) delete fOut;
+//        fOut = NULL;
+//        if (mOptions->verbose) loginfo("Finish to write spcies table for all samples");
+//    }
 }
 
 void HtmlReporterAll::report(){
@@ -572,40 +607,40 @@ void HtmlReporterAll::printAnnotationResults(ofstream& ofs) {
         ofs << "</div>\n";
         ofs << "</div>\n";
         
-        ofs << "<div class='section_div'>\n";
-        ofs << "<div class='section_title' onclick=showOrHide('rarefactionKO')><a name='summary'>Rarefaction curve (KO) <I>" << "</I><font color='#88CCFF' > (click to show/hide) </font></a></div>\n";
-        ofs << "<div id='rarefactionKO'>\n";
-        reportRarefactionKO(ofs);
-        ofs << "</div>\n";
-        ofs << "</div>\n";
-
-        ofs << "<div class='section_div'>\n";
-        ofs << "<div class='section_title' onclick=showOrHide('rarefactionKO3d')><a name='summary'>Rarefaction curve (KO) 3D <I>" << "</I><font color='#88CCFF' > (click to show/hide) </font></a></div>\n";
-        ofs << "<div id='rarefactionKO3d'>\n";
-        reportRarefactionKO3D(ofs);
-        ofs << "</div>\n";
-        ofs << "</div>\n";
-
-        ofs << "<div class='section_div'>\n";
-        ofs << "<div class='section_title' onclick=showOrHide('top_kos')><a name='summary'>Top abundant KOs</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
-        ofs << "<div id='top_kos'>\n";
-        reportKOBarPlot(ofs);
-        ofs << "</div>\n";
-        ofs << "</div>\n";
-
-        ofs << "<div class='section_div'>\n";
-        ofs << "<div class='section_title' onclick=showOrHide('top_pathways')><a name='summary'>Hit pathways</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
-        ofs << "<div id='top_pathways'>\n";
-        reportPathwayBarPlot(ofs);
-        ofs << "</div>\n";
-        ofs << "</div>\n";
-
-        ofs << "<div class='section_div'>\n";
-        ofs << "<div class='section_title' onclick=showOrHide('top_org')><a name='summary'>Hit Species</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
-        ofs << "<div id='top_org'>\n";
-        reportOrgBarPlot(ofs);
-        ofs << "</div>\n";
-        ofs << "</div>\n";
+//        ofs << "<div class='section_div'>\n";
+//        ofs << "<div class='section_title' onclick=showOrHide('rarefactionKO')><a name='summary'>Rarefaction curve (KO) <I>" << "</I><font color='#88CCFF' > (click to show/hide) </font></a></div>\n";
+//        ofs << "<div id='rarefactionKO'>\n";
+//        reportRarefactionKO(ofs);
+//        ofs << "</div>\n";
+//        ofs << "</div>\n";
+//
+//        ofs << "<div class='section_div'>\n";
+//        ofs << "<div class='section_title' onclick=showOrHide('rarefactionKO3d')><a name='summary'>Rarefaction curve (KO) 3D <I>" << "</I><font color='#88CCFF' > (click to show/hide) </font></a></div>\n";
+//        ofs << "<div id='rarefactionKO3d'>\n";
+//        reportRarefactionKO3D(ofs);
+//        ofs << "</div>\n";
+//        ofs << "</div>\n";
+//
+//        ofs << "<div class='section_div'>\n";
+//        ofs << "<div class='section_title' onclick=showOrHide('top_kos')><a name='summary'>Top abundant KOs</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
+//        ofs << "<div id='top_kos'>\n";
+//        reportKOBarPlot(ofs);
+//        ofs << "</div>\n";
+//        ofs << "</div>\n";
+//
+//        ofs << "<div class='section_div'>\n";
+//        ofs << "<div class='section_title' onclick=showOrHide('top_pathways')><a name='summary'>Hit pathways</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
+//        ofs << "<div id='top_pathways'>\n";
+//        reportPathwayBarPlot(ofs);
+//        ofs << "</div>\n";
+//        ofs << "</div>\n";
+//
+//        ofs << "<div class='section_div'>\n";
+//        ofs << "<div class='section_title' onclick=showOrHide('top_org')><a name='summary'>Hit Species</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
+//        ofs << "<div id='top_org'>\n";
+//        reportOrgBarPlot(ofs);
+//        ofs << "</div>\n";
+//        ofs << "</div>\n";
 
         ofs << "<div class='section_div'>\n";
         ofs << "<div class='section_title' onclick=showOrHide('reads_quality')><a name='summary'>Reads Quality</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
@@ -623,12 +658,12 @@ void HtmlReporterAll::printAnnotationResults(ofstream& ofs) {
         ofs << "</div>\n";
         ofs << "</div>\n";
         
-        ofs << "<div class='section_div'>\n";
-        ofs << "<div class='section_title' onclick=showOrHide('top_kos')><a name='summary'>Top abundant KOs</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
-        ofs << "<div id='top_kos'>\n";
-        reportKOBarPlot(ofs);
-        ofs << "</div>\n";
-        ofs << "</div>\n";
+//        ofs << "<div class='section_div'>\n";
+//        ofs << "<div class='section_title' onclick=showOrHide('top_kos')><a name='summary'>Top abundant KOs</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
+//        ofs << "<div id='top_kos'>\n";
+//        reportKOBarPlot(ofs);
+//        ofs << "</div>\n";
+//        ofs << "</div>\n";
 
         ofs << "<div class='section_div'>\n";
         ofs << "<div class='section_title' onclick=showOrHide('reads_quality')><a name='summary'>Reads Quality</a><font color='#88CCFF' > (click to show/hide) </font></div>\n";
@@ -779,7 +814,7 @@ void HtmlReporterAll::reportRarefactionS2f(ofstream& ofs) {
         std::vector<long> x_vec;
         std::vector<double> y_vec;
 
-        for (auto & it : sample.rarefactionIdMap) {
+        for (const auto & it : sample.rarefactionIdMap) {
             x_vec.push_back(it.first);
             y_vec.push_back((double) it.second);
         }
@@ -820,7 +855,7 @@ void HtmlReporterAll::reportRarefactionS2f3D(ofstream& ofs) {
         std::vector<double> y_vec;
         std::vector<string> z_vec;
 
-        for (auto & it : sample.rarefactionIdMap) {
+        for (const auto & it : sample.rarefactionIdMap) {
             x_vec.push_back(it.first);
             y_vec.push_back((double) it.second);
             z_vec.push_back(basename(sample.prefix));
@@ -864,25 +899,54 @@ void HtmlReporterAll::reportS2fBarPlot(ofstream& ofs){
     ofs << "<div id='id_table' style='overflow:auto; height: 400px;'>\n";
     ofs << "<table class='summary_table'>\n";
     ofs << "<tr><td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "Sample" << "</td>";
-    for(auto & it : smNmVec){
+    for(const auto & it : smNmVec){
         ofs << "<td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << it << "</td>";
     }
-    ofs << "<td class='exlarge' style='font-size:14px;color:#ffffff;background:#008000'>" << "Name" << "</td></tr>\n";
+    
+    ofs << "<td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "KO" << "</td>";
+    ofs << "<td class='collarge' style='font-size:14px;color:#ffffff;background:#008000'>" << "GO" << "</td>";
+    ofs << "<td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "Symbol" << "</td>";
+    ofs << "<td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "Name" << "</td></tr>\n";
+    //ofs << "<td class='exlarge' style='font-size:14px;color:#ffffff;background:#008000'>" << "Name" << "</td></tr>\n";
 
     ofs << "<tr><td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "Class" << "</td>";
-    for (auto & it : mOptions->samples) {
+    for (const auto & it : mOptions->samples) {
         ofs << "<td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << it.feature << "</td>";
     }
-    ofs << "<td class='exlarge' style='font-size:14px;color:#ffffff;background:#008000'>" << "Class_info" << "</td></tr>\n";
+
+    ofs << "<td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "-" << "</td>";
+    ofs << "<td class='collarge' style='font-size:14px;color:#ffffff;background:#008000'>" << "-" << "</td>";
+    ofs << "<td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "-" << "</td>";
+    ofs << "<td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "-" << "</td></tr>\n";
     
-    for (auto & it : idFreqVec) {
-        ofs << "<tr><td class='ko_col'>" << it.at(0) << "</td>";
-        if (it.size() > 2) {
-            for (int i = 1; i < (it.size() - 1); i++) {
-                ofs << "<td class='ko_col'>" << it.at(i) << "</td>";
-            }
+   // ofs << "<td class='exlarge' style='font-size:14px;color:#ffffff;background:#008000'>" << "Class_info" << "</td></tr>\n";
+    
+    for (const auto & it : idFreqVec) {
+        ofs << "<tr><td class='ko_col'>" << "s2f_" << *(it.first) << "</td>";
+
+        for (const auto & itt : it.second) {
+            ofs << "<td class='ko_col'>" << itt << "</td>";
         }
-        ofs << "<td class='exlarge'>" << it.back() << "</td></tr>\n";
+        
+        auto itr = mOptions->mHomoSearchOptions.fullDbMap.find(const_cast<const uint32 *>(it.first));
+        if(itr == mOptions->mHomoSearchOptions.fullDbMap.end()){
+             ofs << "<td class='ko_col'>" << 'U' << "</td>";
+             ofs << "<td class='collarge'>" << 'U' << "</td>";
+             ofs << "<td class='ko_col'>" << 'U' << "</td>";
+             ofs << "<td class='ko_col'>" << 'U' << "</td></tr>\n";
+        } else {
+             ofs << "<td class='ko_col'>" << itr->second.ko << "</td>";
+             ofs << "<td class='collarge'>" << itr->second.go << "</td>";
+             ofs << "<td class='ko_col'>" << itr->second.symbol << "</td>";
+             ofs << "<td class='ko_col'>" << itr->second.gene << "</td></tr>\n";
+        }
+        
+//        if (it.second.size() > 2) {
+//            for (int i = 1; i < (it.second.size() - 1); i++) {
+//                ofs << "<td class='ko_col'>" << it.at(i) << "</td>";
+//            }
+//        }
+//        ofs << "<td class='exlarge'>" << it.back() << "</td></tr>\n";
     }
     
     ofs << "</table>\n";

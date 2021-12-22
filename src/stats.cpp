@@ -5,7 +5,7 @@
 
 #define KMER_LEN 5
 
-Stats::Stats(Options* opt, bool isRead2, int guessedCycles, int bufferMargin){
+Stats::Stats(Options* & opt, bool isRead2, int guessedCycles, int bufferMargin){
     mOptions = opt;
     mIsRead2 = isRead2;
     mReads = 0;

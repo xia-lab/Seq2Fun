@@ -11,9 +11,9 @@ using namespace std;
 
 class Processor{
 public:
-    Processor(Options* opt);
+    Processor(Options* & opt);
     ~Processor();
-    bool process(BwtFmiDB * tbwtfmiDB);
+    bool process(BwtFmiDB * & tbwtfmiDB);
 
 private:
     Options* mOptions;

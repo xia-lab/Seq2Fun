@@ -50,21 +50,21 @@
 
 using namespace std;
 
-template <class T>
-void colorCout(const T & str, string color = "red") {
-    if (color == "red") {
+template <typename T>
+void colorCout(const T & str, char color = 'r') {
+    if (color == 'r') {
         std::cout << "\033[1;31m" << str << "\033[0m\n";
-    } else if (color == "green") {
+    } else if (color == 'g') {
         std::cout << "\033[1;32m" << str << "\033[0m\n";
-    } else if (color == "yellow") {
+    } else if (color == 'y') {
         std::cout << "\033[1;33m" << str << "\033[0m\n";
-    } else if (color == "blue") {
+    } else if (color == 'b') {
         std::cout << "\033[1;34m" << str << "\033[0m\n";
-    } else if (color == "magenta") {
+    } else if (color == 'm') {
         std::cout << "\033[1;35m" << str << "\033[0m\n";
-    } else if (color == "cyan") {
+    } else if (color == 'c') {
         std::cout << "\033[1;36m" << str << "\033[0m\n";
-    } else if (color == "white") {
+    } else if (color == 'w') {
         std::cout << "\033[1;37m" << str << "\033[0m\n";
     } else {
         std::cout << "\033[1;30m" << str << "\033[0m\n";
@@ -433,16 +433,17 @@ inline string trimName(string& str) {
     }
 }
 
-inline std::string getMostFreqStrFromVec(std::vector<std::string> & vectorko) {
-    std::map<std::string, int> freq;
+template<typename T>
+T getMostFreqStrFromVec(std::vector< T > & vectorko) {
+    std::map<T, int> freq;
 
     for (int i = 0; i < vectorko.size(); i++) {
         freq[vectorko[i]]++;
     }
 
     int max_F = 0;
-    std::string res = "";
-    for (auto j : freq) {
+    T res;
+    for (const auto & j : freq) {
         if (max_F < j.second) {
             res = j.first;
             max_F = j.second;
@@ -487,7 +488,7 @@ inline string removeStrs(const string &str) {
     if (pos != string::npos) {
         ret.append(str.data(), pos);
     } else {
-        pos = str.find("\tUNASSIGNED");
+        pos = str.find("\tU");
         if (pos != string::npos) {
             ret.append(str.data(), pos);
         } else {
@@ -520,20 +521,86 @@ std::string unkown2Str(const T & t) {
     return os.str();
 }
 
-template <class T>
-std::vector<std::pair<std::string, T> > sortUMapToVector(std::unordered_map<std::string, T> &unMap) {
-    int size = unMap.size();
-    std::vector<std::pair < std::string, T >> sortedVec(size);
+
+//bool cmp(std::pair<const uint32*, uint32>& l,
+//        std::pair<const uint32*, uint32>& r){
+//    return l.second > r.second;
+//}
+//
+//std::vector<std::pair<const uint32*, uint32> > sortMapToVector2(std::map<const uint32*, uint32> &unMap) {
+//    std::vector<std::pair < const uint32*, uint32 > > sortedVec;
+//    sortedVec.reserve(unMap.size());
+//    
+//    for(const auto & it : unMap){
+//        sortedVec.push_back(it);
+//    }
+//    std::sort(sortedVec.begin(), sortedVec.end(), cmp);
+//    
+//    for(const auto & it : sortedVec){
+//        std::cout << it.first << " : " << it.second << "\n";
+//    }
+//    return sortedVec;
+//}
+
+template <typename T1, typename T2>
+std::vector<std::pair<const T1*, T2> > sortMapToVector(std::map<const T1*, T2> &unMap) {
+    std::vector<std::pair < const T1*, T2 >> sortedVec;
+    sortedVec.reserve(unMap.size());
     std::partial_sort_copy(unMap.begin(),
             unMap.end(),
             sortedVec.begin(),
             sortedVec.end(),
-            [](std::pair<const std::string, float> const &l,
-            std::pair<const std::string, float> const &r) {
+            [](std::pair<const T1*, float> const &l,
+            std::pair<const T1*, float> const &r) {
                 return l.second > r.second;
             });
     return sortedVec;
 }
+
+template <typename T1, typename T2>
+std::vector<std::pair<T1, T2> > sortUMapToVector(std::map<T1, T2> &unMap) {
+    int size = unMap.size();
+    std::vector<std::pair < T1, T2 >> sortedVec(size);
+    std::partial_sort_copy(unMap.begin(),
+            unMap.end(),
+            sortedVec.begin(),
+            sortedVec.end(),
+            [](std::pair<const T1, float> const &l,
+            std::pair<const T1, float> const &r) {
+                return l.second > r.second;
+            });
+    return sortedVec;
+}
+
+template <typename T1, typename T2>
+std::vector<std::pair<T1, T2> > sortUMapToVector(std::unordered_map<T1, T2> &unMap) {
+    int size = unMap.size();
+    std::vector<std::pair < T1, T2 >> sortedVec(size);
+    std::partial_sort_copy(unMap.begin(),
+            unMap.end(),
+            sortedVec.begin(),
+            sortedVec.end(),
+            [](std::pair<const T1, float> const &l,
+            std::pair<const T1, float> const &r) {
+                return l.second > r.second;
+            });
+    return sortedVec;
+}
+
+//template <const typename T1, typename T2>
+//std::vector<std::pair<T1, T2> > sortUMapToVector(std::map<T1, T2> &unMap) {
+//    int size = unMap.size();
+//    std::vector<std::pair <T1, T2 >> sortedVec(size);
+//    std::partial_sort_copy(unMap.begin(),
+//            unMap.end(),
+//            sortedVec.begin(),
+//            sortedVec.end(),
+//            [](std::pair<T1, float> const &l,
+//            std::pair<T1, float> const &r) {
+//                return *(l.second) > *(r.second);
+//            });
+//    return sortedVec;
+//}
 
 inline std::vector<std::tuple<std::string, double, int, int> > sortTupleVector(std::vector<std::tuple<std::string, double, int, int> > & OriVec) {
     int size = OriVec.size();

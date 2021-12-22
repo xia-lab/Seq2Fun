@@ -1,6 +1,6 @@
 #include "jsonreporter.h"
 
-JsonReporter::JsonReporter(Options* opt){
+JsonReporter::JsonReporter(Options* & opt){
     mOptions = opt;
     mDupHist = NULL;
     mDupRate = 0;
