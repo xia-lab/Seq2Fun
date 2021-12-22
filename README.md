@@ -117,7 +117,7 @@ S2F_HOME/bin/seq2fun --sampletable sample.txt --tfmi S2F_HOME/database/birds/bir
 ### Results
 #### 1  abundance for all the samples table (All_sample_s2fid_abundance_table.txt)
 
-This table has sample names, meta data and s2fid, KO, GO, gene symbol and gene description separated by '\t'. (how many reads have assigned to the s2fid/ortholog). It looks like this:
+This table has sample names, meta data and s2fid, reads count (how many reads have assigned to the s2fid/ortholog), KO, GO, gene symbol and gene description separated by '\t'.
 ```
 #NAME	A1.CE2-S1	A3.CE1-M2	A4.CE1-H5	B1.CE2-S2	B3.CE1-M3	C1.CE2-S3	C3.CE1-M4	D1.CE2-S4	D3.CE1-M5	E1.CE2-S5	E3.CE1-H1	F3.CE1-H2	G3.CE1-H3	H2.CE1-M1	H3.CE1-H4	annotation
 #CLASS:XX	control	middle	high	control	middle	control	middle	control	middle	control	high	high	high	middle	high	-
@@ -143,7 +143,7 @@ s2f_10015	197	248	217	197	207	173	233	173	193	168	225	238	218	216	176	K15119|GO:
 s2f_10017	18	37	55	34	48	24	49	36	67	20	50	44	55	57	48	K18342|GO:0004843;GO:0006508;GO:0008233;GO:0008234|OTUD6B|otu K23387|GO:0045048|GET4|guided entry of tail-anchored proteins fact
 ...
 ```
-#### 4. Reads KO table (A1.CE2-S1_reads_ko.txt).
+#### 4. Reads annotation file ().
 This table has three columns separated by '\t', s2f_id/ortholog, reads_count(how many reads mapped to the s2f_id) and annotation.
 ```
 #s2f_id	Reads_cout	annotation
@@ -177,13 +177,13 @@ Use seq2fun or seq2fun --help to show the full usage options
   -X, --prefix                      (not recommended) prefix name for output files, eg: sample01
 
       --outputMappedCleanReads,          enable output mapped clean reads into fastq.gz files, by default is false, using --outputMappedCleanReads to enable it
-      --outputReadsKOMap            enable output mapped clean reads-KO map into .gz files, by default is false, using --outputReadsKOMap to enable it
+      --outputReadsAnnoMap            enable output mapped clean reads-annotation map into .gz files, by default is false, using --outputReadsAnnoMap to enable it
 
   // Homology search;
 
-   -D, --genemap                    gene/protein KO species map
+   -D, --genemap                    gene/protein species map
 
-       --profiling                  by default it is off. If this option is specified, 4 levels of output files will be generated, ko abundance table, hit pathway table, hit species table and ko reads mapping tableby default it is off. If this option is specified, 4 levels of output files will be generated, ko abundance table, hit pathway table, hit species table and ko reads mapping table
+       --profiling                  by default it is off. If this option is specified, several output files will be generated, s2f_id/ortholog abundance table.
 
     
   // translated search
@@ -415,7 +415,7 @@ We have followed the codon tables from [NCBI](https://www.ncbi.nlm.nih.gov/Taxon
 To inform us of any bugs or requests, please open a new issue or send an email to rocpengliu@gmail.com or jeff.xia@mcgill.ca
 
 ## Seq2Fun History & Updates
-10-01-2021 - seq2fun_v2.0.0 released  
+12-21-2021 - seq2fun_v2.0.0 released  
 08-23-2021 - seq2fun_v1.2.4 released  
 06-18-2021 - seq2fun_v1.2.3 released  
 06-05-2021 - seq2fun_v1.2.2 released  
