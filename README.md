@@ -33,17 +33,7 @@ cd Seq2Fun/src/
 make clean
 make
 ```
-### Step 2. Run a small test 
-There are four sub folders under seq2fun - src, bin, database and testdata. The bin folder contains the binary code we just complied. The testdata contains a small test data from the Case Study.
-From within the <code><b> testdata </b></code> folder, issue the following commands:
-```
-../bin/seq2fun --sampletable sample.txt --tfmi example.fmi --genemap example_annotation.txt -w 8 --profiling -V --outputMappedCleanReads --outputReadsAnnoMap
-or if you want the trim the first 6 bases
-../bin/seq2fun --sampletable sample.txt --tfmi example.fmi --genemap example_annotation.txt --trim_front1 6 --trim_front2 6 -w 8 --profiling -V --outputMappedCleanReads --outputReadsAnnoMap
-```
-
-
-### Step 3. Database download 
+### Step 2. Database download 
 For most non-model organisms, biological understanding of study outcomes is limited to protein-coding genes with functional annotations such as KEGG pathways, Gene Ontology or PANTHER classification system. Therefore, developing Seq2Fun version 2 database to focus on functionally annotated genes such as orthologs largely meets the preferred needs of most scientists studying non-model organisms.
 
 We provide dozens of pre-built databases that can be downloaded here based on [NCBI ortholog](https://ftp.ncbi.nlm.nih.gov/gene/DATA/gene_orthologs.gz)
@@ -57,6 +47,21 @@ We provide dozens of pre-built databases that can be downloaded here based on [N
 | Reptiles| 24	| 73,6134	| 15,884 | [reptiles.tar.gz](http://gofile.me/4esAc/UbEtvikec)	|
 | Amphibians| 9	| 230,744	| 15,199 | [amphibians.tar.gz](http://gofile.me/4esAc/UbEtvikec)|
 | Fishes| 125	| 3,500,392	| 21,427 | [fishes.tar.gz](http://gofile.me/4esAc/UbEtvikec)	|
+
+### Step 3. Run a small test 
+There are four sub folders under seq2fun - src, bin, database and testdata. The bin folder contains the binary code we just complied. The testdata contains a small test data from the Case Study.
+
+Download the [birds database](http://gofile.me/4esAc/UbEtvikec) to the <code><b> testdata </b></code> folder, and issue the following commands:
+```
+tar -xzvf birds.tar.gz
+```
+
+From within the <code><b> testdata </b></code> folder, issue the following commands:
+```
+../bin/seq2fun --sampletable sample.txt --tfmi birds/birds.fmi --genemap birds/birds_annotation.txt -w 8 --profiling -V --outputMappedCleanReads --outputReadsAnnoMap
+or if you want the trim the first 6 bases
+../bin/seq2fun --sampletable sample.txt --tfmi birds/birds.fmi --genemap birds/birds_annotation.txt --trim_front1 6 --trim_front2 6 -w 8 --profiling -V --outputMappedCleanReads --outputReadsAnnoMap
+```
 
 ## Case Studies
 This short tutorial below demonstrates how to run Seq2Fun. We use a RNA-seq dataset from a real non-model organism double-crested cormorant (DCCO), treated with ethinyl estradiol (EE2) as a show case.
