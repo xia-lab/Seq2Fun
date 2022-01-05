@@ -53,7 +53,7 @@ We are also building more databases such as, plants, fungi... using [JustOrtholo
 ### Step 3. Run a small test 
 There are four sub folders under seq2fun - src, bin, database and testdata. The bin folder contains the binary code we just complied. The testdata contains a small test data from the Case Study.
 
-Download the [birds database](http://gofile.me/4esAc/UbEtvikec) to the <code><b> testdata </b></code> folder, and issue the following commands:
+Download the [birds database](http://gofile.me/4esAc/bG1RlcQIS) to the <code><b> testdata </b></code> folder, and issue the following commands:
 ```
 tar -xzvf birds.tar.gz
 ```
