@@ -1,11 +1,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#include <tuple>
-#include <map>
-#include <unordered_map>
 #include <string>
-#include <vector>
 
 #define SEQ2FUNR_VER "2.0.0"
 
@@ -22,11 +18,6 @@ typedef unsigned short uint16;
 
 typedef char int8;
 typedef unsigned char uint8;
-
-typedef std::tuple < std::vector<std::tuple<std::string, int, std::string> >,
-                     std::map<int, int>, 
-                     std::vector<std::tuple<std::string, double, std::string, int, int> >,
-                     std::vector<std::pair<std::string, int> > > S2FReportTuple;
 
 const char ATCG_BASES[] = {'A', 'T', 'C', 'G'};
 

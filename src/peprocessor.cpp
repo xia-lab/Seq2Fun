@@ -51,20 +51,6 @@ PairEndProcessor::~PairEndProcessor() {
         mUmiProcessor = NULL;
     }
     
-//    if(mOutStream1){
-//        delete mOutStream1;
-//        mOutStream1 = NULL;
-//    }
-//    
-//    if(mOutStream2){
-//        delete mOutStream2;
-//        mOutStream2 = NULL;
-//    }
-//    if(tbwtfmiDB){
-//        delete tbwtfmiDB;
-//        tbwtfmiDB = NULL;
-//    }
-    
     destroyPackRepository();
 }
 
