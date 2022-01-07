@@ -518,11 +518,13 @@ bool PairEndProcessor::processPairEnd(ReadPairPack* pack, ThreadConfig* config) 
         mOptions->transSearch.idUSet.insert(idSet.begin(), idSet.end());
         auto iCount = mOptions->transSearch.idUSet.size();
         logMtx.unlock();
-        std::string str = "Mapped \033[1;31m" + std::to_string(rCount) + "\033[0m reads to \033[1;32m" + std::to_string(iCount) + "\033[0m s2f ids!";
-//        std::string str = "Mapped \033[1;31m" + std::to_string(rCount) + "\033[0m reads to \033[1;32m" + 
-//                std::to_string(kCount) + "\033[0m KOs and \033[1;36m" + std::to_string(gCount) + 
-//                "\033[0m GO sets and \033[1;34m" +  std::to_string(iCount) + "\033[0m s2f ids!";
-        loginfo(str, false);
+        if (mOptions->longlog) {
+            std::string str = "Mapped " + std::to_string(rCount) + "reads to " + std::to_string(iCount) + " s2f ids!";
+            loginfo(str, true);
+        } else {
+            std::string str = "Mapped \033[1;31m" + std::to_string(rCount) + "\033[0m reads to \033[1;32m" + std::to_string(iCount) + "\033[0m s2f ids!";
+            loginfo(str, false);
+        }
     }
 
     mappedReads = 0;

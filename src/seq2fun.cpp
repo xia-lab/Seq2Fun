@@ -71,6 +71,7 @@ int main(int argc, char* argv[]) {
     cmd.add<int>("thread", 'w', "worker thread number, default is 2", false, 2);
     cmd.add("verbose", 'V', "enable verbose");
     cmd.add("debug", 0, "enable debug");
+    cmd.add("longlog", 0, "enable the long logout format");
     
     cmd.add<int>("reads_buffer", 0, "specify reads buffer size (MB) for each file.", false, 1);
     cmd.add("fix_mgi_id", 0, "the MGI FASTQ ID format is not compatible with many BAM operation tools, enable this option to fix it.");
@@ -155,7 +156,6 @@ int main(int argc, char* argv[]) {
     cmd.add("overrepresentation_analysis", 'p', "enable overrepresented sequence analysis.");
     cmd.add<int>("overrepresentation_sampling", 'P', "one in (--overrepresentation_sampling) reads will be computed for overrepresentation analysis (1~10000), smaller is slower, default is 20.", false, 20);
 
-
     // deprecated options
     cmd.add("cut_by_quality5", 0, "DEPRECATED, use --cut_front instead.");
     cmd.add("cut_by_quality3", 0, "DEPRECATED, use --cut_tail instead.");
@@ -189,6 +189,7 @@ int main(int argc, char* argv[]) {
     opt->phred64 = cmd.exist("phred64");
     opt->verbose = cmd.exist("verbose");
     opt->debug = cmd.exist("debug");
+    opt->longlog = cmd.exist("longlog");
     opt->fixMGI = cmd.exist("fix_mgi_id");
 
     // adapter cutting
@@ -591,10 +592,10 @@ int main(int argc, char* argv[]) {
         p.process(tbwtfmiDB);
 
         cerr << endl << command << endl;
-        cerr << endl << "Seq2Fun v" << SEQ2FUNR_VER << ", time used: " << convertSeconds(opt->transSearch.timeLapse) << ", mapping " <<
+        cerr << endl << "Seq2Fun v" << SEQ2FUNR_VER << ", time used: " << convertSeconds(opt->transSearch.timeLapse) << ", mapped " <<
                 opt->transSearch.nTransMappedIdReads << " reads out of " <<
                 opt->mHomoSearchOptions.nTotalReads << " (" <<
-                getPercentage(long(opt->transSearch.nTransMappedIdReads), opt->mHomoSearchOptions.nTotalReads) << " %); " <<
+                getPercentage(long(opt->transSearch.nTransMappedIdReads), opt->mHomoSearchOptions.nTotalReads) << " %), " <<
 //                "mapped " << opt->transSearch.nTransMappedKOs << " KOs out of " <<
 //                opt->transSearch.nKODB << " KOs (" <<
 //                getPercentage(opt->transSearch.nTransMappedKOs, opt->transSearch.nKODB) <<
@@ -722,9 +723,9 @@ int main(int argc, char* argv[]) {
             p.process(tbwtfmiDB);
             cerr << endl << command << endl;
             cerr << endl << "Seq2Fun v" << SEQ2FUNR_VER << ", time used: " << convertSeconds(opt->transSearch.timeLapse) <<
-                    ", mapping " << opt->transSearch.nTransMappedIdReads << " reads out of " <<
+                    ", mapped " << opt->transSearch.nTransMappedIdReads << " reads out of " <<
                     opt->mHomoSearchOptions.nTotalReads << " (" <<
-                    getPercentage(long(opt->transSearch.nTransMappedIdReads), opt->mHomoSearchOptions.nTotalReads) << " %); " <<
+                    getPercentage(long(opt->transSearch.nTransMappedIdReads), opt->mHomoSearchOptions.nTotalReads) << " %), " <<
                     "mapped " << opt->transSearch.nTransMappedIds << " S2f ids out of " <<
                     opt->transSearch.nIdDB << " S2f ids (" <<
                     getPercentage(opt->transSearch.nTransMappedIds, opt->transSearch.nIdDB) <<

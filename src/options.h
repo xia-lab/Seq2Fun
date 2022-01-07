@@ -767,6 +767,7 @@ public:
     // output debug information
     bool verbose;
     bool debug;
+    bool longlog;
     // merge options
     MergeOptions merge;
     TransSearchOptions transSearch;

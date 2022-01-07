@@ -29,6 +29,7 @@ Options::Options(){
     overlapDiffPercentLimit = 20;
     verbose = false;
     debug = false;
+    longlog = false;
     outputMappedCleanReads = false;
     outputReadsAnnoMap = false;
     outReadsKOMap = "";

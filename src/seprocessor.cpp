@@ -331,10 +331,13 @@ bool SingleEndProcessor::processSingleEnd(ReadPack* pack, ThreadConfig* config){
 //        auto kCount = mOptions->transSearch.koUSet.size();
 //        auto gCount = mOptions->transSearch.goUSet.size();
         logMtx.unlock(); 
-         std::string str = "Mapped \033[1;31m" + std::to_string(rCount) + "\033[0m reads to \033[1;32m" + std::to_string(iCount) + "\033[0m s2f ids!";
-//        std::string str = "Mapped \033[1;32m" + std::to_string(rCount) + "\033[0m reads to \033[1;33m" + 
-//                std::to_string(kCount) + "\033[0m KOs and \033[1;36m" + std::to_string(gCount) + "\033[0m GO sets!";
-        loginfo(str, false);
+        if (mOptions->longlog) {
+            std::string str = "Mapped " + std::to_string(rCount) + "reads to " + std::to_string(iCount) + " s2f ids!";
+            loginfo(str, true);
+        } else {
+            std::string str = "Mapped \033[1;31m" + std::to_string(rCount) + "\033[0m reads to \033[1;32m" + std::to_string(iCount) + "\033[0m s2f ids!";
+            loginfo(str, false);
+        }
     }
 
     mappedReads = 0;
