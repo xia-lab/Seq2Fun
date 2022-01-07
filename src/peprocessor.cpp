@@ -337,8 +337,8 @@ int PairEndProcessor::getPeakInsertSize() {
 }
 
 bool PairEndProcessor::processPairEnd(ReadPairPack* pack, ThreadConfig* config) {
-    string outstr1;
-    string outstr2;
+    string * outstr1 = new string();
+    string * outstr2 = new string();
     string unpairedOut1;
     string unpairedOut2;
     string singleOutput;
@@ -484,8 +484,8 @@ bool PairEndProcessor::processPairEnd(ReadPairPack* pack, ThreadConfig* config) 
                     }
                     mappedReads++;
                     if (mLeftWriter && mRightWriter) {
-                        outstr1 += r1->toStringWithTag(orthId);
-                        outstr2 += r2->toStringWithTag(orthId);
+                        *outstr1 += r1->toStringWithTag(orthId);
+                        *outstr2 += r2->toStringWithTag(orthId);
                     }
                     if (mReadsKOWriter) {
                         outReadsKOMapStr += trimName(r1->mName) + "\t" + "s2f_" + std::to_string(*orthId) + "\n";
@@ -543,9 +543,9 @@ bool PairEndProcessor::processPairEnd(ReadPairPack* pack, ThreadConfig* config) 
     } else if (mOptions->split.enabled) {
         // split output by each worker thread
         if (!mOptions->out1.empty())
-            config->getWriter1()->writeString(outstr1);
+            config->getWriter1()->writeString(*outstr1);
         if (!mOptions->out2.empty())
-            config->getWriter2()->writeString(outstr2);
+            config->getWriter2()->writeString(*outstr2);
     }
 
     if (mMergedWriter && !mergedOutput.empty()) {
@@ -563,15 +563,15 @@ bool PairEndProcessor::processPairEnd(ReadPairPack* pack, ThreadConfig* config) 
     }
 
     // normal output by left/right writer thread
-    if (mRightWriter && mLeftWriter && (!outstr1.empty() || !outstr2.empty())) {
+    if (mRightWriter && mLeftWriter && (!outstr1->empty() || !outstr2->empty())) {
         // write PE
-        char* ldata = new char[outstr1.size()];
-        memcpy(ldata, outstr1.c_str(), outstr1.size());
-        mLeftWriter->input(ldata, outstr1.size());
+        char* ldata = new char[outstr1->size()];
+        memcpy(ldata, outstr1->c_str(), outstr1->size());
+        mLeftWriter->input(ldata, outstr1->size());
 
-        char* rdata = new char[outstr2.size()];
-        memcpy(rdata, outstr2.c_str(), outstr2.size());
-        mRightWriter->input(rdata, outstr2.size());
+        char* rdata = new char[outstr2->size()];
+        memcpy(rdata, outstr2->c_str(), outstr2->size());
+        mRightWriter->input(rdata, outstr2->size());
     } else if (mLeftWriter && !singleOutput.empty()) {
         // write singleOutput
         char* ldata = new char[singleOutput.size()];
@@ -613,6 +613,16 @@ bool PairEndProcessor::processPairEnd(ReadPairPack* pack, ThreadConfig* config) 
 
     if (mOptions->merge.enabled) {
         config->addMergedPairs(mergedCount);
+    }
+    
+    if(outstr1){
+        delete outstr1;
+        outstr1 = NULL;
+    }
+    
+    if(outstr2){
+        delete outstr2;
+        outstr2 = NULL;
     }
 
     delete pack->data;
