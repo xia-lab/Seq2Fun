@@ -118,20 +118,14 @@ bool SingleEndProcessor::process(){
             readsKOMapWriterThread->join();
     }
 
-    if(mOptions->verbose)
-        loginfo("start to generate reports\n");
+    if(mOptions->verbose){
+        mOptions->longlog ? loginfolong("start to generate reports\n") : loginfo("start to generate reports\n");
+    }
 
     // merge stats and read filter results
     vector<Stats*> preStats;
     vector<Stats*> postStats;
     vector<FilterResult*> filterResults;
-    vector< std::unordered_map<std::string, uint32 > > totalKoFreqVecResults;
-//    totalKoFreqVecResults.reserve(mOptions->thread);
-//    vector< std::unordered_map<std::string, std::unordered_map<std::string, double> > > totalOrgKOFreqVecResults;
-//    totalOrgKOFreqVecResults.reserve(mOptions->thread);
-//    vector<std::unordered_map<std::string, uint32> > totalGoFreqVecResults;
-//    totalGoFreqVecResults.reserve(mOptions->thread);
-//    vector<std::unordered_map<uint32, uint32> > totalIdFreqVecResults;
     vector<std::map<const uint32 *, uint32> > totalIdFreqVecResults;
     totalIdFreqVecResults.reserve(mOptions->thread);
     for(int t=0; t<mOptions->thread; t++){
@@ -139,25 +133,24 @@ bool SingleEndProcessor::process(){
         postStats.push_back(configs[t]->getPostStats1());
         filterResults.push_back(configs[t]->getFilterResult());
         totalIdFreqVecResults.push_back(configs[t]->getTransSearcher()->getIdFreqSubMap());
-//        totalKoFreqVecResults.push_back(configs[t]->getTransSearcher()->getSubKoFreqUMap());
-//        totalOrgKOFreqVecResults.push_back(configs[t]->getTransSearcher()->getSubOrgKOAbunUMap());
-//        totalGoFreqVecResults.push_back(configs[t]->getTransSearcher()->getSubGoFreqUMap());
-//        totalIdFreqVecResults.push_back(configs[t]->getTransSearcher()->getSubIdFreqUMap());
     }
     Stats* finalPreStats = Stats::merge(preStats);
     Stats* finalPostStats = Stats::merge(postStats);
     FilterResult* finalFilterResult = FilterResult::merge(filterResults);
     
+    mOptions->mHomoSearchOptions.nTotalReads = finalPreStats->getReads(); //change to both reads??????
+    mOptions->mHomoSearchOptions.nCleanReads = finalPostStats->getReads();
     mOptions->transSearch.totalIdFreqUMapResults = TransSearcher::merge(totalIdFreqVecResults);
     mOptions->transSearch.nTransMappedIds = mOptions->transSearch.totalIdFreqUMapResults.size();
     totalIdFreqVecResults.clear();
+    
     prepareResults();
 
     // read filter results to the first thread's
-    for(int t=1; t<mOptions->thread; t++){
-        preStats.push_back(configs[t]->getPreStats1());
-        postStats.push_back(configs[t]->getPostStats1());
-    }
+//    for(int t=1; t<mOptions->thread; t++){
+//        preStats.push_back(configs[t]->getPreStats1());
+//        postStats.push_back(configs[t]->getPostStats1());
+//    }
     int* dupHist = NULL;
     double* dupMeanTlen = NULL;
     double* dupMeanGC = NULL;
@@ -171,13 +164,10 @@ bool SingleEndProcessor::process(){
         cerr << endl;
         cerr << "Duplication rate (may be overestimated since this is SE data): " << dupRate * 100.0 << "%" << endl;
     }
-    
-    
     // make JSON report
     JsonReporter jr(mOptions);
     jr.setDupHist(dupHist, dupMeanGC, dupRate);
     jr.report(finalFilterResult, finalPreStats, finalPostStats);
-    
     // make HTML report
     HtmlReporter hr(mOptions);
     hr.setDupHist(dupHist, dupMeanGC, dupRate);
@@ -293,6 +283,7 @@ bool SingleEndProcessor::processSingleEnd(ReadPack* pack, ThreadConfig* config){
         
         if (r1 != NULL && result == PASS_FILTER) {
             orthId = NULL;
+            
             config->getTransSearcher()->transSearch(r1, orthId);
 
             if (orthId != NULL) {
@@ -332,8 +323,8 @@ bool SingleEndProcessor::processSingleEnd(ReadPack* pack, ThreadConfig* config){
 //        auto gCount = mOptions->transSearch.goUSet.size();
         logMtx.unlock(); 
         if (mOptions->longlog) {
-            std::string str = "Mapped " + std::to_string(rCount) + "reads to " + std::to_string(iCount) + " s2f ids!";
-            loginfo(str, true);
+            std::string str = "Mapped " + std::to_string(rCount) + " reads to " + std::to_string(iCount) + " s2f ids!";
+            loginfolong(str);
         } else {
             std::string str = "Mapped \033[1;31m" + std::to_string(rCount) + "\033[0m reads to \033[1;32m" + std::to_string(iCount) + "\033[0m s2f ids!";
             loginfo(str, false);
@@ -449,8 +440,9 @@ void SingleEndProcessor::consumePack(ThreadConfig* config){
 }
 
 void SingleEndProcessor::producerTask(){
-    if(mOptions->verbose)
-        loginfo("start to load data");
+    if(mOptions->verbose){
+        mOptions->longlog ? loginfolong("start to load data") : loginfo("start to load data");
+    }
     long lastReported = 0;
     int slept = 0;
     long readNum = 0;
@@ -485,7 +477,7 @@ void SingleEndProcessor::producerTask(){
         if(mOptions->verbose && count + readNum >= lastReported + 1000000) {
             lastReported = count + readNum;
             string msg = "\nloaded " + to_string((lastReported/1000000)) + "M reads";
-            loginfo(msg);
+            mOptions->longlog ? loginfolong(msg) : loginfo(msg);
         }
         // a full pack
         if(count == PACK_SIZE || needToBreak){
@@ -532,8 +524,9 @@ void SingleEndProcessor::producerTask(){
 
     //std::unique_lock<std::mutex> lock(mRepo.readCounterMtx);
     mProduceFinished = true;
-    if(mOptions->verbose)
-        loginfo("all reads loaded, start to monitor thread status");
+    if(mOptions->verbose){
+        mOptions->longlog ? loginfolong("all reads loaded, start to monitor thread status") : loginfo("all reads loaded, start to monitor thread status");
+    }
     //lock.unlock();
 
     // if the last data initialized is not used, free it
@@ -586,7 +579,7 @@ void SingleEndProcessor::consumerTask(ThreadConfig* config){
 
     if(mOptions->verbose) {
         string msg = "\nthread " + to_string(config->getThreadId() + 1) + " finished";
-        loginfo(msg);
+        mOptions->longlog ? loginfolong(msg) : loginfo(msg);
     }
 }
 
@@ -602,7 +595,7 @@ void SingleEndProcessor::writeTask(WriterThread* config){
 
     if(mOptions->verbose) {
         string msg = config->getFilename() + " writer finished";
-        loginfo(msg);
+        mOptions->longlog ? loginfolong(msg) : loginfo(msg);
     }
 }
 
@@ -621,7 +614,9 @@ void SingleEndProcessor::prepareResults() {
         std::ofstream* fout = new std::ofstream();
         fout->open(fileoutname.c_str(), std::ofstream::out);
         if(!fout->is_open()) error_exit("Can not open abundance file: " + fileoutname);
-        if (mOptions->verbose) loginfo("Starting to write gene abundance table");
+        if (mOptions->verbose) {
+            mOptions->longlog ? loginfolong("Starting to write gene abundance table") : loginfo("Starting to write gene abundance table");
+        }
         *fout << "#s2f_id\t" << "Reads_cout\t" << "annotation\n";
         if(mOptions->transSearch.nTransMappedIdReads != 0) mOptions->transSearch.nTransMappedIdReads = 0;
         for(const auto & it : mOptions->transSearch.totalIdFreqUMapResults){
@@ -642,10 +637,12 @@ void SingleEndProcessor::prepareResults() {
             fout = NULL;
         }
         
-        if (mOptions->verbose) loginfo("Finish to write s2f id abundance table");
+        if (mOptions->verbose) {
+            mOptions->longlog ? loginfolong("Finish to write s2f id abundance table") : loginfo("Finish to write s2f id abundance table");
+        }
         
-        //2 rarefaction curve;
-        if (mOptions->mHomoSearchOptions.profiling && mOptions->transSearch.nTransMappedIdReads > 0) {
+        //2 rarefaction curve;        
+        if (mOptions->mHomoSearchOptions.profiling && mOptions->transSearch.nTransMappedIdReads > 0) {  
             std::vector<uint32> reshuff_vec;
             reshuff_vec.reserve(mOptions->transSearch.nTransMappedIdReads);
             for(const auto & it : mOptions->transSearch.totalIdFreqUMapResults){

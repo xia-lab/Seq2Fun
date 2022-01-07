@@ -254,7 +254,9 @@ void HtmlReporterAll::reportAllTables() {
     std::ofstream * fOut = new std::ofstream();
     fOut->open(fOutNm.c_str(), std::ofstream::out);
     if(!fOut->is_open()) error_exit("Can not open All_sample_s2fid_abundance_table.txt");
-    if (mOptions->verbose) loginfo("Starting to write all samples s2fid abundance table");
+    if (mOptions->verbose) {
+        mOptions->longlog ? loginfolong("Starting to write all samples s2fid abundance table") : loginfo("Starting to write all samples s2fid abundance table");
+    }
     *fOut << "#NAME\t";
     for(const auto & it : smNmVec){
             *fOut << it << "\t";
@@ -293,13 +295,16 @@ void HtmlReporterAll::reportAllTables() {
     fOut->flush();
     fOut->close();
 
-    if (mOptions->verbose) loginfo("Finish to write s2fid abundance table for all samples");
-    
+    if (mOptions->verbose) {
+        mOptions->longlog ? loginfolong("Finish to write s2fid abundance table for all samples") : loginfo("Finish to write s2fid abundance table for all samples");
+    }
     
     fOutNm = joinpath(mOptions->samples.front().path, "All_sample_s2fid_abundance_table_submit_2_networkanalyst.txt");
     fOut->open(fOutNm.c_str(), std::ofstream::out);
     if(!fOut->is_open()) error_exit("Can not open All_sample_s2fid_abundance_table_submit_2_networkanalystv.txt");
-    if (mOptions->verbose) loginfo("Starting to write all samples s2fid abundance table");
+    if (mOptions->verbose) {
+        mOptions->longlog ? loginfolong("Starting to write all samples s2fid abundance table") : loginfo("Starting to write all samples s2fid abundance table");
+    }
     *fOut << "#NAME\t";
     for(const auto & it : smNmVec){
             *fOut << it << "\t";
@@ -330,7 +335,9 @@ void HtmlReporterAll::reportAllTables() {
     fOutNm = joinpath(mOptions->samples.front().path, "All_annotation_submit_2_networkanalyst.txt");
     fOut->open(fOutNm.c_str(), std::ofstream::out);
     if(!fOut->is_open()) error_exit("Can not open All_annotation_submit_2_networkanalyst.txt");
-    if (mOptions->verbose) loginfo("Starting to write all s2f id annotation table");
+    if (mOptions->verbose) {
+        mOptions->longlog ? loginfolong("Starting to write all s2f id annotation table") : loginfo("Starting to write all s2f id annotation table");
+    }
     *fOut << "s2f_id\tKO\tGO\tSymbol\tGene\n";
     for (const auto & it : idSet) {
         *fOut << "s2f_" << *it << "\t";

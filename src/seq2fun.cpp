@@ -621,7 +621,7 @@ int main(int argc, char* argv[]) {
             count++;
             std::stringstream msgSS;
             msgSS << "processing sample: " << it.prefix << ", " << count << " out of " << opt->samples.size() << " samples" << "\n";
-            loginfo(msgSS.str());
+            opt->longlog ? loginfolong( msgSS.str()) : loginfo(msgSS.str());
             opt->mHomoSearchOptions.prefix = it.prefix;
             opt->in1 = it.in1;
             opt->in2 = it.in2;

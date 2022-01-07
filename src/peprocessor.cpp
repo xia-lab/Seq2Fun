@@ -195,8 +195,9 @@ bool PairEndProcessor::process() {
             readsKOMapWriterThread->join();
     }
 
-    if (mOptions->verbose)
-        loginfo("start to generate reports\n");
+    if (mOptions->verbose){
+        mOptions->longlog ? loginfolong("start to generate reports\n") : loginfo("start to generate reports\n");
+    }
 
     // merge stats and filter results
     vector<Stats*> preStats1;
@@ -519,8 +520,8 @@ bool PairEndProcessor::processPairEnd(ReadPairPack* pack, ThreadConfig* config) 
         auto iCount = mOptions->transSearch.idUSet.size();
         logMtx.unlock();
         if (mOptions->longlog) {
-            std::string str = "Mapped " + std::to_string(rCount) + "reads to " + std::to_string(iCount) + " s2f ids!";
-            loginfo(str, true);
+            std::string str = "Mapped " + std::to_string(rCount) + " reads to " + std::to_string(iCount) + " s2f ids!";
+            loginfolong(str);
         } else {
             std::string str = "Mapped \033[1;31m" + std::to_string(rCount) + "\033[0m reads to \033[1;32m" + std::to_string(iCount) + "\033[0m s2f ids!";
             loginfo(str, false);
@@ -718,8 +719,9 @@ void PairEndProcessor::consumePack(ThreadConfig* config) {
 }
 
 void PairEndProcessor::producerTask() {
-    if (mOptions->verbose)
-        loginfo("start to load data");
+    if (mOptions->verbose){
+        mOptions->longlog ? loginfolong("start to load data") : loginfo("start to load data");
+    }
     long lastReported = 0;
     int slept = 0;
     long readNum = 0;
@@ -754,7 +756,7 @@ void PairEndProcessor::producerTask() {
         if (mOptions->verbose && count + readNum >= lastReported + 1000000) {
             lastReported = count + readNum;
             string msg = "\nloaded " + to_string((lastReported / 1000000)) + "M read pairs";
-            loginfo(msg);
+            mOptions->longlog ? loginfolong(msg) : loginfo(msg);
         }
         // a full pack
         if (count == PACK_SIZE || needToBreak) {
@@ -800,8 +802,10 @@ void PairEndProcessor::producerTask() {
 
     //std::unique_lock<std::mutex> lock(mRepo.readCounterMtx);
     mProduceFinished = true;
-    if (mOptions->verbose)
-        loginfo("all reads loaded, start to monitor thread status");
+    if (mOptions->verbose){
+        mOptions->longlog ? loginfolong("all reads loaded, start to monitor thread status") : loginfo("all reads loaded, start to monitor thread status");
+    }
+        
     //lock.unlock();
 
     // if the last data initialized is not used, free it
@@ -862,7 +866,7 @@ void PairEndProcessor::consumerTask(ThreadConfig* config) {
 
     if (mOptions->verbose) {
         string msg = "\nthread " + to_string(config->getThreadId() + 1) + " finished";
-        loginfo(msg);
+        mOptions->longlog ? loginfolong(msg) : loginfo(msg);
     }
 }
 
@@ -878,7 +882,7 @@ void PairEndProcessor::writeTask(WriterThread* config) {
 
     if (mOptions->verbose) {
         string msg = config->getFilename() + " writer finished";
-        loginfo(msg);
+        mOptions->longlog ? loginfolong(msg) : loginfo(msg);
     }
 }
 
@@ -897,7 +901,9 @@ void PairEndProcessor::prepareResults() {
         std::ofstream* fout = new std::ofstream();
         fout->open(fileoutname.c_str(), std::ofstream::out);
         if(!fout->is_open()) error_exit("Can not open abundance file: " + fileoutname);
-        if (mOptions->verbose) loginfo("Starting to write gene abundance table");
+        if (mOptions->verbose) {
+            mOptions->longlog ? loginfolong("Starting to write gene abundance table") : loginfo("Starting to write gene abundance table");
+        }
         *fout << "#s2f_id\t" << "Reads_cout\t" << "annotation\n";
         if(mOptions->transSearch.nTransMappedIdReads != 0) mOptions->transSearch.nTransMappedIdReads = 0;
         for(const auto & it : mOptions->transSearch.totalIdFreqUMapResults){
@@ -918,7 +924,9 @@ void PairEndProcessor::prepareResults() {
             fout = NULL;
         }
         
-        if (mOptions->verbose) loginfo("Finish to write s2f id abundance table");
+        if (mOptions->verbose) {
+             mOptions->longlog ? loginfolong("Finish to write s2f id abundance table") : loginfo("Finish to write s2f id abundance table");
+        }
         
         //2 rarefaction curve;
         if (mOptions->mHomoSearchOptions.profiling && mOptions->transSearch.nTransMappedIdReads > 0) {

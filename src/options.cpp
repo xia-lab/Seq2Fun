@@ -553,7 +553,7 @@ void Options::readDB() {
     if(mHomoSearchOptions.genemap.empty())  error_exit("Gene KO GO species map file is empty : " + mHomoSearchOptions.genemap);
     if (verbose) {
         std::string msg = "Reading gene GO KO species map from file " + mHomoSearchOptions.genemap;
-        loginfo(msg);
+        longlog ? loginfolong(msg) : loginfo(msg);
     }
     std::set<std::string> KUSet;
     std::set<std::string> orgUSet;
@@ -704,7 +704,7 @@ void Options::readDB() {
     if(!mHomoSearchOptions.fileName.empty()) {
         if (verbose) {
             std::string msg = "Reading KO full name from file: " + mHomoSearchOptions.fileName;
-            loginfo(msg);
+            longlog ? loginfolong(msg) : loginfo(msg);
         }
         mHomoSearchOptions.filein.open(mHomoSearchOptions.fileName.c_str());
         if(!mHomoSearchOptions.filein.is_open()) error_exit("Can not open KO full name map file : " + mHomoSearchOptions.fileName);
@@ -724,7 +724,7 @@ void Options::readDB() {
     if (!mHomoSearchOptions.fileName.empty()) {
         if (verbose) {
             std::string msg = "Reading KO pathway map from file: " + mHomoSearchOptions.fileName;
-            loginfo(msg);
+            longlog ? loginfolong(msg) : loginfo(msg);
         }
         mHomoSearchOptions.filein.open(mHomoSearchOptions.fileName.c_str());
         if (!mHomoSearchOptions.filein.is_open()) error_exit("Can not open KO pathway map file : " + mHomoSearchOptions.fileName);
@@ -747,7 +747,7 @@ void Options::readDB() {
     if (!mHomoSearchOptions.fileName.empty()) {
         if (verbose) {
             std::string msg = "Reading KO pathway stats map from file: " + mHomoSearchOptions.fileName;
-            loginfo(msg);
+            longlog ? loginfolong(msg) : loginfo(msg);
         }
         mHomoSearchOptions.filein.open(mHomoSearchOptions.fileName.c_str());
         if (!mHomoSearchOptions.filein.is_open()) error_exit("Can not open KO pathway map stats file : " + mHomoSearchOptions.fileName);
@@ -788,7 +788,7 @@ void Options::parseSampleTable() {
         check_file_valid(mHomoSearchOptions.sampleTable);
         if (verbose) {
             std::string msg = "Reading sample table from file " + mHomoSearchOptions.sampleTable;
-            loginfo(msg);
+            longlog ? loginfolong(msg) : loginfo(msg);
         }
     } else {
         error_exit("sample table file should be specified by --sampletable");
@@ -953,7 +953,7 @@ void Options::readSampleExtraction(){
         check_file_valid(mSeqExtractions.sampleMappedTableStr);
         if (verbose) {
             std::string msg = "Reading sampleMappedTable for seq extraction from file " + mSeqExtractions.sampleMappedTableStr;
-            loginfo(msg);
+            longlog ? loginfolong(msg) : loginfo(msg);
         }
     }
     
@@ -1029,7 +1029,7 @@ void Options::readSampleExtraction(){
         check_file_valid(mSeqExtractions.targetGeneTableStr);
         if(verbose){
             std::string msg = "Reading targetGeneTable for seq extraction from file " + mSeqExtractions.targetGeneTableStr;
-            loginfo(msg); 
+            longlog ? loginfolong(msg) : loginfo(msg); 
         }
     }
     
@@ -1039,7 +1039,7 @@ void Options::readSampleExtraction(){
     if(!file.is_open()) error_exit("can not open targetGeneTable, please check it!");
     if (verbose) {
         std::string msg = "Reading gene table for seq extraction from file " + mSeqExtractions.targetGeneTableStr;
-        loginfo(msg);
+        longlog ? loginfolong(msg) : loginfo(msg);
     }
     mSeqExtractions.targetGenesVec.clear();
     std::set<std::string> geneSet;
