@@ -345,7 +345,7 @@ bool PairEndProcessor::processPairEnd(ReadPairPack* pack, ThreadConfig* config) 
     string singleOutput;
     string mergedOutput;
     string failedOut;
-    std::string outReadsKOMapStr = "";
+    std::string * outReadsKOMapStr = new string();
     //std::string koTag = "";
     uint32 * orthId = NULL;
     int mappedReads = 0;
@@ -489,7 +489,7 @@ bool PairEndProcessor::processPairEnd(ReadPairPack* pack, ThreadConfig* config) 
                         *outstr2 += r2->toStringWithTag(orthId);
                     }
                     if (mReadsKOWriter) {
-                        outReadsKOMapStr += trimName(r1->mName) + "\t" + "s2f_" + std::to_string(*orthId) + "\n";
+                        *outReadsKOMapStr += trimName(r1->mName) + "\t" + "s2f_" + std::to_string(*orthId) + "\n";
                     }
                 }
                 // stats the read after filtering
@@ -600,10 +600,10 @@ bool PairEndProcessor::processPairEnd(ReadPairPack* pack, ThreadConfig* config) 
         }
     }
 
-    if (mReadsKOWriter && !outReadsKOMapStr.empty()) {
-        char* tdata = new char[outReadsKOMapStr.size()];
-        memcpy(tdata, outReadsKOMapStr.c_str(), outReadsKOMapStr.size());
-        mReadsKOWriter->input(tdata, outReadsKOMapStr.size());
+    if (mReadsKOWriter && !outReadsKOMapStr->empty()) {
+        char* tdata = new char[outReadsKOMapStr->size()];
+        memcpy(tdata, outReadsKOMapStr->c_str(), outReadsKOMapStr->size());
+        mReadsKOWriter->input(tdata, outReadsKOMapStr->size());
     }
 
     if (!mOptions->split.enabled)
@@ -626,6 +626,11 @@ bool PairEndProcessor::processPairEnd(ReadPairPack* pack, ThreadConfig* config) 
     if(outstr2){
         delete outstr2;
         outstr2 = NULL;
+    }
+    
+    if(outReadsKOMapStr){
+        delete outReadsKOMapStr;
+        outReadsKOMapStr = NULL;
     }
 
     delete pack->data;

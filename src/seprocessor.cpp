@@ -207,10 +207,10 @@ bool SingleEndProcessor::process(){
 }
 
 bool SingleEndProcessor::processSingleEnd(ReadPack* pack, ThreadConfig* config){
-    string outstr;
+    string * outstr = new string();
     string failedOut;
     int readPassed = 0;
-    std::string outReadsKOMapStr = "";
+    std::string * outReadsKOMapStr = new string();
     //std::string koTag = "";
     uint32* orthId = NULL;
     std::set<uint32 *> idSet;
@@ -292,10 +292,10 @@ bool SingleEndProcessor::processSingleEnd(ReadPack* pack, ThreadConfig* config){
                 }
                 mappedReads++;
                 if (mLeftWriter) {
-                    outstr += r1->toStringWithTag(orthId);
+                    *outstr += r1->toStringWithTag(orthId);
                 }
                 if (mReadsKOWriter) {
-                    outReadsKOMapStr += trimName(r1->mName) + "\t" + "s2f_" + std::to_string(*orthId) + "\n";
+                    *outReadsKOMapStr += trimName(r1->mName) + "\t" + "s2f_" + std::to_string(*orthId) + "\n";
                 }
                 orthId = NULL;
             }
@@ -337,17 +337,17 @@ bool SingleEndProcessor::processSingleEnd(ReadPack* pack, ThreadConfig* config){
     if(!mOptions->split.enabled)
         mOutputMtx.lock();
     if(mOptions->outputToSTDOUT) {
-        fwrite(outstr.c_str(), 1, outstr.length(), stdout);
+        fwrite(outstr->c_str(), 1, outstr->length(), stdout);
     } else if(mOptions->split.enabled) {
         // split output by each worker thread
         if(!mOptions->out1.empty())
-            config->getWriter1()->writeString(outstr);
+            config->getWriter1()->writeString(*outstr);
     } 
 
     if(mLeftWriter) {
-        char* ldata = new char[outstr.size()];
-        memcpy(ldata, outstr.c_str(), outstr.size());
-        mLeftWriter->input(ldata, outstr.size());
+        char* ldata = new char[outstr->size()];
+        memcpy(ldata, outstr->c_str(), outstr->size());
+        mLeftWriter->input(ldata, outstr->size());
     }
     if(mFailedWriter && !failedOut.empty()) {
         // write failed data
@@ -356,10 +356,10 @@ bool SingleEndProcessor::processSingleEnd(ReadPack* pack, ThreadConfig* config){
         mFailedWriter->input(fdata, failedOut.size());
     }
     
-    if (mReadsKOWriter && !outReadsKOMapStr.empty()) {
-        char* tdata = new char[outReadsKOMapStr.size()];
-        memcpy(tdata, outReadsKOMapStr.c_str(), outReadsKOMapStr.size());
-        mReadsKOWriter->input(tdata, outReadsKOMapStr.size());
+    if (mReadsKOWriter && !outReadsKOMapStr->empty()) {
+        char* tdata = new char[outReadsKOMapStr->size()];
+        memcpy(tdata, outReadsKOMapStr->c_str(), outReadsKOMapStr->size());
+        mReadsKOWriter->input(tdata, outReadsKOMapStr->size());
     }
     
     if(!mOptions->split.enabled)
@@ -370,6 +370,16 @@ bool SingleEndProcessor::processSingleEnd(ReadPack* pack, ThreadConfig* config){
     else
         config->markProcessed(pack->count);
 
+    if(outstr){
+        delete outstr;
+        outstr = NULL;
+    }
+    
+    if(outReadsKOMapStr){
+        delete outReadsKOMapStr;
+        outReadsKOMapStr = NULL;
+    }
+    
     delete pack->data;
     delete pack;
 
