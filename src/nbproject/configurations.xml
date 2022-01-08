@@ -2,54 +2,6 @@
 <configurationDescriptor version="100">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <df root="." name="0">
-      <df name="assembler">
-        <in>ReadTrace.c</in>
-        <in>arc.c</in>
-        <in>attachPEinfo.c</in>
-        <in>bubble.c</in>
-        <in>check.c</in>
-        <in>compactEdge.c</in>
-        <in>concatenateEdge.c</in>
-        <in>connect.c</in>
-        <in>contig.c</in>
-        <in>cutTipPreGraph.c</in>
-        <in>cutTip_graph.c</in>
-        <in>darray.c</in>
-        <in>dfib.c</in>
-        <in>dfibHeap.c</in>
-        <in>fib.c</in>
-        <in>fibHeap.c</in>
-        <in>hashFunction.c</in>
-        <in>kmer.c</in>
-        <in>lib.c</in>
-        <in>loadGraph.c</in>
-        <in>loadPath.c</in>
-        <in>loadPreGraph.c</in>
-        <in>localAsm.c</in>
-        <in>main.c</in>
-        <in>map.c</in>
-        <in>mem_manager.c</in>
-        <in>newhash.c</in>
-        <in>node2edge.c</in>
-        <in>orderContig.c</in>
-        <in>output_contig.c</in>
-        <in>output_pregraph.c</in>
-        <in>output_scaffold.c</in>
-        <in>pregraph.c</in>
-        <in>prlHashCtg.c</in>
-        <in>prlHashReads.c</in>
-        <in>prlRead2Ctg.c</in>
-        <in>prlRead2path.c</in>
-        <in>prlReadFillGap.c</in>
-        <in>read2scaf.c</in>
-        <in>readInterval.c</in>
-        <in>readseq1by1.c</in>
-        <in>scaffold.c</in>
-        <in>searchPath.c</in>
-        <in>seq.c</in>
-        <in>splitReps.c</in>
-        <in>stack.c</in>
-      </df>
       <df name="bwt">
         <in>bwt.c</in>
         <in>compactfmi.c</in>
@@ -152,8 +104,7 @@
       <flagsDictionary>
         <element flagsID="0" commonFlags="-O3"/>
         <element flagsID="1" commonFlags="-O3 -g"/>
-        <element flagsID="2" commonFlags="-O3 -m64"/>
-        <element flagsID="3" commonFlags="-O3 -std=c++11"/>
+        <element flagsID="2" commonFlags="-O3 -std=c++11"/>
       </flagsDictionary>
       <codeAssistance>
       </codeAssistance>
@@ -180,195 +131,11 @@
         </preBuild>
       </makefileType>
       <item path="adaptertrimmer.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="3">
+        <ccTool flags="2">
         </ccTool>
       </item>
-      <item path="assembler/ReadTrace.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/arc.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/attachPEinfo.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/bubble.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/check.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/compactEdge.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/concatenateEdge.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/connect.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/contig.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/cutTipPreGraph.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/cutTip_graph.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/darray.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/dfib.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/dfibHeap.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/fib.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/fibHeap.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/hashFunction.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/kmer.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/lib.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/loadGraph.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/loadPath.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/loadPreGraph.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/localAsm.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/main.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/map.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/mem_manager.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/newhash.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/node2edge.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/orderContig.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/output_contig.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/output_pregraph.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/output_scaffold.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/pregraph.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/prlHashCtg.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/prlHashReads.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/prlRead2Ctg.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/prlRead2path.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/prlReadFillGap.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/read2scaf.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/readInterval.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/readseq1by1.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/scaffold.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/searchPath.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/seq.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/splitReps.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
-      <item path="assembler/stack.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="2">
-        </cTool>
-      </item>
       <item path="basecorrector.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="3">
+        <ccTool flags="2">
         </ccTool>
       </item>
       <item path="bwt/bwt.c" ex="false" tool="0" flavor2="3">
@@ -404,27 +171,17 @@
         </cTool>
       </item>
       <item path="bwtfmiDB.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="3">
+        <ccTool flags="2">
         </ccTool>
       </item>
       <item path="duplicate.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="3">
+        <ccTool flags="2">
         </ccTool>
       </item>
       <item path="evaluator.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="3">
+        <ccTool flags="2">
         </ccTool>
       </item>
-      <folder path="0/assembler">
-        <cTool>
-          <incDir>
-            <pElem>assembler/inc</pElem>
-          </incDir>
-          <preprocessorList>
-            <Elem>MER31</Elem>
-          </preprocessorList>
-        </cTool>
-      </folder>
       <folder path="0/include">
         <cTool>
           <incDir>
@@ -439,31 +196,31 @@
         </cTool>
       </folder>
       <item path="fastareader.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="3">
+        <ccTool flags="2">
         </ccTool>
       </item>
       <item path="fastqreader.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="3">
+        <ccTool flags="2">
         </ccTool>
       </item>
       <item path="filter.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="3">
+        <ccTool flags="2">
         </ccTool>
       </item>
       <item path="filterresult.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="3">
+        <ccTool flags="2">
         </ccTool>
       </item>
       <item path="fragment.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="3">
+        <ccTool flags="2">
         </ccTool>
       </item>
       <item path="htmlreporter.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="3">
+        <ccTool flags="2">
         </ccTool>
       </item>
       <item path="htmlreporterall.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="3">
+        <ccTool flags="2">
         </ccTool>
       </item>
       <item path="include/ncbi-blast+/algo/blast/composition_adjustment/matrix_frequency_data.c"
@@ -600,87 +357,87 @@
         </cTool>
       </item>
       <item path="jsonreporter.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="3">
+        <ccTool flags="2">
         </ccTool>
       </item>
       <item path="nucleotidetree.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="3">
+        <ccTool flags="2">
         </ccTool>
       </item>
       <item path="options.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="3">
+        <ccTool flags="2">
         </ccTool>
       </item>
       <item path="overlapanalysis.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="3">
+        <ccTool flags="2">
         </ccTool>
       </item>
       <item path="peprocessor.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="3">
+        <ccTool flags="2">
         </ccTool>
       </item>
       <item path="polyx.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="3">
+        <ccTool flags="2">
         </ccTool>
       </item>
       <item path="processor.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="3">
+        <ccTool flags="2">
         </ccTool>
       </item>
       <item path="read.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="3">
+        <ccTool flags="2">
         </ccTool>
       </item>
       <item path="seprocessor.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="3">
+        <ccTool flags="2">
         </ccTool>
       </item>
       <item path="seq2fun.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="3">
+        <ccTool flags="2">
         </ccTool>
       </item>
       <item path="seqtract.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="3">
+        <ccTool flags="2">
         </ccTool>
       </item>
       <item path="seqtractpeprocessor.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="3">
+        <ccTool flags="2">
         </ccTool>
       </item>
       <item path="sequence.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="3">
+        <ccTool flags="2">
         </ccTool>
       </item>
       <item path="stats.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="3">
+        <ccTool flags="2">
         </ccTool>
       </item>
       <item path="threadconfig.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="3">
+        <ccTool flags="2">
         </ccTool>
       </item>
       <item path="threadsconfig2.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="3">
+        <ccTool flags="2">
         </ccTool>
       </item>
       <item path="transsearcher.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="3">
+        <ccTool flags="2">
         </ccTool>
       </item>
       <item path="umiprocessor.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="3">
+        <ccTool flags="2">
         </ccTool>
       </item>
       <item path="unittest.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="3">
+        <ccTool flags="2">
         </ccTool>
       </item>
       <item path="writer.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="3">
+        <ccTool flags="2">
         </ccTool>
       </item>
       <item path="writerthread.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="3">
+        <ccTool flags="2">
         </ccTool>
       </item>
     </conf>

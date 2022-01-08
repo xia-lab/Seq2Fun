@@ -332,9 +332,9 @@ void HtmlReporterAll::reportAllTables() {
     fOut->flush();
     fOut->close();
     
-    fOutNm = joinpath(mOptions->samples.front().path, "All_annotation_submit_2_networkanalyst.txt");
+    fOutNm = joinpath(mOptions->samples.front().path, "All_sample_annotation_submit_2_networkanalyst.txt");
     fOut->open(fOutNm.c_str(), std::ofstream::out);
-    if(!fOut->is_open()) error_exit("Can not open All_annotation_submit_2_networkanalyst.txt");
+    if(!fOut->is_open()) error_exit("Can not open All_sample_annotation_submit_2_networkanalyst.txt");
     if (mOptions->verbose) {
         mOptions->longlog ? loginfolong("Starting to write all s2f id annotation table") : loginfo("Starting to write all s2f id annotation table");
     }

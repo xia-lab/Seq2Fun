@@ -42,10 +42,10 @@ all: makefile  seq2fun seqtract bwt/mkbwt
 	cp bwt/mkbwt ../bin/mkbwt
 	cp bwt/mkfmi ../bin/mkfmi
 	cp seqtract ../bin/
-	$(MAKE) -C assembler/
+	#$(MAKE) -C assembler/
 #	cd assembler && make $@
 #	cd ../
-	cp assembler/SOAPdenovo-Trans-31mer ../bin/transembler
+	#cp assembler/SOAPdenovo-Trans-31mer ../bin/transembler
 	#cp assembler/SOAPdenovo-Trans-31mer ../bin/SOAPdenovo-Trans-31mer
 
 #SOAPdenovo: makefile assembler/SOAPdenovo-Trans-31mer
@@ -55,8 +55,8 @@ all: makefile  seq2fun seqtract bwt/mkbwt
 bwt/mkbwt:
 	$(MAKE) -C bwt/ $(MAKECMDGOALS)
 	
-assembler/SOAPdenovo-Trans-31kmer:
-	$(MAKE) -C assembler/ $(MAKECMDGOALS)
+#assembler/SOAPdenovo-Trans-31kmer:
+#	$(MAKE) -C assembler/ $(MAKECMDGOALS)
 
 seq2fun: makefile bwt/mkbwt seq2fun.o transsearcher.o fragment.o bwtfmiDB.o adaptertrimmer.o basecorrector.o \
 	duplicate.o evaluator.o fastareader.o fastqreader.o filter.o filterresult.o htmlreporter.o htmlreporterall.o \
@@ -88,10 +88,11 @@ seqtract: makefile seqtract.o transsearcher.o fragment.o bwtfmiDB.o adaptertrimm
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c -o $@ $<
 
 clean:
-	rm -f -v bwt/mkbwt bwt/mkfmi assembler/transembler seq2fun seqtract ../bin/* ../testdata/All* ../testdata/*.html ../testdata/*_mapped* ../testdata/D*.txt ../testdata/*.json ../testdata/*.txt.gz
+	#rm -f -v bwt/mkbwt bwt/mkfmi assembler/transembler seq2fun seqtract ../bin/* ../testdata/All* ../testdata/*.html ../testdata/*_mapped* ../testdata/D*.txt ../testdata/*.json ../testdata/*.txt.gz
+	rm -f -v bwt/mkbwt bwt/mkfmi seq2fun seqtract ../bin/* ../testdata/All* ../testdata/*.html ../testdata/*_mapped* ../testdata/D*.txt ../testdata/*.json ../testdata/*.txt.gz
 	find . -name "*.o" -delete
 	$(MAKE) -C bwt/ clean
-	$(MAKE) -C assembler/ clean
+	#$(MAKE) -C assembler/ clean
 
 static: LDFLAGS = -static
 static: LDLIBS = $(LD_LIBS_STATIC)

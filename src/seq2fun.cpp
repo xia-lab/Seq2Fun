@@ -512,7 +512,7 @@ int main(int argc, char* argv[]) {
         for (int i = 0; i < argc; i++) {
             ss << argv[i] << " ";
         }
-        std::cout << "opt->lengthFilter.requiredLength: " << opt->lengthFilter.requiredLength << "; tmode: " << opt->transSearch.tmode << "; minAAFragLength: " << opt->transSearch.minAAFragLength << "; misMathces: " << opt->transSearch.misMatches << "; minScore: " << opt->transSearch.minScore << "; maxTransLength: " << opt->transSearch.maxTransLength << "\n"; 
+//        std::cout << "opt->lengthFilter.requiredLength: " << opt->lengthFilter.requiredLength << "; tmode: " << opt->transSearch.tmode << "; minAAFragLength: " << opt->transSearch.minAAFragLength << "; misMathces: " << opt->transSearch.misMatches << "; minScore: " << opt->transSearch.minScore << "; maxTransLength: " << opt->transSearch.maxTransLength << "\n"; 
         command = ss.str();
         opt->mHomoSearchOptions.commandStr = command;
 
