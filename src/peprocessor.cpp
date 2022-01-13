@@ -901,11 +901,11 @@ void PairEndProcessor::prepareResults() {
             mOptions->transSearch.nTransMappedIdReads += it.second;
             auto itt = mOptions->mHomoSearchOptions.fullDbMap.find(it.first);
             if(itt != mOptions->mHomoSearchOptions.fullDbMap.end()){
-                *fout << "s2f_" << *(it.first) << "\t";
+                *fout << "s2f_" << *(it.first) << "\t" <<  it.second << "\t" << itt->second.ko << "|" << itt->second.go << "|" << itt->second.symbol << "|" << itt->second.gene << "\n";
             } else {
-                *fout << "s2f_U" << "\t";
+                *fout << "s2f_U" << "\t" << *(it.first) << "\t" <<  it.second << "\t" << "U" << "|" << "U" << "|" << "U" << "|" << "U" << "\n";
             }
-            *fout << it.second << "\t" << itt->second.ko << "|" << itt->second.go << "|" << itt->second.symbol << "|" << itt->second.gene << "\n";
+            //*fout << it.second << "\t" << itt->second.ko << "|" << itt->second.go << "|" << itt->second.symbol << "|" << itt->second.gene << "\n";
         }
         
         fout->flush();

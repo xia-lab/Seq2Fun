@@ -652,50 +652,54 @@ void Options::readDB() {
     }
     tmpIdMap.clear();
 
-    std::vector<std::string> tmpKO;
-    std::vector<std::string> tmpGO;
-    std::vector<std::string> tmpSymbol;
-    std::vector<std::string> tmpGene;
+//    std::vector<std::string> tmpKO;
+//    std::vector<std::string> tmpGO;
+//    std::vector<std::string> tmpSymbol;
+//    std::vector<std::string> tmpGene;
 
     for (const auto & it : transSearch.orthIdSet) {
         auto itr = fullidDbMMap.equal_range(it);
+        gkg.ko = itr.first->second.ko;
+        gkg.go = itr.first->second.go;
+        gkg.symbol = itr.first->second.symbol;
+        gkg.gene = itr.first->second.gene;
 
-        for (auto & itt = itr.first; itt != itr.second; itt++) {
-            auto iKO = itt->second.ko;
-            if (iKO != "U") {
-                tmpKO.emplace_back(iKO);
-            }
+//        for (auto & itt = itr.first; itt != itr.second; itt++) {
+//            auto iKO = itt->second.ko;
+//            if (iKO != "U") {
+//                tmpKO.emplace_back(iKO);
+//            }
+//
+//            auto iGO = itt->second.go;
+//            if (iGO != "U") {
+//                tmpGO.emplace_back(iGO);
+//            }
+//
+//            auto iSbo = itt->second.symbol;
+//            if (iSbo != "U") {
+//                tmpSymbol.emplace_back(iSbo);
+//            }
+//
+//            auto iGen = itt->second.gene;
+//            if (iGen != "U") {
+//                tmpGene.emplace_back(iGen);
+//            }
+//        }
 
-            auto iGO = itt->second.go;
-            if (iGO != "U") {
-                tmpGO.emplace_back(iGO);
-            }
-
-            auto iSbo = itt->second.symbol;
-            if (iSbo != "U") {
-                tmpSymbol.emplace_back(iSbo);
-            }
-
-            auto iGen = itt->second.gene;
-            if (iGen != "U") {
-                tmpGene.emplace_back(iGen);
-            }
-        }
-
-        gkg.ko = tmpKO.empty() ? "U" : getMostFreqStrFromVec(tmpKO);
-        gkg.go = tmpGO.empty() ? "U" : getMostFreqStrFromVec(tmpGO);
-        gkg.symbol = tmpSymbol.empty() ? "U" : getMostFreqStrFromVec(tmpSymbol);
-        gkg.gene = tmpGene.empty() ? "U" : getMostFreqStrFromVec(tmpGene);
-        tmpKO.clear();
-        tmpGO.clear();
-        tmpSymbol.clear();
-        tmpGene.clear();
+//        gkg.ko = tmpKO.empty() ? "U" : getMostFreqStrFromVec(tmpKO);
+//        gkg.go = tmpGO.empty() ? "U" : getMostFreqStrFromVec(tmpGO);
+//        gkg.symbol = tmpSymbol.empty() ? "U" : getMostFreqStrFromVec(tmpSymbol);
+//        gkg.gene = tmpGene.empty() ? "U" : getMostFreqStrFromVec(tmpGene);
+//        tmpKO.clear();
+//        tmpGO.clear();
+//        tmpSymbol.clear();
+//        tmpGene.clear();
         mHomoSearchOptions.fullDbMap.insert(std::make_pair(&it, gkg));
     }
-    tmpKO.clear();
-    tmpGO.clear();
-    tmpSymbol.clear();
-    tmpGene.clear();
+//    tmpKO.clear();
+//    tmpGO.clear();
+//    tmpSymbol.clear();
+//    tmpGene.clear();
     fullidDbMMap.clear();
     
     //read ko full name file;
