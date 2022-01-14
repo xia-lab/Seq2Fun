@@ -596,14 +596,6 @@ int main(int argc, char* argv[]) {
                 opt->transSearch.nTransMappedIdReads << " reads out of " <<
                 opt->mHomoSearchOptions.nTotalReads << " (" <<
                 getPercentage(long(opt->transSearch.nTransMappedIdReads), opt->mHomoSearchOptions.nTotalReads) << " %), " <<
-//                "mapped " << opt->transSearch.nTransMappedKOs << " KOs out of " <<
-//                opt->transSearch.nKODB << " KOs (" <<
-//                getPercentage(opt->transSearch.nTransMappedKOs, opt->transSearch.nKODB) <<
-//                " %)" << 
-//                "mapped " << opt->transSearch.nTransMappedGOs << " GO sets out of " <<
-//                opt->transSearch.nGODB << " GO sets (" <<
-//                getPercentage(opt->transSearch.nTransMappedGOs, opt->transSearch.nGODB) <<
-//                " %); " << 
                 "mapped " << opt->transSearch.nTransMappedIds << " S2f ids out of " <<
                 opt->transSearch.nIdDB << " S2f ids (" <<
                 getPercentage(opt->transSearch.nTransMappedIds, opt->transSearch.nIdDB) <<
@@ -613,7 +605,6 @@ int main(int argc, char* argv[]) {
         opt->mHomoSearchOptions.reset2Default();
     } else {
         opt->parseSampleTable();
-        //std::vector< std::pair<std::string, std::unordered_map<std::string, int> > > sampleKOTableVec;
         int count = 0;
         for (const auto & it : opt->samples) {
             time_t t_cycleBegin = time(NULL);

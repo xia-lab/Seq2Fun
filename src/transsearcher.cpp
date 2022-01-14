@@ -8,19 +8,6 @@ TransSearcher::TransSearcher(Options * & opt, BwtFmiDB * & mBwtfmiDB) {
     //matched_genids.clear();
     idFreqSubMap.clear();
     tmpIdFreqMap.clear();
-//    subKoFreqUMap.clear();
-//    subOrgKOAbunUMMap.clear();
-//    orgSet.clear();
-//    koUSet.clear();
-//    subGoFreqUMap.clear();
-//    goUSet.clear();
-//    tmpGoVec.clear();
-//    tmpGoVec.reserve(100);
-//    idUSet.clear();
-//    subIdFreqUMap.clear();
-//    tmpGeneKGI.clear();
-//    tmpGeneKGIGo.clear();
-//    tmpGeneKGIKo.clear();
     blosum_subst = {
         {'A',
             {'S', 'V', 'T', 'G', 'C', 'P', 'M', 'K', 'L', 'I', 'E', 'Q', 'R', 'Y', 'F', 'H', 'D', 'N', 'W'}},
@@ -1548,11 +1535,6 @@ uint32 * TransSearcher::postProcess() {
 void TransSearcher::transSearch(Read *item, uint32* & orthId) {
     //matched_genids.clear();
     tmpIdFreqMap.clear();
-    //preProcess();
-//    outputStr = "";
-//    extraoutput = "";
-//    extraoutputGO = "";
-    //extraoutputId = 0;
     query_len = static_cast<double> (item->length()) / 3.0;
     if (item->mSeq.length() >= mOptions->transSearch.minAAFragLength * 3) {
         if (mOptions->debug)
