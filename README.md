@@ -49,7 +49,7 @@ We provide dozens of pre-built databases that can be downloaded here based on [O
 | Arthropods| 119| 1,709,887	| 114,560 | [arthropods.tar.gz](http://gofile.me/4esAc/YkygX7SwI)	|
 |Nematodes | 6	| 103,321	| 38,733 | [nematodes.tar.gz](http://gofile.me/4esAc/YkygX7SwI)	|
 |Invertebrate| 158| 2,502,377	| 198,800 | [invertebrate.tar.gz](http://gofile.me/4esAc/YkygX7SwI)	|
-|Plants | 127	| ;">3,925,179	| 147,787 | [plants.tar.gz](http://gofile.me/4esAc/YkygX7SwI)	|
+|Plants | 127	| 3,925,179	| 147,787 | [plants.tar.gz](http://gofile.me/4esAc/YkygX7SwI)	|
 |Fungi | 138	| 1,278,312	| 142,573 | [fungi.tar.gz](http://gofile.me/4esAc/YkygX7SwI)	|
 |Protists | 52	| 655,135	| 138,844 | [protists.tar.gz](http://gofile.me/4esAc/YkygX7SwI)	|
 
