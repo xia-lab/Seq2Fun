@@ -40,13 +40,19 @@ We provide dozens of pre-built databases that can be downloaded here based on [O
 
 | Group | Species | Proteins	| ortholog | Filename	|
 | ----- | ------- | --------- | ----- | --------- |
-| Animals | 436	| 14,072,810	| 30,392 | [animals.tar.gz](http://gofile.me/4esAc/UbEtvikec)	|
-| Vertebrates| 434 | 14,072,808	| 30,392 | [vertebrates.tar.gz](http://gofile.me/4esAc/UbEtvikec)	|
-| Mammals | 170	| 6,991,695	| 19,323 | [mammals.tar.gz](http://gofile.me/4esAc/UbEtvikec)	|
-| Birds	| 91 | 2,189,089	| 15,537 | [birds.tar.gz](http://gofile.me/4esAc/UbEtvikec)	|
-| Reptiles| 24	| 73,6134	| 15,884 | [reptiles.tar.gz](http://gofile.me/4esAc/UbEtvikec)	|
-| Amphibians| 9	| 230,744	| 15,199 | [amphibians.tar.gz](http://gofile.me/4esAc/UbEtvikec)|
-| Fishes| 125	| 3,500,392	| 21,427 | [fishes.tar.gz](http://gofile.me/4esAc/UbEtvikec)	|
+| Vertebrates| 212 | 4,573,967	| 74,321 | [vertebrates.tar.gz](http://gofile.me/4esAc/YkygX7SwI)	|
+| Mammals | 94	| 1,909,225	| 51,570 | [mammals.tar.gz](http://gofile.me/4esAc/YkygX7SwI)	|
+| Birds	| 31 | 482,205	| 24,076 | [birds.tar.gz](http://gofile.me/4esAc/YkygX7SwI)	|
+| Reptiles| 20	| 382,462	| 24,823 | [reptiles.tar.gz](http://gofile.me/4esAc/YkygX7SwI)	|
+| Amphibians| 3	| 75,261	| 22,211 | [amphibians.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
+| Fishes| 61	| 1,655,763	| 49,668 | [fishes.tar.gz](http://gofile.me/4esAc/YkygX7SwI)	|
+| Arthropods| 119| 1,709,887	| 114,560 | [arthropods.tar.gz](http://gofile.me/4esAc/YkygX7SwI)	|
+|Nematodes | 6	| 103,321	| 38,733 | [nematodes.tar.gz](http://gofile.me/4esAc/YkygX7SwI)	|
+|Invertebrate| 158| 2,502,377	| 198,800 | [invertebrate.tar.gz](http://gofile.me/4esAc/YkygX7SwI)	|
+|Plants | 127	| 3,925,179	| 147,787 | [plants.tar.gz](http://gofile.me/4esAc/YkygX7SwI)	|
+|Fungi | 138	| 1,278,312	| 142,573 | [fungi.tar.gz](http://gofile.me/4esAc/YkygX7SwI)	|
+|Protists | 52	| 655,135	| 138,844 | [protists.tar.gz](http://gofile.me/4esAc/YkygX7SwI)	|
+
 
 ### Step 3. Run a small test 
 There are four sub folders under seq2fun - src, bin, database and testdata. The bin folder contains the binary code we just complied. The testdata contains a small test data from the Case Study.
@@ -87,7 +93,7 @@ The samples can be download from [here](http://gofile.me/4esAc/UPNLXPxxO)
 
 | Group | Number of species | Number of proteins | Number of ortholog | Database name |
 | ----- | ----------------    | ------------- | ---------------   | ------------- |
-| Birds	| 91 | 2,189,089 | 15,537 | [birds.tar.gz](http://gofile.me/4esAc/UbEtvikec) |
+| Birds	| 31 | 482,205 | 24,076 | [birds.tar.gz](http://gofile.me/4esAc/YkygX7SwI) |
 
 ### Running Seq2Fun
 #### 1.Preparing sample.txt file
