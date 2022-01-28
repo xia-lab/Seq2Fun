@@ -250,10 +250,10 @@ void HtmlReporterAll::reportAllTables() {
 //    if (mOptions->verbose) loginfo("Finish to write KO abundance table for all samples");
     
     //for s2fid abundance table
-    std::string fOutNm = joinpath(mOptions->samples.front().path, "All_samples_s2fid_abundance_table.txt");
+    std::string fOutNm = joinpath(mOptions->samples.front().path, "S2fid_abundance_table_all_samples.txt");
     std::ofstream * fOut = new std::ofstream();
     fOut->open(fOutNm.c_str(), std::ofstream::out);
-    if(!fOut->is_open()) error_exit("Can not open All_samples_s2fid_abundance_table.txt");
+    if(!fOut->is_open()) error_exit("Can not open S2fid_abundance_table_all_samples.txt");
     if (mOptions->verbose) {
         mOptions->longlog ? loginfolong("Starting to write all samples s2fid abundance table") : loginfo("Starting to write all samples s2fid abundance table");
     }
@@ -299,9 +299,9 @@ void HtmlReporterAll::reportAllTables() {
         mOptions->longlog ? loginfolong("Finish to write s2fid abundance table for all samples") : loginfo("Finish to write s2fid abundance table for all samples");
     }
     
-    fOutNm = joinpath(mOptions->samples.front().path, "All_samples_s2fid_abundance_table_submit_2_networkanalyst.txt");
+    fOutNm = joinpath(mOptions->samples.front().path, "S2fid_abundance_table_all_samples_submit_2_networkanalyst.txt");
     fOut->open(fOutNm.c_str(), std::ofstream::out);
-    if(!fOut->is_open()) error_exit("Can not open All_samples_s2fid_abundance_table_submit_2_networkanalystv.txt");
+    if(!fOut->is_open()) error_exit("Can not open S2fid_abundance_table_all_samples_submit_2_networkanalystv.txt");
     if (mOptions->verbose) {
         mOptions->longlog ? loginfolong("Starting to write all samples s2fid abundance table") : loginfo("Starting to write all samples s2fid abundance table");
     }
@@ -330,9 +330,9 @@ void HtmlReporterAll::reportAllTables() {
     fOut->flush();
     fOut->close();
     
-    fOutNm = joinpath(mOptions->samples.front().path, "All_samples_annotation.txt");
+    fOutNm = joinpath(mOptions->samples.front().path, "S2fid_ortholog_annotation_all_samples.txt");
     fOut->open(fOutNm.c_str(), std::ofstream::out);
-    if(!fOut->is_open()) error_exit("Can not open All_samples_annotation.txt");
+    if(!fOut->is_open()) error_exit("Can not open S2fid_ortholog_annotation_all_samples.txt");
     if (mOptions->verbose) {
         mOptions->longlog ? loginfolong("Starting to write all s2f id annotation table") : loginfo("Starting to write all s2f id annotation table");
     }
@@ -358,7 +358,7 @@ void HtmlReporterAll::report(){
     
     reportAllTables();
     
-    std::string allHtmlReporter = dirname(mOptions->mHomoSearchOptions.prefix) + "All_samples.html";
+    std::string allHtmlReporter = dirname(mOptions->mHomoSearchOptions.prefix) + "Seq2Fun_summary_all_samples.html";
     ofstream ofs;
     ofs.open(allHtmlReporter, ifstream::out);
     printHeader(ofs);
