@@ -250,10 +250,10 @@ void HtmlReporterAll::reportAllTables() {
 //    if (mOptions->verbose) loginfo("Finish to write KO abundance table for all samples");
     
     //for s2fid abundance table
-    std::string fOutNm = joinpath(mOptions->samples.front().path, "All_sample_s2fid_abundance_table.txt");
+    std::string fOutNm = joinpath(mOptions->samples.front().path, "All_samples_s2fid_abundance_table.txt");
     std::ofstream * fOut = new std::ofstream();
     fOut->open(fOutNm.c_str(), std::ofstream::out);
-    if(!fOut->is_open()) error_exit("Can not open All_sample_s2fid_abundance_table.txt");
+    if(!fOut->is_open()) error_exit("Can not open All_samples_s2fid_abundance_table.txt");
     if (mOptions->verbose) {
         mOptions->longlog ? loginfolong("Starting to write all samples s2fid abundance table") : loginfo("Starting to write all samples s2fid abundance table");
     }
@@ -299,42 +299,40 @@ void HtmlReporterAll::reportAllTables() {
         mOptions->longlog ? loginfolong("Finish to write s2fid abundance table for all samples") : loginfo("Finish to write s2fid abundance table for all samples");
     }
     
-    fOutNm = joinpath(mOptions->samples.front().path, "All_sample_s2fid_abundance_table_submit_2_networkanalyst.txt");
+    fOutNm = joinpath(mOptions->samples.front().path, "All_samples_s2fid_abundance_table_submit_2_networkanalyst.txt");
     fOut->open(fOutNm.c_str(), std::ofstream::out);
-    if(!fOut->is_open()) error_exit("Can not open All_sample_s2fid_abundance_table_submit_2_networkanalystv.txt");
+    if(!fOut->is_open()) error_exit("Can not open All_samples_s2fid_abundance_table_submit_2_networkanalystv.txt");
     if (mOptions->verbose) {
         mOptions->longlog ? loginfolong("Starting to write all samples s2fid abundance table") : loginfo("Starting to write all samples s2fid abundance table");
     }
     *fOut << "#NAME\t";
     for(const auto & it : smNmVec){
-            *fOut << it << "\t";
+            *fOut << it << (&it == &smNmVec.back() ? "\n" : "\t");
     }
-    *fOut << "\n";
     *fOut << "#CLASS:XX\t";
+    
     for(const auto & it : mOptions->samples){
-            *fOut << it.feature  << "\t";
+        *fOut << it.feature << (&it == &mOptions->samples.back() ? "\n" : "\t");
     }
-    *fOut << "\n";
     for (const auto & it : idSet) {
         *fOut << "s2f_" << *it << "\t";
         for (const Sample & sample : mOptions->samples) {
             auto itkf = sample.totalIdFreqUMapResults.find(it);
             if (itkf == sample.totalIdFreqUMapResults.end()) {
-                *fOut << 0 << "\t";
+                *fOut << 0 << (&sample == &mOptions->samples.back() ? "\n" : "\t");
                 tmpIdVec.push_back(0);
             } else {
-                *fOut << itkf->second << "\t";
+                *fOut << itkf->second << (&sample == &mOptions->samples.back() ? "\n" : "\t");
                 tmpIdVec.push_back(itkf->second);
             }
         }
-        *fOut << "\n";
     }
     fOut->flush();
     fOut->close();
     
-    fOutNm = joinpath(mOptions->samples.front().path, "All_sample_annotation_submit_2_networkanalyst.txt");
+    fOutNm = joinpath(mOptions->samples.front().path, "All_samples_annotation.txt");
     fOut->open(fOutNm.c_str(), std::ofstream::out);
-    if(!fOut->is_open()) error_exit("Can not open All_sample_annotation_submit_2_networkanalyst.txt");
+    if(!fOut->is_open()) error_exit("Can not open All_samples_annotation.txt");
     if (mOptions->verbose) {
         mOptions->longlog ? loginfolong("Starting to write all s2f id annotation table") : loginfo("Starting to write all s2f id annotation table");
     }

@@ -457,7 +457,7 @@ bool PairEndProcessor::processPairEnd(ReadPairPack* pack, ThreadConfig* config) 
                         if (result == PASS_FILTER) {
                             config->getTransSearcher()->transSearch(merged, orthId);
                         } else {
-                             config->getTransSearcher()->transSearch(r1, r2, orthId);
+                            config->getTransSearcher()->transSearch(r1, r2, orthId);
                         }
                         delete merged;
                     } else {
