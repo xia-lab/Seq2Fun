@@ -87,7 +87,7 @@ The samples can be download from [here](http://gofile.me/4esAc/UPNLXPxxO)
 
 | Group | Number of species | Number of proteins | Number of ortholog | Database name |
 | ----- | ----------------    | ------------- | ---------------   | ------------- |
-| Birds	| 91 | 2,189,089 | 15,537 | [birds.tar.gz](http://gofile.me/4esAc/UbEtvikec) |
+| Birds	| 31 | 482,205 | 24,076 | [birds.tar.gz](http://gofile.me/4esAc/YkygX7SwI) |
 
 ### Running Seq2Fun
 #### 1.Preparing sample.txt file
