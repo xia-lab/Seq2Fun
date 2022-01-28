@@ -128,7 +128,7 @@ S2F_HOME/bin/seq2fun --sampletable sample.txt --tfmi S2F_HOME/database/birds/bir
 ```
 
 ### Main results
-#### 1  abundance for all the samples table (All_sample_s2fid_abundance_table.txt)
+#### 1  abundance for all the samples table (S2fid_abundance_table_all_samples.txt)
 
 This table has sample names, meta data and s2fid, reads count (how many reads have assigned to the s2fid/ortholog), KO, GO, gene symbol and gene description separated by '\t'.
 ```
