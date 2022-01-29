@@ -51,10 +51,6 @@ struct ReadRepository {
     ReadPack** packBuffer;
     atomic_long readPos;
     atomic_long writePos;
-    //std::mutex mtx;
-    //std::mutex readCounterMtx;
-    //std::condition_variable repoNotFull;
-    //std::condition_variable repoNotEmpty;
 };
 
 typedef struct ReadRepository ReadRepository;
@@ -78,11 +74,6 @@ private:
     void closeOutput();
     void writeTask(WriterThread* config);
     void prepareResults();
-//    void prepareResults(std::vector< std::unordered_map<std::string, uint32 > > & totalKoFreqVecResults,
-//                        std::vector< std::unordered_map<std::string, std::unordered_map<std::string, double> > > & totalOrgKOFreqVecResults,
-//                        std::vector< std::unordered_map<std::string, uint32 > > & totalGoFreqVecResults,
-//                        std::vector< std::unordered_map<uint32, uint32 > > & totalIdFreqVecResults);
-
 private:
     Options* mOptions;
     ReadRepository mRepo;

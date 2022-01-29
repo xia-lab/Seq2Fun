@@ -399,34 +399,12 @@ void SingleEndProcessor::destroyPackRepository() {
 }
 
 void SingleEndProcessor::producePack(ReadPack* pack){
-    //std::unique_lock<std::mutex> lock(mRepo.mtx);
-    /*while(((mRepo.writePos + 1) % PACK_NUM_LIMIT)
-        == mRepo.readPos) {
-        //mRepo.repoNotFull.wait(lock);
-    }*/
-
     mRepo.packBuffer[mRepo.writePos] = pack;
     mRepo.writePos++;
-
-    /*if (mRepo.writePos == PACK_NUM_LIMIT)
-        mRepo.writePos = 0;*/
-
-    //mRepo.repoNotEmpty.notify_all();
-    //lock.unlock();
 }
 
 void SingleEndProcessor::consumePack(ThreadConfig* config){
     ReadPack* data;
-    //std::unique_lock<std::mutex> lock(mRepo.mtx);
-    // buffer is empty, just wait here.
-    /*while(mRepo.writePos % PACK_NUM_LIMIT == mRepo.readPos % PACK_NUM_LIMIT) {
-        if(mProduceFinished){
-            //lock.unlock();
-            return;
-        }
-        //mRepo.repoNotEmpty.wait(lock);
-    }*/
-
     mInputMtx.lock();
     while(mRepo.writePos <= mRepo.readPos) {
         usleep(1000);
@@ -437,16 +415,8 @@ void SingleEndProcessor::consumePack(ThreadConfig* config){
     }
     data = mRepo.packBuffer[mRepo.readPos];
     mRepo.readPos++;
-
-    /*if (mRepo.readPos >= PACK_NUM_LIMIT)
-        mRepo.readPos = 0;*/
     mInputMtx.unlock();
-
-    //lock.unlock();
-    //mRepo.repoNotFull.notify_all();
-
     processSingleEnd(data, config);
-
 }
 
 void SingleEndProcessor::producerTask(){
@@ -515,20 +485,6 @@ void SingleEndProcessor::producerTask(){
             }
             // reset count to 0
             count = 0;
-            // re-evaluate split size
-            // TODO: following codes are commented since it may cause threading related conflicts in some systems
-            /*if(mOptions->split.needEvaluation && !splitSizeReEvaluated && readNum >= mOptions->split.size) {
-                splitSizeReEvaluated = true;
-                // greater than the initial evaluation
-                if(readNum >= 1024*1024) {
-                    size_t bytesRead;
-                    size_t bytesTotal;
-                    reader.getBytes(bytesRead, bytesTotal);
-                    mOptions->split.size *=  (double)bytesTotal / ((double)bytesRead * (double) mOptions->split.number);
-                    if(mOptions->split.size <= 0)
-                        mOptions->split.size = 1;
-                }
-            }*/
         }
     }
 
@@ -562,7 +518,6 @@ void SingleEndProcessor::consumerTask(ThreadConfig* config){
                 string msg = "thread " + to_string(config->getThreadId() + 1) + " data processing completed";
                 //loginfo(msg, false);
             }
-            //lock.unlock();
             break;
         }
         if(mProduceFinished){
@@ -571,9 +526,7 @@ void SingleEndProcessor::consumerTask(ThreadConfig* config){
                 //loginfo(msg, false);
             }
             consumePack(config);
-            //lock.unlock();
         } else {
-            //lock.unlock();
             consumePack(config);
         }
     }

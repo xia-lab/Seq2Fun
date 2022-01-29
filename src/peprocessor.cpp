@@ -820,7 +820,7 @@ void PairEndProcessor::consumerTask(ThreadConfig* config) {
             mFinishedThreads++;
             if (mOptions->verbose) {
                 string msg = "\nthread " + to_string(config->getThreadId() + 1) + " data processing completed";
-                //loginfo(msg);
+                 //mOptions->longlog ? loginfolong(msg) : loginfo(msg);
             }
             //lock.unlock();
             break;
@@ -828,7 +828,7 @@ void PairEndProcessor::consumerTask(ThreadConfig* config) {
         if (mProduceFinished) {
             if (mOptions->verbose) {
                 string msg = "thread " + to_string(config->getThreadId() + 1) + " is processing the " + to_string(mRepo.readPos) + " / " + to_string(mRepo.writePos) + " pack";
-                //loginfo(msg, false);
+                // mOptions->longlog ? loginfolong(msg) : loginfo(msg);
             }
             consumePack(config);
             //lock.unlock();
