@@ -658,34 +658,12 @@ void PairEndProcessor::destroyPackRepository() {
 }
 
 void PairEndProcessor::producePack(ReadPairPack* pack) {
-    //std::unique_lock<std::mutex> lock(mRepo.mtx);
-    /*while(((mRepo.writePos + 1) % PACK_NUM_LIMIT)
-        == mRepo.readPos) {
-        //mRepo.repoNotFull.wait(lock);
-    }*/
-
     mRepo.packBuffer[mRepo.writePos] = pack;
     mRepo.writePos++;
-
-    /*if (mRepo.writePos == PACK_NUM_LIMIT)
-        mRepo.writePos = 0;*/
-
-    //mRepo.repoNotEmpty.notify_all();
-    //lock.unlock();
 }
 
 void PairEndProcessor::consumePack(ThreadConfig* config) {
     ReadPairPack* data;
-    //std::unique_lock<std::mutex> lock(mRepo.mtx);
-    // buffer is empty, just wait here.
-    /*while(mRepo.writePos % PACK_NUM_LIMIT == mRepo.readPos % PACK_NUM_LIMIT) {
-        if(mProduceFinished){
-            //lock.unlock();
-            return;
-        }
-        //mRepo.repoNotEmpty.wait(lock);
-    }*/
-
     mInputMtx.lock();
     while (mRepo.writePos <= mRepo.readPos) {
         usleep(1000);
@@ -696,17 +674,8 @@ void PairEndProcessor::consumePack(ThreadConfig* config) {
     }
     data = mRepo.packBuffer[mRepo.readPos];
     mRepo.readPos++;
-
-    /*if (mRepo.readPos >= PACK_NUM_LIMIT)
-        mRepo.readPos = 0;*/
     mInputMtx.unlock();
-    //mRepo.readPos++;
-
-    //lock.unlock();
-    //mRepo.repoNotFull.notify_all();
-
     processPairEnd(data, config);
-
 }
 
 void PairEndProcessor::producerTask() {
@@ -753,7 +722,7 @@ void PairEndProcessor::producerTask() {
         if (count == PACK_SIZE || needToBreak) {
             ReadPairPack* pack = new ReadPairPack;
             pack->data = data;
-            pack->count = count;
+            pack->count = count;           
             producePack(pack);
             //re-initialize data for next pack
             data = new ReadPair*[PACK_SIZE];
@@ -774,30 +743,13 @@ void PairEndProcessor::producerTask() {
             }
             // reset count to 0
             count = 0;
-            // re-evaluate split size
-            // TODO: following codes are commented since it may cause threading related conflicts in some systems
-            /*if(mOptions->split.needEvaluation && !splitSizeReEvaluated && readNum >= mOptions->split.size) {
-                splitSizeReEvaluated = true;
-                // greater than the initial evaluation
-                if(readNum >= 1024*1024) {
-                    size_t bytesRead;
-                    size_t bytesTotal;
-                    reader.mLeft->getBytes(bytesRead, bytesTotal);
-                    mOptions->split.size *=  (double)bytesTotal / ((double)bytesRead * (double) mOptions->split.number);
-                    if(mOptions->split.size <= 0)
-                        mOptions->split.size = 1;
-                }
-            }*/
         }
     }
 
-    //std::unique_lock<std::mutex> lock(mRepo.readCounterMtx);
     mProduceFinished = true;
     if (mOptions->verbose){
         mOptions->longlog ? loginfolong("all reads loaded, start to monitor thread status") : loginfo("all reads loaded, start to monitor thread status");
     }
-        
-    //lock.unlock();
 
     // if the last data initialized is not used, free it
     if (data != NULL)
@@ -805,7 +757,7 @@ void PairEndProcessor::producerTask() {
 }
 
 void PairEndProcessor::consumerTask(ThreadConfig* config) {
-    while (true) {
+    while (true) {            
         if (config->canBeStopped()) {
             mFinishedThreads++;
             break;
@@ -815,14 +767,13 @@ void PairEndProcessor::consumerTask(ThreadConfig* config) {
                 break;
             usleep(1000);
         }
-        //std::unique_lock<std::mutex> lock(mRepo.readCounterMtx);
+
         if (mProduceFinished && mRepo.writePos == mRepo.readPos) {
             mFinishedThreads++;
             if (mOptions->verbose) {
                 string msg = "\nthread " + to_string(config->getThreadId() + 1) + " data processing completed";
                  //mOptions->longlog ? loginfolong(msg) : loginfo(msg);
             }
-            //lock.unlock();
             break;
         }
         if (mProduceFinished) {
@@ -886,7 +837,6 @@ void PairEndProcessor::prepareResults() {
     //s2f_id abundance
     if(!mOptions->transSearch.totalIdFreqUMapResults.empty()){
         //sort the map;
-
         fileoutname.clear();
         fileoutname = mOptions->mHomoSearchOptions.prefix + "_s2fid_abundance.txt";
         std::ofstream* fout = new std::ofstream();
@@ -895,17 +845,18 @@ void PairEndProcessor::prepareResults() {
         if (mOptions->verbose) {
             mOptions->longlog ? loginfolong("Starting to write gene abundance table") : loginfo("Starting to write gene abundance table");
         }
-        *fout << "#s2f_id\t" << "Reads_cout\t" << "annotation\n";
+        *fout << "#s2f_id\tReads_cout\tannotation\tcore_ortho_freq\n";
         if(mOptions->transSearch.nTransMappedIdReads != 0) mOptions->transSearch.nTransMappedIdReads = 0;
+        mOptions->transSearch.nMappedCoreOrthos = 0;
         for(const auto & it : mOptions->transSearch.totalIdFreqUMapResults){
             mOptions->transSearch.nTransMappedIdReads += it.second;
             auto itt = mOptions->mHomoSearchOptions.fullDbMap.find(it.first);
             if(itt != mOptions->mHomoSearchOptions.fullDbMap.end()){
-                *fout << "s2f_" << *(it.first) << "\t" <<  it.second << "\t" << itt->second.ko << "|" << itt->second.go << "|" << itt->second.symbol << "|" << itt->second.gene << "\n";
+                *fout << "s2f_" << *(it.first) << "\t" <<  it.second << "\t" << itt->second.ko << "|" << itt->second.go << "|" << itt->second.symbol << "|" << itt->second.gene << "\t" << itt->second.coreOrthoPer << "\n";
+                if(itt->second.coreOrthoPer >= 0.90) mOptions->transSearch.nMappedCoreOrthos++;
             } else {
-                *fout << "s2f_U" << "\t" << *(it.first) << "\t" <<  it.second << "\t" << "U" << "|" << "U" << "|" << "U" << "|" << "U" << "\n";
+                *fout << "s2f_U" << "\t" << *(it.first) << "\t" <<  it.second << "\tU|U|U|U\t0\n";
             }
-            //*fout << it.second << "\t" << itt->second.ko << "|" << itt->second.go << "|" << itt->second.symbol << "|" << itt->second.gene << "\n";
         }
         
         fout->flush();
@@ -914,11 +865,11 @@ void PairEndProcessor::prepareResults() {
             delete fout;
             fout = NULL;
         }
-        
+             
         if (mOptions->verbose) {
-             mOptions->longlog ? loginfolong("Finish to write s2f id abundance table") : loginfo("Finish to write s2f id abundance table");
+            std::string msg = "Finish to write s2f id abundance table!";
+             mOptions->longlog ? loginfolong(msg) : loginfo(msg);
         }
-        
         //2 rarefaction curve;
         if (mOptions->mHomoSearchOptions.profiling && mOptions->transSearch.nTransMappedIdReads > 0) {
             std::vector<uint32> reshuff_vec;
@@ -982,6 +933,9 @@ void PairEndProcessor::prepareResults() {
         mOptions->samples.at(sampleId).nId = mOptions->transSearch.nTransMappedIds;
         mOptions->samples.at(sampleId).nIdDb = mOptions->transSearch.nIdDB;
         mOptions->samples.at(sampleId).idRate = double(mOptions->samples.at(sampleId).nId * 100) / double(mOptions->samples.at(sampleId).nIdDb);
+        mOptions->samples.at(sampleId).coreOrthosDb = mOptions->transSearch.coreOrthosDb;
+        mOptions->samples.at(sampleId).nMappedCoreOrthos = mOptions->transSearch.nMappedCoreOrthos;
+        mOptions->samples.at(sampleId).nMappedCoreOrthoRate = double(mOptions->samples.at(sampleId).nMappedCoreOrthos * 100) / double(mOptions->transSearch.coreOrthosDb);
         mOptions->samples.at(sampleId).rarefactionIdMap = mOptions->transSearch.rarefactionIdMap;
     }
         

@@ -52,10 +52,6 @@ struct ReadPairRepository {
     ReadPairPack** packBuffer;
     atomic_long readPos;
     atomic_long writePos;
-    //std::mutex mtx;
-    //std::mutex readCounterMtx;
-    //std::condition_variable repoNotFull;
-    //std::condition_variable repoNotEmpty;
 };
 
 typedef struct ReadPairRepository ReadPairRepository;

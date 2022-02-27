@@ -89,14 +89,14 @@ void HtmlReporterAll::outputRow(ofstream& ofs, std::vector<Sample> & samplesVec)
             "<td class='col1'> n. S2F ids(db) </td>" <<
             "<td class='col1'> n. reads (S2F id) </td>" <<
             "<td class='col1'> S2F id reads rate(%) </td>" <<
-//            "<td class='col1'> n. KOs </td>" <<
-//            "<td class='col1'> KO rate(%) </td>" <<
-//            "<td class='col1'> n. KOs(db) </td>" <<
-//            "<td class='col1'> n. reads (KO) </td>" <<
-//            "<td class='col1'> KO reads rate(%) </td>" <<
             "<td class='col1'> n. clean reads </td>" <<
             "<td class='col1'> clean reads rate(%) </td>" <<
             "<td class='col1'> n. raw reads </td>" <<
+            
+            "<td class='col1'> n. core orthologs </td>" <<
+            "<td class='col1'> core orthologs rate(%) </td>" <<
+            "<td class='col1'> n. core orthologs (db)" <<
+            
             "<td class='col1'> time used</td>" <<
             "<td class='col1'> date </td>";
     ofs << "</tr>\n";   
@@ -113,14 +113,14 @@ void HtmlReporterAll::outputRow(ofstream& ofs, std::vector<Sample> & samplesVec)
                 "<td class='col1'>" + to_string(it.nIdDb) + "</td>" <<
                 "<td class='col1'>" + to_string(it.transSearchMappedIdReads) << "</td>" <<
                 "<td class='col1'>" + to_string(it.mappedIdReadsRate) << "</td>" <<
-//                "<td class='col1'>" + to_string(it.nKO) + "</td>" <<
-//                "<td class='col1'>" + to_string(it.koRate) << "</td>" <<
-//                "<td class='col1'>" + to_string(it.nKODb) + "</td>" <<
-//                "<td class='col1'>" + to_string(it.transSearchMappedKOReads) << "</td>" <<
-//                "<td class='col1'>" + to_string(it.mappedKOReadsRate) << "</td>" <<
                 "<td class='col1'>" + to_string(it.totalCleanReads) << "</td>" <<
                 "<td class='col1'>" + to_string(it.cleanReadsRate) << "</td>" <<
                 "<td class='col1'>" + to_string(it.totalRawReads) << "</td>" << 
+                
+                "<td class='col1'>" + to_string(it.nMappedCoreOrthos) + "</td>" <<
+                "<td class='col1'>" + to_string(it.nMappedCoreOrthoRate) << "</td>" <<
+                "<td class='col1'>" + to_string(it.coreOrthosDb) + "</td>" <<
+                
                 "<td class='col1'>" + convertSeconds(it.timeLapse) << "</td>" << 
                 "<td class='col1'>" + unkown2Str(ctime(&it.startTime)) << "</td>";
         ofs << "</tr>\n";        
@@ -133,20 +133,7 @@ void HtmlReporterAll::reportAllTables() {
     std::set<const uint32 * > idSet;
     for (const Sample & sample : mOptions->samples) {
         smNmVec.push_back(basename(sample.prefix));
-//        for(const auto & it : sample.totalKoFreqUMapResults){
-//            koSet.insert(it.first);
-//        }
-//        for(const auto & it : sample.totalPathwayMap){
-//            pathwaySet.insert(it.first);
-//        }
-//        for(const auto & it : sample.totalOrgKOUMap){
-//            orgSet.insert(it.first);
-//        }
-//        for(const auto & it : sample.totalGoFreqUMapResults){
-//            goSet.insert(it.first);
-//        }
         for(const auto & it : sample.totalIdFreqUMapResults){
-            //idSet.insert(const_cast<uint32 *> (it.first));
             idSet.insert(it.first);
         }
     }
@@ -257,16 +244,19 @@ void HtmlReporterAll::reportAllTables() {
     if (mOptions->verbose) {
         mOptions->longlog ? loginfolong("Starting to write all samples s2fid abundance table") : loginfo("Starting to write all samples s2fid abundance table");
     }
+    
+    int totalNMappedOrthos = 0;
+    
     *fOut << "#NAME\t";
     for(const auto & it : smNmVec){
             *fOut << it << "\t";
     }
-    *fOut << "annotation\n";
+    *fOut << "annotation\tcore_ortho_freq\n";
     *fOut << "#CLASS:XX\t";
     for(const auto & it : mOptions->samples){
             *fOut << it.feature  << "\t";
     }
-    *fOut << "-\n";
+    *fOut << "-\t-\n";
     idFreqVec.reserve(idSet.size());
     std::vector<uint32> tmpIdVec;
     tmpIdVec.reserve(smNmVec.size() + 1);
@@ -287,16 +277,18 @@ void HtmlReporterAll::reportAllTables() {
 
         auto itid = mOptions->mHomoSearchOptions.fullDbMap.find(it);
         if (itid == mOptions->mHomoSearchOptions.fullDbMap.end()) {
-            *fOut << "U\n";
+            *fOut << "U\t0\n";
         } else {
-            *fOut << itid->second.ko << "|" << itid->second.go << "|" << itid->second.symbol << "|" << itid->second.gene << "\n";
+            *fOut << itid->second.ko << "|" << itid->second.go << "|" << itid->second.symbol << "|" << itid->second.gene << "\t" << itid->second.coreOrthoPer << "\n";
+            if(itid->second.coreOrthoPer >= 0.90) totalNMappedOrthos++;
         }
     }
     fOut->flush();
     fOut->close();
 
     if (mOptions->verbose) {
-        mOptions->longlog ? loginfolong("Finish to write s2fid abundance table for all samples") : loginfo("Finish to write s2fid abundance table for all samples");
+        std::string msg = "Finish to write s2fid abundance table for all samples with mapped core ortholog rate " + (totalNMappedOrthos > 0.90 ? std::to_string(getPercentage(totalNMappedOrthos, mOptions->transSearch.coreOrthosDb)) : "0") + "%";
+        mOptions->longlog ? loginfolong(msg) : loginfo(msg);
     }
     
     fOutNm = joinpath(mOptions->samples.front().path, "S2fid_abundance_table_all_samples_submit_2_networkanalyst.txt");
@@ -336,14 +328,14 @@ void HtmlReporterAll::reportAllTables() {
     if (mOptions->verbose) {
         mOptions->longlog ? loginfolong("Starting to write all s2f id annotation table") : loginfo("Starting to write all s2f id annotation table");
     }
-    *fOut << "s2f_id\tKO\tGO\tSymbol\tGene\n";
+    *fOut << "s2f_id\tKO\tGO\tSymbol\tGene\tOrthologFreq\n";
     for (const auto & it : idSet) {
         *fOut << "s2f_" << *it << "\t";
         auto itid = mOptions->mHomoSearchOptions.fullDbMap.find(it);
         if (itid == mOptions->mHomoSearchOptions.fullDbMap.end()) {
-            *fOut << "U\tU\tU\tU\n";
+            *fOut << "U\tU\tU\tU\t0\n";
         } else {
-            *fOut << itid->second.ko << "\t" << itid->second.go << "\t" << itid->second.symbol << "\t" << itid->second.gene << "\n";
+            *fOut << itid->second.ko << "\t" << itid->second.go << "\t" << itid->second.symbol << "\t" << itid->second.gene << "\t" << itid->second.coreOrthoPer << "\n";
         }
     }
     fOut->flush();
@@ -704,8 +696,8 @@ void HtmlReporterAll::reportS2fBarPlot(ofstream& ofs){
     ofs << "<td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "KO" << "</td>";
     ofs << "<td class='collarge' style='font-size:14px;color:#ffffff;background:#008000'>" << "GO" << "</td>";
     ofs << "<td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "Symbol" << "</td>";
-    ofs << "<td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "Name" << "</td></tr>\n";
-    //ofs << "<td class='exlarge' style='font-size:14px;color:#ffffff;background:#008000'>" << "Name" << "</td></tr>\n";
+    ofs << "<td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "Name" << "</td>";
+    ofs << "<td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "Ortholog Freq" << "</td></tr>\n";
 
     ofs << "<tr><td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "Class" << "</td>";
     for (const auto & it : mOptions->samples) {
@@ -714,6 +706,7 @@ void HtmlReporterAll::reportS2fBarPlot(ofstream& ofs){
 
     ofs << "<td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "-" << "</td>";
     ofs << "<td class='collarge' style='font-size:14px;color:#ffffff;background:#008000'>" << "-" << "</td>";
+    ofs << "<td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "-" << "</td>";
     ofs << "<td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "-" << "</td>";
     ofs << "<td class='ko_col' style='font-size:14px;color:#ffffff;background:#008000'>" << "-" << "</td></tr>\n";
     
@@ -731,20 +724,15 @@ void HtmlReporterAll::reportS2fBarPlot(ofstream& ofs){
              ofs << "<td class='ko_col'>" << 'U' << "</td>";
              ofs << "<td class='collarge'>" << 'U' << "</td>";
              ofs << "<td class='ko_col'>" << 'U' << "</td>";
+             ofs << "<td class='ko_col'>" << 'U' << "</td>";
              ofs << "<td class='ko_col'>" << 'U' << "</td></tr>\n";
         } else {
              ofs << "<td class='ko_col'>" << itr->second.ko << "</td>";
              ofs << "<td class='collarge'>" << itr->second.go << "</td>";
              ofs << "<td class='ko_col'>" << itr->second.symbol << "</td>";
-             ofs << "<td class='ko_col'>" << itr->second.gene << "</td></tr>\n";
+             ofs << "<td class='ko_col'>" << itr->second.gene << "</td>";
+             ofs << "<td class='ko_col'>" << itr->second.coreOrthoPer << "</td></tr>\n";
         }
-        
-//        if (it.second.size() > 2) {
-//            for (int i = 1; i < (it.second.size() - 1); i++) {
-//                ofs << "<td class='ko_col'>" << it.at(i) << "</td>";
-//            }
-//        }
-//        ofs << "<td class='exlarge'>" << it.back() << "</td></tr>\n";
     }
     
     ofs << "</table>\n";

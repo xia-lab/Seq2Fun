@@ -373,6 +373,9 @@ public:
         totalPathwayMap.clear();
         totalOrgKOUMap.clear();
         totoalReadsQualityVec.clear();
+        nMappedCoreOrthos = 0;
+        coreOrthosDb = 0;
+        nMappedCoreOrthoRate = 0;
     }
     
 public:
@@ -401,6 +404,9 @@ public:
     int nMappedPathways;
     int nOrgsDB;
     int nMappedOrgs;
+    int nMappedCoreOrthos;
+    int coreOrthosDb;
+    float nMappedCoreOrthoRate;
     time_t startTime;
     time_t endTime;
     long timeLapse;
@@ -459,6 +465,9 @@ public:
         nMappedOrgs = 0;
         timeLapse = 0;
         orthIdSet.clear();
+        coreOrthosDb = 0;
+        nMappedCoreOrthos = 0;
+        nMappedCoreOrthoRate = 0;
     }
 
     void reset2Default() {
@@ -481,6 +490,8 @@ public:
         sortedOrgFreqVec.clear();
         nMappedOrgs = 0;
         timeLapse = 0;
+        nMappedCoreOrthos = 0;
+        nMappedCoreOrthoRate = 0;
     }
     
 public:
@@ -517,10 +528,10 @@ public:
     unsigned int nTransMappedKOs;
     unsigned int nTransMappedGOs;
     unsigned int nTransMappedIds;
-    int nMappedPathways;
-    int nPathwaysDB;
-    int nOrgsDB;
-    int nMappedOrgs;
+    unsigned int nMappedPathways;
+    unsigned int nPathwaysDB;
+    unsigned int nOrgsDB;
+    unsigned int nMappedOrgs;
     std::map<const uint32 *, uint32 > totalIdFreqUMapResults;
     std::vector< std::tuple <std::string, uint32, std::string> > sortedKOFreqTupleVector;
     std::vector< std::tuple <std::string, uint32, std::string> > sortedIdFreqTupleVector;
@@ -531,6 +542,9 @@ public:
     std::unordered_map<std::string, int> sampleKOAbunUMap;
     bool transSearchFinished;
     std::set< uint32> orthIdSet;
+    unsigned int coreOrthosDb;
+    unsigned int nMappedCoreOrthos;
+    float nMappedCoreOrthoRate;
 };
 
 class geneKoGoComb{
@@ -540,25 +554,15 @@ public:
     std::string spec;
     std::string symbol;
     std::string gene;
-//    uint32 id;
-    //std::string gid;
-//    unsigned short int nGos;
-//    unsigned short int nKos;
-//    std::string getKo(){ return ko;};
-//    std::string getGo(){ return go;};
-//    std::string getSpec(){ return spec;};
-//    std::string getSymbol(){ return symbol;};
-//    std::string getGene(){ return gene;};
-//    std::string getFull(){return (ko + "\t" + go + "\t" + symbol + "\t" + gene);};
-//    uint32 getId(){ return id;};
+    float coreOrthoPer;
 public:
     geneKoGoComb(){
         ko = "U";
         go = "U";
         spec = "U";
-//        id = 0;
         symbol = "U";
         gene = "U";
+        coreOrthoPer = 0;
     }
 };
 
