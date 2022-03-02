@@ -528,7 +528,7 @@ void HtmlReporter::reportBarPlotId(ofstream& ofs){
             symbol = itt->second.symbol;
             gene = itt->second.gene;
         }
-        ofs << "<tr><td class='ko_col'>" << "s2f_" << *it.first 
+        ofs << "<tr><td class='ko_col'>" << "s2f_" << std::setfill('0') << std::setw(7) << *it.first 
                 << "</td><td class='ko_col'>" << count 
                 << "</td><td class='ko_col'>" << ko 
                 << "</td><td class='collarge'>" << go 

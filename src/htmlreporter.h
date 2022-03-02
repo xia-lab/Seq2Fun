@@ -8,6 +8,8 @@
 #include <fstream>
 #include <time.h>
 #include <atomic>
+#include <iomanip>
+
 #include "options.h"
 #include "stats.h"
 #include "filterresult.h"

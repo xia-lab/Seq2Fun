@@ -26,6 +26,7 @@
 #include <fstream>
 #include <deque>
 #include <regex>
+#include <iomanip>
 
 #ifdef WINDOWS
 #include <direct.h>
@@ -669,5 +670,12 @@ int getVecIndex(vector<T> & v, T i) {
     auto it = std::find(v.begin(), v.end(), i);
     return (it != v.end() ? it - v.begin() : -1);
 }
+
+inline std::string paddingOs(std::string num){
+    stringstream ss;
+    ss << std::internal << std::setfill('0') << std::setw(7) << num;
+    return ss.str();
+}
+
 
 #endif /* UTIL_H */

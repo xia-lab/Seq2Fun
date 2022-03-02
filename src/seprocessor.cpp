@@ -295,7 +295,7 @@ bool SingleEndProcessor::processSingleEnd(ReadPack* pack, ThreadConfig* config){
                     *outstr += r1->toStringWithTag(orthId);
                 }
                 if (mReadsKOWriter) {
-                    *outReadsKOMapStr += trimName(r1->mName) + "\t" + "s2f_" + std::to_string(*orthId) + "\n";
+                    *outReadsKOMapStr += trimName(r1->mName) + "\t" + "s2f_" + paddingOs(std::to_string(*orthId)) + "\n";
                 }
                 orthId = NULL;
             }
@@ -585,7 +585,7 @@ void SingleEndProcessor::prepareResults() {
             mOptions->transSearch.nTransMappedIdReads += it.second;
             auto itt = mOptions->mHomoSearchOptions.fullDbMap.find(it.first);
             if(itt != mOptions->mHomoSearchOptions.fullDbMap.end()){
-                *fout << "s2f_" << *(it.first) << "\t" <<  it.second << "\t" << itt->second.ko << "|" << itt->second.go << "|" << itt->second.symbol << "|" << itt->second.gene << "\t" << itt->second.coreOrthoPer << "\n";
+                *fout << "s2f_" << std::setfill('0') << std::setw(7) << *(it.first) << "\t" <<  it.second << "\t" << itt->second.ko << "|" << itt->second.go << "|" << itt->second.symbol << "|" << itt->second.gene << "\t" << itt->second.coreOrthoPer << "\n";
                 if(itt->second.coreOrthoPer >= 0.90) mOptions->transSearch.nMappedCoreOrthos++;
             } else {
                 *fout << "s2f_U" << "\t" << *(it.first) << "\t" <<  it.second << "\tU|U|U|U\t0\n";

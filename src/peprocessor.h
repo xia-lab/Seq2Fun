@@ -21,6 +21,7 @@
 #include <future>
 #include <deque>
 #include <time.h>
+#include <iomanip>
 
 #include "fastqreader.h"
 #include "util.h"

@@ -261,7 +261,7 @@ void HtmlReporterAll::reportAllTables() {
     std::vector<uint32> tmpIdVec;
     tmpIdVec.reserve(smNmVec.size() + 1);
     for (const auto & it : idSet) {
-        *fOut << "s2f_" << *it << "\t";
+        *fOut << "s2f_" << std::setfill('0') << std::setw(7) << *it << "\t";
         tmpIdVec.clear();
         for (const Sample & sample : mOptions->samples) {
             auto itkf = sample.totalIdFreqUMapResults.find(it);
@@ -307,7 +307,7 @@ void HtmlReporterAll::reportAllTables() {
         *fOut << it.feature << (&it == &mOptions->samples.back() ? "\n" : "\t");
     }
     for (const auto & it : idSet) {
-        *fOut << "s2f_" << *it << "\t";
+        *fOut << "s2f_" << std::setfill('0') << std::setw(7) <<  *it << "\t";
         for (const Sample & sample : mOptions->samples) {
             auto itkf = sample.totalIdFreqUMapResults.find(it);
             if (itkf == sample.totalIdFreqUMapResults.end()) {
@@ -330,7 +330,7 @@ void HtmlReporterAll::reportAllTables() {
     }
     *fOut << "s2f_id\tKO\tGO\tSymbol\tGene\tOrthologFreq\n";
     for (const auto & it : idSet) {
-        *fOut << "s2f_" << *it << "\t";
+        *fOut << "s2f_" << std::setfill('0') << std::setw(7) << *it << "\t";
         auto itid = mOptions->mHomoSearchOptions.fullDbMap.find(it);
         if (itid == mOptions->mHomoSearchOptions.fullDbMap.end()) {
             *fOut << "U\tU\tU\tU\t0\n";
@@ -713,7 +713,7 @@ void HtmlReporterAll::reportS2fBarPlot(ofstream& ofs){
    // ofs << "<td class='exlarge' style='font-size:14px;color:#ffffff;background:#008000'>" << "Class_info" << "</td></tr>\n";
     
     for (const auto & it : idFreqVec) {
-        ofs << "<tr><td class='ko_col'>" << "s2f_" << *(it.first) << "</td>";
+        ofs << "<tr><td class='ko_col'>" << "s2f_" << std::setfill('0') << std::setw(7) << *(it.first) << "</td>";
 
         for (const auto & itt : it.second) {
             ofs << "<td class='ko_col'>" << itt << "</td>";

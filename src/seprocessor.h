@@ -20,6 +20,7 @@
 #include <future>
 #include <deque>
 #include <time.h>
+#include <iomanip>
 
 #include "options.h"
 #include "threadconfig.h"

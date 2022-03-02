@@ -10,6 +10,7 @@
 #include <memory.h>
 #include <valarray>
 #include <time.h>
+#include <iomanip>
 
 #include "util.h"
 #include "common.h"
