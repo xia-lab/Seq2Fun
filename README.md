@@ -38,12 +38,10 @@ For most non-model organisms, biological understanding of study outcomes is limi
 
 We provide dozens of pre-built databases that can be downloaded here based on [Orthofinder](https://ftp.ncbi.nlm.nih.gov/gene/DATA/gene_orthologs.gz).
 
-| First Header  | Second Header |
-| ------------- | ------------- |
-| Content Cell  | Content Cell  |
-| Content Cell  | Content Cell  |
-
-| Group  | Species | Proteins | n. of ortholog | n. of core ortholog | Filename |
+| Group  | Species | Proteins  | n. of ortholog | n. of core ortholog  | Filename |
+| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
+| Content  | Content  | Content  | Content  | Content  | Content  |
+| Content  | Content  | Content  | Content  | Content  | Content  |
 
 
 | -----	| ------- | --------- | ----- | --------- |	
