@@ -473,6 +473,7 @@ We have followed the codon tables from [NCBI](https://www.ncbi.nlm.nih.gov/Taxon
 To inform us of any bugs or requests, please open a new issue or send an email to rocpengliu@gmail.com or jeff.xia@mcgill.ca
 
 ## Seq2Fun History & Updates
+03-16-2022 - seq2fun_v2.0.4 released(database with orthologs)  
 12-21-2021 - seq2fun_v2.0.0 released  
 08-23-2021 - seq2fun_v1.2.4 released  
 06-18-2021 - seq2fun_v1.2.3 released  
