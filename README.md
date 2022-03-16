@@ -38,9 +38,9 @@ For most non-model organisms, biological understanding of study outcomes is limi
 
 We provide dozens of pre-built databases that can be downloaded here based on [Orthofinder](https://ftp.ncbi.nlm.nih.gov/gene/DATA/gene_orthologs.gz).
 
-| Group | Species | Proteins	| n. of ortholog | n. of core ortholog | Filename	|
-| -----	| ------- | --------- | ----- | --------- |
-| Vertebrates | 212 | 4,573,967	| 74,321 | [vertebrates.tar.gz](http://gofile.me/4esAc/YkygX7SwI)	|
+| Group | Species | Proteins	| n. of ortholog | n. of core ortholog | Filename	|	
+| -----	| ------- | --------- | ----- | --------- |	
+| Vertebrates | 212 | 4,573,967	| 74,321 | [vertebrates.tar.gz](http://gofile.me/4esAc/YkygX7SwI)	|	
 |Algae | 14 | 155495| 34628| 1831| [algae.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
 |alveolates | 21 | 207674| 48656| 1099| [alveolates.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
 |amoebozoa | 7 |81844| 20217| 1200| [amoebozoa.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
