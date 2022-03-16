@@ -43,7 +43,9 @@ We provide dozens of pre-built databases that can be downloaded here based on [O
 | Content Cell  | Content Cell  |
 | Content Cell  | Content Cell  |
 
-| Group | Species | Proteins | n. of ortholog | n. of core ortholog | Filename |	
+| Group  | Species | Proteins | n. of ortholog | n. of core ortholog | Filename |
+
+
 | -----	| ------- | --------- | ----- | --------- |	
 | Vertebrates | 212 | 4,573,967	| 74,321 | [vertebrates.tar.gz](http://gofile.me/4esAc/YkygX7SwI)	|	
 |Algae | 14 | 155495| 34628| 1831| [algae.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
