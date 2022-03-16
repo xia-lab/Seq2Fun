@@ -291,9 +291,9 @@ void HtmlReporterAll::reportAllTables() {
         mOptions->longlog ? loginfolong(msg) : loginfo(msg);
     }
     
-    fOutNm = joinpath(mOptions->samples.front().path, "S2fid_abundance_table_all_samples_submit_2_networkanalyst.txt");
+    fOutNm = joinpath(mOptions->samples.front().path, "S2fid_abundance_table_all_samples_submit_2_expressanalyst.txt");
     fOut->open(fOutNm.c_str(), std::ofstream::out);
-    if(!fOut->is_open()) error_exit("Can not open S2fid_abundance_table_all_samples_submit_2_networkanalystv.txt");
+    if(!fOut->is_open()) error_exit("Can not open S2fid_abundance_table_all_samples_submit_2_expressanalyst.txt");
     if (mOptions->verbose) {
         mOptions->longlog ? loginfolong("Starting to write all samples s2fid abundance table") : loginfo("Starting to write all samples s2fid abundance table");
     }
