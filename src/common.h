@@ -3,7 +3,7 @@
 
 #include <string>
 
-#define SEQ2FUNR_VER "2.0.3"
+#define SEQ2FUNR_VER "2.0.4"
 
 #define _DEBUG false
 
