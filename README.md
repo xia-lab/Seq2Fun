@@ -37,46 +37,7 @@ make
 For most non-model organisms, biological understanding of study outcomes is limited to protein-coding genes with functional annotations such as KEGG pathways, Gene Ontology or PANTHER classification system. Therefore, developing Seq2Fun version 2 database to focus on functionally annotated genes such as orthologs largely meets the preferred needs of most scientists studying non-model organisms.
 
 We provide dozens of pre-built databases that can be downloaded here based on [Orthofinder](https://ftp.ncbi.nlm.nih.gov/gene/DATA/gene_orthologs.gz).
-
-| Group  | Species | Proteins  | n. of ortholog | n. of core ortholog  | Filename |
-| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
-| Content  | Content  | Content  | Content  | Content  | Content  |
-| Content  | Content  | Content  | Content  | Content  | Content  |
-
-
-| -----	| ------- | --------- | ----- | --------- |	
-| Vertebrates | 212 | 4,573,967	| 74,321 | [vertebrates.tar.gz](http://gofile.me/4esAc/YkygX7SwI)	|	
-|Algae | 14 | 155495| 34628| 1831| [algae.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
-|alveolates | 21 | 207674| 48656| 1099| [alveolates.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
-|amoebozoa | 7 |81844| 20217| 1200| [amoebozoa.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
-| amphibians|  3| 75261| 9838| 7776| [amphibians.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
-| animals|  370| 7150735| 236447| 3388| [animals.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
-| apicomplexans|  18|93576| 13823| 1042| [apicomplexans.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
-| arthropods|  119| 1727651| 101867| 4053| [arthropods.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
-| ascomycetes| 100 |904642| 93433| 2590| [ascomycetes.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
-| basidiomycetes| 33 |363997| 52723| 2263| [basidiomycetes.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
-| birds|  31|482205|13868 | 6433| [birds.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
-| cnidarians| 9 |203000| 18682|4840 | [cnidarians.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
-| crustaceans|7|154960|32225 | 4408*| [crustaceans.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
-| dothideomycetes|  10|123200| 26288|4644 | [dothideomycetes.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
-| eudicots|93| 3180221	|72086 | 6935| [eudicots.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
-| euglenozoa|9|86483| 11790| 4341| [euglenozoa.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
-| eurotiomycetes| 20 | 196228	| 23006| 4081| [eurotiomycetes.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
-| fishes|64|1736572| 27327| 7140| [fishes.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
-| flatworms|4|58181| 15156| 3720| [flatworms.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
-|fungi |138|1278312| 141223| 2063| [fungi.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
-| insects| 101 |1376824| 60375| 4508| [insects.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
-| leotiomycetes|  5|67865|19335 | 4833| [leotiomycetes.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
-| mammals|94|1910363| 32471| 7781*| [mammals.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
-| mollusks|9|206905|29992|5485** | [mollusks.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
-| monocots|17|560027|32745| 6060| [monocots.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
-|nematodes | 6 |134093| 32549| 3018| [nematodes.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
-| plants|127|3968027|128122 | 3872| [plants.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
-| protists|52|660237| 126969| 736| [protists.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
-| reptiles| 20 |384584| 11946|6786 | [reptiles.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
-| saccharomycetes| 36 |195913|13337 | 2741| [saccharomycetes.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
-| stramenopiles| 8 |119746| 28902| 680| [stramenopiles.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
-| vertebrates|212|4588985| 59392| 6045| [vertebrates.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
+You can download these databases from [here](http://gofile.me/4esAc/YkygX7SwI)
 
 ### Step 3. Run a small test 
 There are four sub folders under seq2fun - src, bin, database and testdata. The bin folder contains the binary code we just complied. The testdata contains a small test data from the Case Study.
