@@ -36,8 +36,7 @@ make
 ### Step 2. Database download 
 For most non-model organisms, biological understanding of study outcomes is limited to protein-coding genes with functional annotations such as KEGG pathways, Gene Ontology or PANTHER classification system. Therefore, developing Seq2Fun version 2 database to focus on functionally annotated genes such as orthologs largely meets the preferred needs of most scientists studying non-model organisms.
 
-We provide dozens of pre-built databases that can be downloaded here based on [Orthofinder](https://ftp.ncbi.nlm.nih.gov/gene/DATA/gene_orthologs.gz).
-You can download these databases from [here](http://gofile.me/4esAc/YkygX7SwI)
+We provide dozens of pre-built databases that can be downloaded from [here](http://gofile.me/4esAc/bG1RlcQIS).
 
 ### Step 3. Run a small test 
 There are four sub folders under seq2fun - src, bin, database and testdata. The bin folder contains the binary code we just complied. The testdata contains a small test data from the Case Study.
@@ -78,7 +77,7 @@ The samples can be download from [here](http://gofile.me/4esAc/UPNLXPxxO)
 
 | Group | Number of species | Number of proteins | Number of ortholog | Database name |
 | ----- | ----------------    | ------------- | ---------------   | ------------- |
-| Birds	| 31 | 482,205 | 24,076 | [birds.tar.gz](http://gofile.me/4esAc/YkygX7SwI) |
+| Birds	| 31 | 482,205 | 24,076 | [birds.tar.gz](http://gofile.me/4esAc/bG1RlcQIS) |
 
 ### Running Seq2Fun
 #### 1.Preparing sample.txt file
