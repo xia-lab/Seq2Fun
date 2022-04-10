@@ -191,12 +191,6 @@ bool PairEndProcessor::process() {
     vector<Stats*> preStats2;
     vector<Stats*> postStats2;
     vector<FilterResult*> filterResults;
-//    vector< std::unordered_map<std::string, uint32 > > totalKoFreqVecResults;
-//    totalKoFreqVecResults.reserve(mOptions->thread);
-//    vector< std::unordered_map<std::string, std::unordered_map<std::string, double> > > totalOrgKOFreqVecResults;
-//    totalOrgKOFreqVecResults.reserve(mOptions->thread);
-//    vector<std::unordered_map<std::string, uint32> > totalGoFreqVecResults;
-//    totalGoFreqVecResults.reserve(mOptions->thread);
 
     vector<std::map<const uint32 *, uint32> > totalIdFreqVecResults;
     totalIdFreqVecResults.reserve(mOptions->thread);
@@ -206,9 +200,6 @@ bool PairEndProcessor::process() {
         preStats2.push_back(configs[t]->getPreStats2());
         postStats2.push_back(configs[t]->getPostStats2());
         filterResults.push_back(configs[t]->getFilterResult());
-//        totalKoFreqVecResults.push_back(configs[t]->getTransSearcher()->getSubKoFreqUMap());
-//        totalOrgKOFreqVecResults.push_back(configs[t]->getTransSearcher()->getSubOrgKOAbunUMap());
-//        totalGoFreqVecResults.push_back(configs[t]->getTransSearcher()->getSubGoFreqUMap());
         totalIdFreqVecResults.push_back(configs[t]->getTransSearcher()->getIdFreqSubMap());
     }
     Stats* finalPreStats1 = Stats::merge(preStats1);

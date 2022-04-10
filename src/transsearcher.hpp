@@ -65,11 +65,6 @@ protected:
     std::vector<std::string> longest_fragments;
     
     unsigned int best_match_score = 0;
-    
-//    std::string outputStr = "";
-//    std::string extraoutput = "";
-//    std::string extraoutputGO = "";
-    //uint32 extraoutputId = 0;
     double query_len;
     uint32_t read_count = 0;
     uint32 uniq_mapped_reads = 0;
@@ -98,32 +93,6 @@ protected:
     std::set<const uint32 *> matched_genids;
     std::map<const uint32 *, uint32> tmpIdFreqMap;
     std::map<const uint32 *, uint32> idFreqSubMap;
-    
-//    geneKoGoComb tmpGKG;
-//    std::vector<geneKoGoComb> tmpGeneKGI;
-//    std::vector<geneKoGoComb> tmpGeneKGIKo;
-//    std::vector<geneKoGoComb> tmpGeneKGIGo;
-//    std::vector<std::string> tmpKOVec;
-//    std::set<std::string> orgSet;
-//    std::unordered_set<std::string> koUSet;
-//    std::unordered_multimap<std::string, std::string> tmpKOProteinUMMap;
-//    std::unordered_multimap<std::string, std::pair<std::string, double> > tmpOrgKOAbunUMMap;
-//    std::multimap<std::string, double> tmpKOFreqMMap; //for org;
-//    std::unordered_map<std::string, double> tmpKOFreqUMap; //for org;
-//    std::unordered_map<std::string, uint32 > subKoFreqUMap;
-//    std::unordered_multimap<std::string, std::unordered_map<std::string, double> > subOrgKOAbunUMMap;
-//    std::unordered_map<std::string, std::unordered_map<std::string, double> > priOrgKOAbunUMap;
-//    std::unordered_map<std::string, std::vector<std::string> > subPathwayUMap;
-//    
-//    std::vector<std::string> tmpGOVec;
-//    std::unordered_map<std::string, uint32 > subGoFreqUMap;
-//    std::unordered_set<std::string> goUSet;
-//    std::vector<std::string> tmpGoVec;
-    
-//    std::vector<uint32> tmpIdVec;
-//    std::unordered_set<uint32> idUSet;
-//    std::unordered_map<uint32, uint32 > subIdFreqUMap;
-    
     Options * mOptions;   
     BwtFmiDB * tbwtfmiDB;
     
@@ -133,12 +102,6 @@ public:
     void transSearch(Read * item1, Read * item2, uint32* & orthId);
     inline std::map<const uint32 *, uint32> getIdFreqSubMap(){return idFreqSubMap;};
     static std::map<const uint32 *, uint32> merge(std::vector<std::map<const uint32*, uint32>> & list);
-    
-    //inline std::unordered_map<std::string, uint32 > getSubKoFreqUMap(){return subKoFreqUMap;};
-    //inline std::unordered_map<std::string, uint32 > getSubGoFreqUMap(){return subGoFreqUMap;};
-    //inline std::unordered_map<uint32, uint32 > getSubIdFreqUMap(){return subIdFreqUMap;};
-    //std::unordered_map<std::string, std::unordered_map<std::string, double> > getSubOrgKOAbunUMap();
-    //std::unordered_map<std::string, std::vector<std::string> > getSubPathwayUMap();
 };
 
 
