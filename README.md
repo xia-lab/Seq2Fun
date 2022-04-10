@@ -36,23 +36,7 @@ make
 ### Step 2. Database download 
 For most non-model organisms, biological understanding of study outcomes is limited to protein-coding genes with functional annotations such as KEGG pathways, Gene Ontology or PANTHER classification system. Therefore, developing Seq2Fun version 2 database to focus on functionally annotated genes such as orthologs largely meets the preferred needs of most scientists studying non-model organisms.
 
-We provide dozens of pre-built databases that can be downloaded here based on [Orthofinder](https://ftp.ncbi.nlm.nih.gov/gene/DATA/gene_orthologs.gz).
-
-| Group | Species | Proteins	| ortholog | Filename	|
-| ----- | ------- | --------- | ----- | --------- |
-| Vertebrates| 212 | 4,573,967	| 74,321 | [vertebrates.tar.gz](http://gofile.me/4esAc/YkygX7SwI)	|
-| Mammals | 94	| 1,909,225	| 51,570 | [mammals.tar.gz](http://gofile.me/4esAc/YkygX7SwI)	|
-| Birds	| 31 | 482,205	| 24,076 | [birds.tar.gz](http://gofile.me/4esAc/YkygX7SwI)	|
-| Reptiles| 20	| 382,462	| 24,823 | [reptiles.tar.gz](http://gofile.me/4esAc/YkygX7SwI)	|
-| Amphibians| 3	| 75,261	| 22,211 | [amphibians.tar.gz](http://gofile.me/4esAc/YkygX7SwI)|
-| Fishes| 61	| 1,655,763	| 49,668 | [fishes.tar.gz](http://gofile.me/4esAc/YkygX7SwI)	|
-| Arthropods| 119| 1,709,887	| 114,560 | [arthropods.tar.gz](http://gofile.me/4esAc/YkygX7SwI)	|
-|Nematodes | 6	| 103,321	| 38,733 | [nematodes.tar.gz](http://gofile.me/4esAc/YkygX7SwI)	|
-|Invertebrate| 158| 2,502,377	| 198,800 | [invertebrate.tar.gz](http://gofile.me/4esAc/YkygX7SwI)	|
-|Plants | 127	| 3,925,179	| 147,787 | [plants.tar.gz](http://gofile.me/4esAc/YkygX7SwI)	|
-|Fungi | 138	| 1,278,312	| 142,573 | [fungi.tar.gz](http://gofile.me/4esAc/YkygX7SwI)	|
-|Protists | 52	| 655,135	| 138,844 | [protists.tar.gz](http://gofile.me/4esAc/YkygX7SwI)	|
-
+We provide dozens of pre-built databases that can be downloaded from [here](http://gofile.me/4esAc/bG1RlcQIS).
 
 ### Step 3. Run a small test 
 There are four sub folders under seq2fun - src, bin, database and testdata. The bin folder contains the binary code we just complied. The testdata contains a small test data from the Case Study.
@@ -93,7 +77,7 @@ The samples can be download from [here](http://gofile.me/4esAc/UPNLXPxxO)
 
 | Group | Number of species | Number of proteins | Number of ortholog | Database name |
 | ----- | ----------------    | ------------- | ---------------   | ------------- |
-| Birds	| 31 | 482,205 | 24,076 | [birds.tar.gz](http://gofile.me/4esAc/YkygX7SwI) |
+| Birds	| 31 | 482,205 | 24,076 | [birds.tar.gz](http://gofile.me/4esAc/bG1RlcQIS) |
 
 ### Running Seq2Fun
 #### 1.Preparing sample.txt file
@@ -449,6 +433,7 @@ We have followed the codon tables from [NCBI](https://www.ncbi.nlm.nih.gov/Taxon
 To inform us of any bugs or requests, please open a new issue or send an email to rocpengliu@gmail.com or jeff.xia@mcgill.ca
 
 ## Seq2Fun History & Updates
+03-16-2022 - seq2fun_v2.0.4 released(database with orthologs)  
 12-21-2021 - seq2fun_v2.0.0 released  
 08-23-2021 - seq2fun_v1.2.4 released  
 06-18-2021 - seq2fun_v1.2.3 released  
