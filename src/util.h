@@ -673,7 +673,7 @@ int getVecIndex(vector<T> & v, T i) {
 
 inline std::string paddingOs(std::string num){
     stringstream ss;
-    ss << std::internal << std::setfill('0') << std::setw(7) << num;
+    ss << std::internal << std::setfill('0') << std::setw(10) << num;
     return ss.str();
 }
 
