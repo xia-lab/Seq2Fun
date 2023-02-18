@@ -2,8 +2,6 @@
 
 **Seq2Fun version 2** is an ultra-fast, all-in-one high resolution functional profiling tool directly from RNA-seq raw reads for organisms without reference genomes. For more detailed descriptions of the concept and algorithm, and instructions, please visit the Seq2Fun website **www.seq2fun.ca**.
 
-If you want to use **version 1** , please download the source code [here](http://gofile.me/4esAc/OY02RFz5y) and database from [here](http://gofile.me/4esAc/UPNLXPxxO)
-
 
 ## Key features of Seq2Fun version 2
 
@@ -36,12 +34,12 @@ make
 ### Step 2. Database download 
 For most non-model organisms, biological understanding of study outcomes is limited to protein-coding genes with functional annotations such as KEGG pathways, Gene Ontology or PANTHER classification system. Therefore, developing Seq2Fun version 2 database to focus on functionally annotated genes such as orthologs largely meets the preferred needs of most scientists studying non-model organisms.
 
-We provide dozens of pre-built databases that can be downloaded from [here](http://gofile.me/4esAc/bG1RlcQIS).
+We provide dozens of pre-built databases that can be downloaded from [here](https://www.expressanalyst.ca/ExpressAnalyst/docs/Databases.xhtml), and click "**Without a Reference Transcriptome**".
 
 ### Step 3. Run a small test 
 There are four sub folders under seq2fun - src, bin, database and testdata. The bin folder contains the binary code we just complied. The testdata contains a small test data from the Case Study.
 
-Download the [birds database](http://gofile.me/4esAc/bG1RlcQIS) to the <code><b> testdata </b></code> folder, and issue the following commands:
+Download the [birds database](https://www.expressanalyst.ca/ExpressAnalyst/docs/Databases.xhtml) to the <code><b> testdata </b></code> folder, and issue the following commands:
 ```
 tar -xzvf birds.tar.gz
 ```
@@ -64,7 +62,7 @@ DCCO embryos were exposed via egg injection to EE2, a synthetic estrogen that is
 #### 2. Experimental samples
 
 Each sample was subsampled with 5 million reads, just for demonstration purpose.
-The samples can be download from [here](http://gofile.me/4esAc/UPNLXPxxO)
+The samples can be download from [here](http://gofile.me/4esAc/rhwAvsbOL)
 
 | Group | Chemicals (dose)	| Number of samples	| Number of reads	|
 | ----- | ----------------- | ----------------- | --------------- |
@@ -77,7 +75,7 @@ The samples can be download from [here](http://gofile.me/4esAc/UPNLXPxxO)
 
 | Group | Number of species | Number of proteins | Number of ortholog | Database name |
 | ----- | ----------------    | ------------- | ---------------   | ------------- |
-| Birds	| 31 | 482,205 | 24,076 | [birds.tar.gz](http://gofile.me/4esAc/bG1RlcQIS) |
+| Birds	| 31 | 482,205 | 24,076 | [birds.tar.gz](https://www.expressanalyst.ca/ExpressAnalyst/docs/Databases.xhtml) |
 
 ### Running Seq2Fun
 #### 1.Preparing sample.txt file
