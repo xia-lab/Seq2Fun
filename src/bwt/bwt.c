@@ -115,8 +115,7 @@ void get_suffix(FMI *fmi, suffixArray *s, IndexType i, int *iseq, IndexType *pos
 		suffixArray_decode_number(iseq, pos,
 				(i>>s->chpt_exp)-((s->nseq-1)>>s->chpt_exp)-1, s);
 		*pos += k;
-	}
-	else { *iseq = i; *pos=k-1; }
+	} else { *iseq = i; *pos=k-1; }
 
 }
 
