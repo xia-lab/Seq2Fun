@@ -23,15 +23,30 @@ SEQstruct *alloc_SEQstruct() {
 
 void free_SEQstruct(SEQstruct *ss) {
   if (ss) {
-    if (ss->id) free(ss->id);
+    if (ss->id) {
+      free(ss->id);
+      ss->id = NULL;
+    }
+    if(ss->descr) {
+      free(ss->descr);
+      ss->descr = NULL; 
+    }            // added;
+    if(ss->start) {
+      free(ss->start);//added;
+      ss->start = NULL;
+    }
     free(ss);
+    ss = NULL;
   }
 }
 
 /* Assumes that base->start points to the whole sequence */
 void recursive_free_SEQstruct(SEQstruct *base) {
   SEQstruct *ss, *next;
-  if (base->start) free(base->start);
+  if (base->start){
+      free(base->start);
+      base->start = NULL;
+  }
   ss=base;
   next=ss->next;
   while (ss) {
@@ -40,9 +55,6 @@ void recursive_free_SEQstruct(SEQstruct *base) {
     if (next) next=ss->next;
   }
 }
-
-
-
 
 
 /* Makes a translation table from an alphabet to a translation, so

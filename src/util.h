@@ -238,27 +238,27 @@ inline string get_upper_dir() {
     return (cwd);
 }
 
-//#ifdef WINDOWS
-//
-//std::string getexepath() {
-//    char result[ MAX_PATH ];
-//    return std::string(result, GetModuleFileName(NULL, result, MAX_PATH));
-//}
-//#else
-//
-//inline string GetExePath() {
-//    char result[ PATH_MAX ];
-//    ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
-//    return std::string(result, (count > 0) ? count : 0);
-//}
-//
-//inline string get_seq2fun_dir() {
-//    std::string cwd = GetExePath();
-//    std::string::size_type bepos = cwd.find("/bin");
-//    cwd.erase(bepos);
-//    return (cwd);
-//}
-//#endif
+#ifdef WINDOWS
+
+std::string getexepath() {
+    char result[ MAX_PATH ];
+    return std::string(result, GetModuleFileName(NULL, result, MAX_PATH));
+}
+#else
+
+inline string GetExePath() {
+    char result[ PATH_MAX ];
+    ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
+    return std::string(result, (count > 0) ? count : 0);
+}
+
+inline string get_seq2fun_dir() {
+    std::string cwd = GetExePath();
+    std::string::size_type bepos = cwd.find("/bin");
+    cwd.erase(bepos);
+    return (cwd);
+}
+#endif
 
 inline string dirname(const string& filename) {
     string::size_type pos = filename.find_last_of('/');

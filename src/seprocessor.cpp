@@ -35,8 +35,6 @@ SingleEndProcessor::~SingleEndProcessor() {
         delete mUmiProcessor;
         mUmiProcessor = NULL;
     }
-    
-    destroyPackRepository();
 }
 
 void SingleEndProcessor::initOutput() {
@@ -118,6 +116,8 @@ bool SingleEndProcessor::process(){
             readsKOMapWriterThread->join();
     }
 
+    destroyPackRepository();
+    
     if(mOptions->verbose){
         mOptions->longlog ? loginfolong("start to generate reports\n") : loginfo("start to generate reports\n");
     }
@@ -146,11 +146,6 @@ bool SingleEndProcessor::process(){
     
     prepareResults();
 
-    // read filter results to the first thread's
-//    for(int t=1; t<mOptions->thread; t++){
-//        preStats.push_back(configs[t]->getPreStats1());
-//        postStats.push_back(configs[t]->getPostStats1());
-//    }
     int* dupHist = NULL;
     double* dupMeanTlen = NULL;
     double* dupMeanGC = NULL;
@@ -380,7 +375,7 @@ bool SingleEndProcessor::processSingleEnd(ReadPack* pack, ThreadConfig* config){
         outReadsKOMapStr = NULL;
     }
     
-    delete pack->data;
+    delete[] pack->data;
     delete pack;
 
     return true;
@@ -395,7 +390,7 @@ void SingleEndProcessor::initPackRepository() {
 }
 
 void SingleEndProcessor::destroyPackRepository() {
-    if(mRepo.packBuffer) delete mRepo.packBuffer; mRepo.packBuffer = NULL;
+    if(mRepo.packBuffer) delete[] mRepo.packBuffer; mRepo.packBuffer = NULL;
 }
 
 void SingleEndProcessor::producePack(ReadPack* pack){
@@ -495,8 +490,16 @@ void SingleEndProcessor::producerTask(){
     //lock.unlock();
 
     // if the last data initialized is not used, free it
-    if(data != NULL)
+    if (data != NULL) {
+        for (int i = 0; i < PACK_SIZE; ++i) {
+            if (data[i] != NULL) {
+                delete data[i];
+                data[i] = NULL;
+            }
+        }
         delete[] data;
+        data = NULL;
+    }
 }
 
 void SingleEndProcessor::consumerTask(ThreadConfig* config){

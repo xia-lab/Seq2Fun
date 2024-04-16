@@ -37,7 +37,7 @@ PairEndProcessor::~PairEndProcessor() {
     }
     
     if (mInsertSizeHist) {
-        delete mInsertSizeHist; 
+        delete[] mInsertSizeHist; 
         mInsertSizeHist = NULL;
     }
     
@@ -50,8 +50,6 @@ PairEndProcessor::~PairEndProcessor() {
         delete mUmiProcessor;
         mUmiProcessor = NULL;
     }
-    
-    destroyPackRepository();
 }
 
 void PairEndProcessor::initOutput() {
@@ -180,6 +178,8 @@ bool PairEndProcessor::process() {
         if (readsKOMapWriterThread)
             readsKOMapWriterThread->join();
     }
+    
+    destroyPackRepository();
 
     if (mOptions->verbose){
         mOptions->longlog ? loginfolong("start to generate reports\n") : loginfo("start to generate reports\n");
@@ -235,30 +235,22 @@ bool PairEndProcessor::process() {
     int peakInsertSize = getPeakInsertSize();
     cerr << endl;
     cerr << "Insert size peak (evaluated by paired-end reads): " << peakInsertSize << endl;
-
     if (mOptions->merge.enabled) {
-        //        cerr << endl;
-        //        cerr << "Read pairs merged: " << finalFilterResult->mMergedPairs << endl;
         if (finalPostStats1->getReads() > 0) {
             double postMergedPercent = 100.0 * finalFilterResult->mMergedPairs / finalPostStats1->getReads();
             double preMergedPercent = 100.0 * finalFilterResult->mMergedPairs / finalPreStats1->getReads();
-            //            cerr << "% of original read pairs: " << preMergedPercent << "%" << endl;
-            //            cerr << "% in reads after filtering: " << postMergedPercent << "%" << endl;
         }
         cerr << endl;
     }
-
     JsonReporter jr(mOptions);
     jr.setDupHist(dupHist, dupMeanGC, dupRate);
     jr.setInsertHist(mInsertSizeHist, peakInsertSize);
     jr.report(finalFilterResult, finalPreStats1, finalPostStats1, finalPreStats2, finalPostStats2);
-
     // make HTML report
     HtmlReporter hr(mOptions);
     hr.setDupHist(dupHist, dupMeanGC, dupRate);
     hr.setInsertHist(mInsertSizeHist, peakInsertSize);
     hr.report(finalFilterResult, finalPreStats1, finalPostStats1, finalPreStats2, finalPostStats2);
-
     // clean up
     for (int t = 0; t < mOptions->thread; t++) {
         delete threads[t];
@@ -266,21 +258,17 @@ bool PairEndProcessor::process() {
         delete configs[t];
         configs[t] = NULL;
     }
-
     delete finalPreStats1;
     delete finalPostStats1;
     delete finalPreStats2;
     delete finalPostStats2;
     delete finalFilterResult;
-
     if (mOptions->duplicate.enabled) {
         delete[] dupHist;
         delete[] dupMeanGC;
     }
-
     delete[] threads;
     delete[] configs;
-
     if (leftWriterThread)
         delete leftWriterThread;
     if (rightWriterThread)
@@ -295,10 +283,8 @@ bool PairEndProcessor::process() {
         delete failedWriterThread;
     if (readsKOMapWriterThread)
         delete readsKOMapWriterThread;
-
     if (!mOptions->split.enabled)
         closeOutput();
-
     return true;
 }
 
@@ -478,7 +464,7 @@ bool PairEndProcessor::processPairEnd(ReadPairPack* pack, ThreadConfig* config) 
             }
         }
 
-        delete pair;
+        delete pair; pair = NULL;
         // if no trimming applied, r1 should be identical to or1
         if (r1 != or1 && r1 != NULL)
             delete r1;
@@ -491,8 +477,6 @@ bool PairEndProcessor::processPairEnd(ReadPairPack* pack, ThreadConfig* config) 
         mOptions->transSearch.nTransMappedIdReads += mappedReads;
         logMtx.lock();
         auto rCount = long(mOptions->transSearch.nTransMappedIdReads);
-//        auto kCount = mOptions->transSearch.koUSet.size();
-//        auto gCount = mOptions->transSearch.goUSet.size();
         mOptions->transSearch.idUSet.insert(idSet.begin(), idSet.end());
         auto iCount = mOptions->transSearch.idUSet.size();
         logMtx.unlock();
@@ -610,7 +594,7 @@ bool PairEndProcessor::processPairEnd(ReadPairPack* pack, ThreadConfig* config) 
         outReadsKOMapStr = NULL;
     }
 
-    delete pack->data;
+    delete[] pack->data;
     delete pack;
 
     return true;
@@ -645,7 +629,7 @@ void PairEndProcessor::initPackRepository() {
 }
 
 void PairEndProcessor::destroyPackRepository() {
-    if(mRepo.packBuffer) delete mRepo.packBuffer; mRepo.packBuffer = NULL;
+    if(mRepo.packBuffer) delete[] mRepo.packBuffer; mRepo.packBuffer = NULL;
 }
 
 void PairEndProcessor::producePack(ReadPairPack* pack) {
@@ -743,8 +727,16 @@ void PairEndProcessor::producerTask() {
     }
 
     // if the last data initialized is not used, free it
-    if (data != NULL)
+     if(data != NULL){
+        for(int i = 0; i < PACK_SIZE; ++i){
+            if(data[i]!= NULL){
+                delete data[i];
+                data[i] = NULL;
+            }
+        }
         delete[] data;
+        data = NULL;
+    }
 }
 
 void PairEndProcessor::consumerTask(ThreadConfig* config) {

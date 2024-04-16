@@ -1070,11 +1070,8 @@ void TransSearcher::flush_output(){
 }
 
 void TransSearcher::clearFragments() {
-    while (!fragments.empty()) {
-        auto it = fragments.begin();
-        Fragment *f = it->second;
-        delete f;
-        fragments.erase(it);
+    for(auto it = fragments.begin(); it != fragments.end(); ++it){
+        delete it->second;
     }
     fragments.clear();
 }

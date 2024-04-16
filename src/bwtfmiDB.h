@@ -25,7 +25,9 @@ class BwtFmiDB {
 public:
     BwtFmiDB(Options * & opt);
     ~BwtFmiDB();
-
+    void free_BWT();
+    void free_FMI(FMI*& fmi);
+    void free_suffixArray(suffixArray*& sa);
     //for trans search
     BWT * tbwt;
     FMI * tfmi;

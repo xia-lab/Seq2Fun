@@ -723,7 +723,7 @@ int main(int argc, char* argv[]) {
                     opt->transSearch.nIdDB << " S2f ids (" <<
                     getPercentage(opt->transSearch.nTransMappedIds, opt->transSearch.nIdDB) <<
                     " %), " << "mapped " << opt->transSearch.nMappedCoreOrthos << " core orthologs out of " <<
-                    opt->transSearch.coreOrthosDb << " orthologs (" << getPercentage(opt->transSearch.nMappedCoreOrthos, opt->transSearch.coreOrthosDb) <<
+                    opt->transSearch.coreOrthosDb << "orthologs (" << getPercentage(opt->transSearch.nMappedCoreOrthos, opt->transSearch.coreOrthosDb) <<
                     " %)" << endl << endl;
             opt->transSearch.reset2Default();
             opt->mHomoSearchOptions.reset2Default();
